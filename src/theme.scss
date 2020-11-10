@@ -1,0 +1,25 @@
+@import '~@angular/material/core/theming/_all-theme';
+@include mat-core();
+@import 'variables';
+
+$app-dark-primary: mat-palette($mat-pink, 700);
+$app-dark-accent: mat-palette($mat-blue-grey);
+
+$app-light-primary: mat-palette($mat-blue, 700);
+$app-light-accent: mat-palette($mat-amber);
+$dark-theme: true !default;
+
+.dark-theme {
+  // Dark theme
+  $app-dark-theme: mat-dark-theme($app-dark-primary, $app-dark-accent);
+  $dark-theme: true;
+  @include angular-material-theme($app-dark-theme);
+  @include my-custom-component-theme($app-dark-theme);
+}
+.light-theme {
+  // Light theme
+  $app-light-theme: mat-light-theme($app-light-primary, $app-light-accent);
+  $dark-theme: false;
+  @include angular-material-theme($app-light-theme);
+  @include my-custom-component-theme($app-light-theme);
+}

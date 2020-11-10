@@ -1,0 +1,43 @@
+<div class="container"
+     *ngIf="auth.isLoading$ | async; else loaded">
+  <mat-spinner></mat-spinner>
+</div>
+
+<ng-template #loaded>
+
+
+  <div class="d-flex flex-column h-100"
+       [class.dark-theme]="isDarkTheme"
+       [class.light-theme]="!isDarkTheme">
+
+
+    <mat-sidenav-container class="h-100">
+
+
+      <mat-sidenav #mainSidenav
+                   mode="{{ isHandsetLayout? 'over' : 'side'  }}">
+        <app-sidenav (changeTheme)="changeTheme()"></app-sidenav>
+      </mat-sidenav>
+
+
+      <mat-sidenav-content>
+
+        <app-nav-bar (toggleMenu)="mainSidenav.toggle()">
+
+        </app-nav-bar>
+
+
+        <div class="container flex-grow-1 flex-shrink-1">
+          <router-outlet></router-outlet>
+        </div>
+
+
+
+      </mat-sidenav-content>
+
+
+    </mat-sidenav-container>
+
+
+  </div>
+</ng-template>

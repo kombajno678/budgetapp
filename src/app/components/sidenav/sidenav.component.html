@@ -1,0 +1,34 @@
+<div>
+
+
+    <div class="top-section  mat-bg-accent">
+        <ng-container *ngIf="auth.user$ | async as user">
+            <div class="user-avatar-container mat-border-primary mat-bg-background">
+                <img [src]="user.picture"
+                     class="user-avatar " />
+            </div>
+            <span class="text-center">
+                <h3>
+                    {{ user.name }}
+                </h3>
+            </span>
+        </ng-container>
+    </div>
+
+    <mat-nav-list>
+
+        <ng-container *ngFor="let link of links">
+            <a mat-list-item
+               [routerLink]="link.url">
+                <mat-icon>
+                    {{link.icon}}
+                </mat-icon>
+                {{link.title}}
+            </a>
+
+        </ng-container>
+        <button mat-menu-item
+                (click)="handleChangeThemeClick()"> Change theme</button>
+
+    </mat-nav-list>
+</div>

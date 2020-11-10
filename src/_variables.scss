@@ -1,0 +1,49 @@
+@import "~@angular/material/theming";
+/*
+@import 'theme';
+
+$primary: red !default;
+$accent: red !default;
+
+@if $dark-theme == true {
+    $primary: mat-color($app-dark-primary);
+    $accent: mat-color($app-dark-accent);
+} @else {
+    $primary: mat-color($app-light-primary);
+    $accent: mat-color($app-light-accent);
+}
+
+*/
+
+@mixin my-custom-component-theme($theme) {
+    // Extract whichever individual palettes you need from the theme.
+    $primary: map-get($theme, primary);
+    $accent: map-get($theme, accent); // Use mat-color to extract individual colors from a palette as necessary.
+    $foreground : map-get($theme, foreground);
+    $background: map-get($theme, background);
+
+    .mat-bg-accent {
+        background-color: mat-color($accent, 600) !important;
+    }
+    .mat-bg-primary {
+        background-color: mat-color($primary, 600) !important;
+    }
+    .mat-bg-background {
+        background: mat-color($background, card)!important;
+    }
+
+
+    .mat-color-accent {
+        color: mat-color($accent, 600) !important;
+    }
+    .mat-color-primary {
+        color: mat-color($primary, 600) !important;
+    }
+
+    .mat-border-accent {
+        border-color: mat-color($accent, 600) !important;
+    }
+    .mat-border-primary {
+        border-color: mat-color($primary, 600) !important;
+    }
+}

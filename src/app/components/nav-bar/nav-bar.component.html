@@ -1,0 +1,78 @@
+<mat-toolbar color="primary">
+    <div class="row align-items-center w-100 no-gutters">
+
+
+        <div class="col-auto  align-middle">
+            <button color="accent"
+                    (click)="handleMenuButtonClick()"
+                    mat-icon-button
+                    class=""
+                    aria-label="toggle side menu">
+                <mat-icon>menu</mat-icon>
+            </button>
+
+        </div>
+        <div class="col-auto  align-middle">
+            <span>
+                Budgetapp
+            </span>
+
+        </div>
+
+
+        <div class="col  align-middle"></div>
+
+
+
+
+
+        <div class="col-auto p-2 align-middle ">
+            <div class="avatar-wrapper">
+
+                <app-user-avatar></app-user-avatar>
+            </div>
+
+
+        </div>
+    </div>
+
+
+
+
+
+
+
+    <!-- Login button: show if NOT authenticated
+    auth.user$ | async as user
+ -->
+
+
+
+
+
+
+
+
+
+    <!-- Fullsize dropdown: show if authenticated -->
+
+
+    <!-- /Fullsize dropdown -->
+
+
+    <!--
+        <img [src]="user.picture" alt="Profile picture" class="nav-user-profile rounded-circle" style="width: 75px;" />
+        <div class="">
+            <div class="">
+                {{ user.name }}
+            </div>
+            <a routerLink="/profile" class="">
+                Profile
+            </a>
+            <button (click)="logout()" class="btn btn-link dropdown-item" id="qsLogoutBtn">
+                Log out
+            </button>
+        </div>
+    -->
+
+</mat-toolbar>
