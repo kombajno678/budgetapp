@@ -1,8 +1,9 @@
 import { domain, clientId, audience } from '../../auth_config.json';
+import { apiUrl } from './api';
 
 export const environment = {
   production: true,
-  apiUrl : 'https://flask-test-app-01.herokuapp.com',
+  apiUrl: apiUrl,
   auth: {
     domain,
     clientId,
@@ -10,6 +11,6 @@ export const environment = {
     redirectUri: window.location.origin,
   },
   httpInterceptor: {
-    allowedList: [`https://flask-test-app-01.herokuapp.com/*`],
+    allowedList: [apiUrl + `/*`],
   },
 };
