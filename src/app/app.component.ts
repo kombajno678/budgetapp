@@ -1,6 +1,7 @@
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Component } from '@angular/core';
 import { AuthService } from '@auth0/auth0-angular';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-root',
@@ -8,13 +9,13 @@ import { AuthService } from '@auth0/auth0-angular';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  title = 'flask-test';
+  title = 'budgetapp';
   isDarkTheme = JSON.parse(localStorage.getItem('isDarkTheme'));
-  isHandsetLayout:boolean = false;
+  isHandsetLayout: boolean = false;
 
   constructor(
     public auth: AuthService,
-    public breakpointObserver:BreakpointObserver
+    public breakpointObserver: BreakpointObserver,
   ) {
 
     breakpointObserver.observe([
@@ -26,8 +27,10 @@ export class AppComponent {
       }
     });
 
-    
 
+    this.auth.getAccessTokenSilently({ ignoreCache: true, audience: environment.auth.audience }).subscribe(token => {
+      localStorage.setItem('budgetapp-token', token);
+    })
   }
 
   changeTheme() {
@@ -35,7 +38,7 @@ export class AppComponent {
     localStorage.setItem('isDarkTheme', this.isDarkTheme);
   }
 
-  activateHandsetLayout(){
+  activateHandsetLayout() {
     this.isHandsetLayout = true;
   }
 }

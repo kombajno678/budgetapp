@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '@auth0/auth0-angular';
-
+import { BudgetService } from 'src/app/services/budget/budget.service';
 @Component({
   selector: 'app-user-avatar',
   templateUrl: './user-avatar.component.html',
@@ -8,17 +8,24 @@ import { AuthService } from '@auth0/auth0-angular';
 })
 export class UserAvatarComponent implements OnInit {
 
-  constructor(public auth: AuthService) { }
+  constructor(public auth: AuthService, public budget: BudgetService) { }
 
   ngOnInit(): void {
   }
 
   loginWithRedirect() {
-    this.auth.loginWithRedirect();
+    this.auth.loginWithPopup();
   }
 
   logout() {
     this.auth.logout({ returnTo: '' });
+  }
+
+  tokenTest() {
+    this.budget.tokenTest().subscribe(r => {
+      console.log('tokenTest : ', r);
+    })
+
   }
 
 

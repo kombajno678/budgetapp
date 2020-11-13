@@ -11,7 +11,11 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { HomeComponent, CustomSnackbarComponent } from './pages/home/home.component';
 import { ProfileComponent } from './pages/profile/profile.component';
 import { NavBarComponent } from './components/nav-bar/nav-bar.component';
+
+
 import { AuthHttpInterceptor, AuthModule } from '@auth0/auth0-angular';
+import { JwtModule } from '@auth0/angular-jwt';
+
 
 
 import { MaterialModule } from './material/material.module';
@@ -20,6 +24,9 @@ import { SidenavComponent } from './components/sidenav/sidenav.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { UserAvatarComponent } from './components/nav-bar/user-avatar/user-avatar.component';
 
+function tokenGetter() {
+  return localStorage.getItem('budgetapp-token');
+}
 
 @NgModule({
   declarations: [
@@ -46,6 +53,15 @@ import { UserAvatarComponent } from './components/nav-bar/user-avatar/user-avata
       httpInterceptor: {
         ...env.httpInterceptor,
       },
+    }),
+    JwtModule.forRoot({
+      config: {
+        tokenGetter: tokenGetter,
+        allowedDomains: [
+          'https://dev-wkdk2hez.eu.auth0.com'],
+        disallowedRoutes: [],
+
+      }
     }),
     NgbModule,
   ],
