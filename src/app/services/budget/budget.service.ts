@@ -11,7 +11,7 @@ import { BudgetOperation } from 'src/app/models/BudgetOperation';
 })
 export class BudgetService {
 
-  private url: string = environment.apiUrl + '/users/0';
+  private url: string = (environment.apiUrl.endsWith('/') ? environment.apiUrl.slice(0, environment.apiUrl.length - 1) : environment.apiUrl) + '/users/0';
   private operationsPath = this.url + '/operations';
 
   private getAllOperationsObservable: Observable<BudgetOperation[]>;
