@@ -19,7 +19,7 @@ import { JwtModule } from '@auth0/angular-jwt';
 
 
 import { MaterialModule } from './material/material.module';
-import { environment as env } from '../environments/environment';
+import { environment as env, environment } from '../environments/environment';
 import { SidenavComponent } from './components/sidenav/sidenav.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { UserAvatarComponent } from './components/nav-bar/user-avatar/user-avatar.component';
@@ -36,8 +36,26 @@ import { MAT_DATE_LOCALE, DateAdapter, MAT_DATE_FORMATS } from '@angular/materia
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import { MAT_MOMENT_DATE_ADAPTER_OPTIONS, MAT_MOMENT_DATE_FORMATS, MomentDateAdapter } from '@angular/material-moment-adapter';
 
-function tokenGetter() {
-  return localStorage.getItem('budgetapp-token');
+async function tokenGetter(): Promise<string> {
+  console.log('tokenGetter invoked ...');
+
+
+  if (localStorage.getItem('budgetapp-token')) {
+    console.log('tokenGetter > returning token from localstorage');
+    return localStorage.getItem('budgetapp-token');
+  } else {
+    console.log('tokenGetter > getting token from api ... ');
+    await this.auth.getAccessTokenSilently({ ignoreCache: true, audience: environment.auth.audience }).subscribe(token => {
+      console.log('tokenGetter > token received from api');
+      console.log('received token, ', token)
+      localStorage.setItem('budgetapp-token', token);
+    })
+
+    console.log('tokenGetter > returning token');
+    return localStorage.getItem('budgetapp-token');
+
+  }
+
 }
 
 @NgModule({
