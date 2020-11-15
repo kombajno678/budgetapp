@@ -21,12 +21,7 @@ export class UserAvatarComponent implements OnInit {
     this.auth.logout({ returnTo: '' });
   }
 
-  tokenTest() {
-    this.budget.tokenTest().subscribe(r => {
-      console.log('tokenTest : ', r);
-    })
 
-  }
 
 
 }

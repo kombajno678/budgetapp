@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import { Observable, of, Subject } from 'rxjs';
+import { catchError, share, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 
 import { BudgetOperation } from 'src/app/models/BudgetOperation';
@@ -11,18 +11,35 @@ import { BudgetOperation } from 'src/app/models/BudgetOperation';
 })
 export class BudgetService {
 
-  private url: string = environment.apiUrl;
+  private url: string = environment.apiUrl + '/users/0';
+  private operationsPath = this.url + '/operations';
+
+  private getAllOperationsObservable: Observable<BudgetOperation[]>;
+  public allOperationsSubject: Subject<BudgetOperation[]> = new Subject<BudgetOperation[]>();
 
 
   constructor(private http: HttpClient) { }
 
-  getOperations(): Observable<BudgetOperation[]> {
-    let path = this.url + '/operations';
+  refreshOperations() {
 
-    return this.http.get<BudgetOperation[]>(path).pipe(
+    let path = this.operationsPath;
+    this.getAllOperationsObservable = this.http.get<BudgetOperation[]>(path).pipe(
       tap(_ => this.log(path)),
-      catchError(this.handleError<BudgetOperation[]>(path, null))
+      catchError(this.handleError<BudgetOperation[]>(path, null)),
+      share(),
     )
+    this.getAllOperationsObservable.subscribe(r => {
+      this.allOperationsSubject.next(r);
+    })
+
+  }
+  getOperations(): Subject<BudgetOperation[]> {
+
+    if (!this.getAllOperationsObservable) {
+      this.refreshOperations();
+    }
+
+    return this.allOperationsSubject;
   }
 
   getOperation(id: number): Observable<BudgetOperation> {
@@ -60,16 +77,6 @@ export class BudgetService {
       catchError(this.handleError<BudgetOperation>(path, null))
     )
   }
-
-  tokenTest() {
-    let path = this.url + '/testtoken';
-
-    return this.http.get<any>(path).pipe(
-      tap(_ => this.log(path)),
-      catchError(this.handleError<any>(path, null))
-    )
-  }
-
 
 
   private log(msg: string) {

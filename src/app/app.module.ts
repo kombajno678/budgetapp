@@ -23,6 +23,18 @@ import { environment as env } from '../environments/environment';
 import { SidenavComponent } from './components/sidenav/sidenav.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { UserAvatarComponent } from './components/nav-bar/user-avatar/user-avatar.component';
+import { BudgetComponent } from './pages/budget/budget.component';
+import { RecentOperationsTableComponent } from './components/tables/recent-operations-table/recent-operations-table.component';
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSortModule } from '@angular/material/sort';
+import { CreateNewOperationDialogComponent } from './components/dialogs/create-new-operation-dialog/create-new-operation-dialog.component';
+
+
+
+import { MAT_DATE_LOCALE, DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';
+import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
+import { MAT_MOMENT_DATE_ADAPTER_OPTIONS, MAT_MOMENT_DATE_FORMATS, MomentDateAdapter } from '@angular/material-moment-adapter';
 
 function tokenGetter() {
   return localStorage.getItem('budgetapp-token');
@@ -37,10 +49,14 @@ function tokenGetter() {
     SidenavComponent,
     CustomSnackbarComponent,
     UserAvatarComponent,
+    BudgetComponent,
+    RecentOperationsTableComponent,
+    CreateNewOperationDialogComponent,
 
   ],
   entryComponents: [CustomSnackbarComponent],
   imports: [
+
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
@@ -64,6 +80,9 @@ function tokenGetter() {
       }
     }),
     NgbModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatSortModule,
   ],
   providers: [
     {
@@ -71,6 +90,18 @@ function tokenGetter() {
       useClass: AuthHttpInterceptor,
       multi: true,
     },
+    { provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { appearance: 'fill' } },
+    { provide: MAT_DATE_LOCALE, useValue: 'pl-PL' },
+
+    // `MomentDateAdapter` and `MAT_MOMENT_DATE_FORMATS` can be automatically provided by importing
+    // `MatMomentDateModule` in your applications root module. We provide it at the component level
+    // here, due to limitations of our example generation script.
+    {
+      provide: DateAdapter,
+      useClass: MomentDateAdapter,
+      deps: [MAT_DATE_LOCALE, MAT_MOMENT_DATE_ADAPTER_OPTIONS]
+    },
+    { provide: MAT_DATE_FORMATS, useValue: MAT_MOMENT_DATE_FORMATS },
 
   ],
   bootstrap: [AppComponent]
@@ -81,3 +112,7 @@ platformBrowserDynamic().bootstrapModule(AppModule)
   .catch(err => console.error(err));
   */
  // causes component to laod twice, dunno why
+
+
+
+
