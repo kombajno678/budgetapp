@@ -79,6 +79,16 @@ export class BudgetService {
   }
 
 
+  testToken() {
+    let path = environment.apiUrl + '/testtoken';
+
+    return this.http.get<any>(path).pipe(
+      tap(_ => this.log(path)),
+      catchError(this.handleError<any>(path, null))
+    )
+  }
+
+
   private log(msg: string) {
     console.log('BudgetService> ' + msg);
   }

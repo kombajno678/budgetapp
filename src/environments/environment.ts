@@ -1,8 +1,9 @@
 import { domain, clientId, audience } from '../../auth_config.json';
+import { apiUrl } from './api';
 
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:5000/',
+  apiUrl: apiUrl,
   auth: {
     domain,
     clientId,
@@ -10,6 +11,6 @@ export const environment = {
     redirectUri: window.location.origin,
   },
   httpInterceptor: {
-    allowedList: [`http://localhost:5000/*`],
+    allowedList: [apiUrl + `/*`],
   },
 };

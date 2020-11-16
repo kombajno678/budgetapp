@@ -36,7 +36,10 @@ import { MAT_DATE_LOCALE, DateAdapter, MAT_DATE_FORMATS } from '@angular/materia
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import { MAT_MOMENT_DATE_ADAPTER_OPTIONS, MAT_MOMENT_DATE_FORMATS, MomentDateAdapter } from '@angular/material-moment-adapter';
 
-async function tokenGetter(): Promise<string> {
+function tokenGetter(): string {
+
+  return localStorage.getItem('budgetapp-token')
+  /*
   console.log('tokenGetter invoked ...');
 
 
@@ -53,8 +56,10 @@ async function tokenGetter(): Promise<string> {
 
     console.log('tokenGetter > returning token');
     return localStorage.getItem('budgetapp-token');
+    
 
   }
+  */
 
 }
 

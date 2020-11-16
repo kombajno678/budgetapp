@@ -17,6 +17,10 @@ export class UserAvatarComponent implements OnInit {
     this.auth.loginWithPopup();
   }
 
+  testToken() {
+    this.budget.testToken().subscribe(r => console.log(r));
+  }
+
   logout() {
     this.auth.logout({ returnTo: '' });
   }

@@ -24,6 +24,13 @@
         </span>
 
 
+        <button mat-menu-item
+                *ngIf="this.user"
+                (click)="testToken()"
+                id="qsLogoutBtn">
+            Test token auth
+        </button>
+
 
         <button mat-menu-item
                 *ngIf="this.user"
