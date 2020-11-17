@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, of, Subject } from 'rxjs';
-import { catchError, share, tap } from 'rxjs/operators';
+import { catchError, finalize, share, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 
 import { BudgetOperation } from 'src/app/models/BudgetOperation';
@@ -43,7 +43,7 @@ export class BudgetService {
   }
 
   getOperation(id: number): Observable<BudgetOperation> {
-    let path = this.url + '/operations/' + id;
+    let path = this.operationsPath + '/' + id;
 
     return this.http.get<BudgetOperation>(path).pipe(
       tap(_ => this.log(path)),
@@ -52,29 +52,32 @@ export class BudgetService {
   }
 
   addOperation(operation: BudgetOperation): Observable<BudgetOperation> {
-    let path = this.url + '/operations';
+    let path = this.operationsPath;
 
     return this.http.post<BudgetOperation>(path, operation).pipe(
       tap(_ => this.log(path)),
-      catchError(this.handleError<BudgetOperation>(path, null))
+      catchError(this.handleError<BudgetOperation>(path, null)),
+      finalize(() => this.refreshOperations())
     )
   }
 
   updateOperation(operation: BudgetOperation): Observable<BudgetOperation> {
-    let path = this.url + '/operations/' + operation.id;
+    let path = this.operationsPath + '/' + operation.id;
 
     return this.http.put<BudgetOperation>(path, operation).pipe(
       tap(_ => this.log(path)),
-      catchError(this.handleError<BudgetOperation>(path, null))
+      catchError(this.handleError<BudgetOperation>(path, null)),
+      finalize(() => this.refreshOperations())
     )
   }
 
   deleteOperation(operation: BudgetOperation): Observable<BudgetOperation> {
-    let path = this.url + '/operations/' + operation.id;
+    let path = this.operationsPath + '/' + operation.id;
 
     return this.http.delete<BudgetOperation>(path).pipe(
       tap(_ => this.log(path)),
-      catchError(this.handleError<BudgetOperation>(path, null))
+      catchError(this.handleError<BudgetOperation>(path, null)),
+      finalize(() => this.refreshOperations())
     )
   }
 

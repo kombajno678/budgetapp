@@ -33,7 +33,7 @@ export class BudgetComponent implements OnInit, AfterViewInit {
       let new_operation: BudgetOperation = result;
       this.budget.addOperation(new_operation).subscribe(r => {
         console.log('result od add operation = ', r);
-        this.budget.refreshOperations();
+        //this.budget.refreshOperations();
       })
     })
 

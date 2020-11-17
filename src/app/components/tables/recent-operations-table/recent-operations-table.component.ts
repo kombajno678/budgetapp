@@ -18,7 +18,7 @@ export class RecentOperationsTableComponent implements AfterViewInit, OnInit {
   dataSource: RecentOperationsTableDataSource;
 
   /** Columns displayed in the table. Columns IDs can be added, removed, or reordered. */
-  displayedColumns = ['name', 'value', 'when'];
+  displayedColumns = ['name', 'value', 'when', 'action'];
 
   constructor(private budget: BudgetService) { }
 
@@ -37,5 +37,12 @@ export class RecentOperationsTableComponent implements AfterViewInit, OnInit {
 
     this.dataSource.loadOperations();
 
+  }
+
+
+  onDeleteClick(operation: BudgetOperation) {
+    this.budget.deleteOperation(operation).subscribe(r => {
+      console.log('deleteOperation result = ', r);
+    })
   }
 }
