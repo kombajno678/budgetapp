@@ -37,30 +37,7 @@ import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import { MAT_MOMENT_DATE_ADAPTER_OPTIONS, MAT_MOMENT_DATE_FORMATS, MomentDateAdapter } from '@angular/material-moment-adapter';
 
 function tokenGetter(): string {
-
   return localStorage.getItem('budgetapp-token')
-  /*
-  console.log('tokenGetter invoked ...');
-
-
-  if (localStorage.getItem('budgetapp-token')) {
-    console.log('tokenGetter > returning token from localstorage');
-    return localStorage.getItem('budgetapp-token');
-  } else {
-    console.log('tokenGetter > getting token from api ... ');
-    await this.auth.getAccessTokenSilently({ ignoreCache: true, audience: environment.auth.audience }).subscribe(token => {
-      console.log('tokenGetter > token received from api');
-      console.log('received token, ', token)
-      localStorage.setItem('budgetapp-token', token);
-    })
-
-    console.log('tokenGetter > returning token');
-    return localStorage.getItem('budgetapp-token');
-    
-
-  }
-  */
-
 }
 
 @NgModule({
@@ -97,9 +74,11 @@ function tokenGetter(): string {
       config: {
         tokenGetter: tokenGetter,
         allowedDomains: [
-          'https://dev-wkdk2hez.eu.auth0.com'],
+          'https://dev-wkdk2hez.eu.auth0.com', environment.apiUrl],
         disallowedRoutes: [],
-
+        authScheme: "Bearer ",
+        throwNoTokenError: true,
+        skipWhenExpired: true,
       }
     }),
     NgbModule,
