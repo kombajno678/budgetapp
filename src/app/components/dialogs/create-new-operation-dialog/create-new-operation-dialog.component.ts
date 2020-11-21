@@ -39,6 +39,7 @@ export class CreateNewOperationDialogComponent implements OnInit {
     { value: 11, display: 'November' },
     { value: 12, display: 'December' }
   ];
+
   daysOfWeek = [
     { value: 1, display: 'Monday' },
     { value: 2, display: 'Tuesday' },
@@ -50,11 +51,6 @@ export class CreateNewOperationDialogComponent implements OnInit {
   ];
 
   daysOfMonth = Array.from(Array(31), (_, x) => x + 1);
-
-
-
-
-
 
   createTitle: string = 'New Operation';
   updateTitle: string = 'Modify operation';

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ResourceService } from './ResourceService';
+import { ResourceServiceInterface } from './ResourceServiceInterface';
 import { OperationSchedule } from 'src/app/models/OperationSchedule';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of } from 'rxjs';
@@ -9,7 +9,7 @@ import { environment } from 'src/environments/environment';
 @Injectable({
   providedIn: 'root'
 })
-export class OperationSchedulesService implements ResourceService<OperationSchedule> {
+export class OperationSchedulesService implements ResourceServiceInterface<OperationSchedule> {
 
   private url: string = (environment.apiUrl.endsWith('/') ? environment.apiUrl.slice(0, environment.apiUrl.length - 1) : environment.apiUrl);
 

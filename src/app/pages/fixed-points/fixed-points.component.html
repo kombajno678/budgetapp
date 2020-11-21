@@ -1,0 +1,51 @@
+<mat-list>
+        <div mat-subheader>Fixed points</div>
+        <ng-container *ngFor="let fp of fixedPoints">
+
+                <mat-list-item>
+                        <mat-icon mat-list-icon>insights</mat-icon>
+                        <div mat-line>
+                                {{getDateString(fp.when)}}
+                        </div>
+                        <div mat-line>
+                                {{fp.exact_value}}
+                        </div>
+
+                        <button mat-icon-button
+                                [matMenuTriggerFor]="menu"
+                                aria-label="Example icon-button with a menu">
+                                <mat-icon>more_vert</mat-icon>
+                        </button>
+
+
+                        <mat-menu #menu="matMenu">
+                                <button mat-menu-item
+                                        color="warn"
+                                        (click)="delete(fp)">
+                                        <mat-icon>delete</mat-icon>
+                                        <span>Delete</span>
+                                </button>
+                                <button mat-menu-item
+                                        color="accent"
+                                        (click)="modify(fp)">
+                                        <mat-icon>edit</mat-icon>
+                                        <span>Modify</span>
+                                </button>
+                                <button mat-menu-item
+                                        disabled>
+                                        <mat-icon>notifications_off</mat-icon>
+                                        <span>Placeholder</span>
+                                </button>
+                        </mat-menu>
+
+
+                </mat-list-item>
+
+        </ng-container>
+
+
+</mat-list>
+
+
+<button mat-flat-button
+        (click)="add()">Add</button>

@@ -37,6 +37,8 @@ import { MAT_DATE_LOCALE, DateAdapter, MAT_DATE_FORMATS } from '@angular/materia
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import { MAT_MOMENT_DATE_ADAPTER_OPTIONS, MAT_MOMENT_DATE_FORMATS, MomentDateAdapter } from '@angular/material-moment-adapter';
 import { ScheduledOperationsComponent } from './pages/scheduled-operations/scheduled-operations.component';
+import { FixedPointsComponent } from './pages/fixed-points/fixed-points.component';
+import { CreateNewFixedPointDialogComponent } from './components/dialogs/create-new-fixed-point-dialog/create-new-fixed-point-dialog.component';
 
 function tokenGetter(): string {
   return localStorage.getItem('budgetapp-token')
@@ -55,7 +57,9 @@ function tokenGetter(): string {
     RecentOperationsTableComponent,
     CreateNewOperationDialogComponent,
     CreateNewScheduledOperationDialogComponent,
-    ScheduledOperationsComponent
+    ScheduledOperationsComponent,
+    FixedPointsComponent,
+    CreateNewFixedPointDialogComponent
 
   ],
   entryComponents: [CustomSnackbarComponent],

@@ -1,8 +1,9 @@
 import { OperationSchedule } from './OperationSchedule';
+import { AbstractResource } from './AbstractResource';
 
-export class ScheduledBudgetOperation {
+export class ScheduledBudgetOperation extends AbstractResource {
 
-    id?: number;
+    //id?: number;
     user_id?: number;
     name?: string;
     value?: number;
@@ -13,7 +14,9 @@ export class ScheduledBudgetOperation {
 
 
     constructor() {
-        this.id = null;
+        super();
+
+        //this.id = null;
         this.user_id = null;
         this.schedule_id = null;
     }

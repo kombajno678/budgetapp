@@ -1,6 +1,6 @@
 import { Observable } from 'rxjs';
 
-export interface ResourceService<T> {
+export interface ResourceServiceInterface<T> {
 
     path: string;
 

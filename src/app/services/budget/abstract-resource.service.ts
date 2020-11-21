@@ -1,25 +1,34 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
-import { ScheduledBudgetOperation } from 'src/app/models/ScheduledBudgetOperation';
+import { AbstractResource } from 'src/app/models/AbstractResource';
 import { environment } from 'src/environments/environment';
 import { ResourceServiceInterface } from './ResourceServiceInterface';
-import { multicast } from 'rxjs/operators';
-
+/*
 @Injectable({
   providedIn: 'root'
 })
-export class ScheduledOperationsService implements ResourceServiceInterface<ScheduledBudgetOperation> {
+*/
+export abstract class AbstractResourceService<T extends AbstractResource> implements ResourceServiceInterface<T>{
 
   private url: string = (environment.apiUrl.endsWith('/') ? environment.apiUrl.slice(0, environment.apiUrl.length - 1) : environment.apiUrl);
 
-  path: string = this.url + '/users/0/scheduled_operations';
+  path: string;
 
-  public scheduledOperations: BehaviorSubject<ScheduledBudgetOperation[]>;
+  //to override
+  pathSuffix: string;
 
-  constructor(private http: HttpClient) {
-    this.scheduledOperations = new BehaviorSubject<ScheduledBudgetOperation[]>(null);
+  public resource: BehaviorSubject<T[]>;
+
+  constructor(pathSuffix: string, private http: HttpClient) {
+    this.pathSuffix = pathSuffix;
+    if (!this.pathSuffix) {
+      throw 'pathSuffix not sppecified';
+    }
+    this.path = this.url + this.pathSuffix;
+
+    this.resource = new BehaviorSubject<T[]>(null);
     this.refreshResource();
 
 
@@ -27,44 +36,42 @@ export class ScheduledOperationsService implements ResourceServiceInterface<Sche
 
   refreshResource() {
 
-    this.http.get<ScheduledBudgetOperation[]>(this.path).pipe(
+    this.http.get<T[]>(this.path).pipe(
       tap(_ => this.log(this.path)),
       catchError(this.handleError<any>(this.path, null)),
-    ).subscribe(result => {
-      this.scheduledOperations.next(result);
-    })
+    ).subscribe(result => this.resource.next(result))
 
   }
 
 
   getAll() {
 
-    return this.scheduledOperations.asObservable();
+    return this.resource.asObservable();
   }
 
   get(id: number) {
-    return this.http.get<ScheduledBudgetOperation>(this.path + '/' + id).pipe(
+    return this.http.get<T>(this.path + '/' + id).pipe(
       tap(_ => this.log(this.path)),
       catchError(this.handleError<any>(this.path, null)),
     );
   }
 
-  delete(object: ScheduledBudgetOperation) {
-    return this.http.delete<ScheduledBudgetOperation>(this.path + '/' + object.id).pipe(
+  delete(object: T) {
+    return this.http.delete<T>(this.path + '/' + object.id).pipe(
       tap(_ => { this.log(this.path); this.refreshResource(); }),
       catchError(this.handleError<any>(this.path, null)),
     )
   }
 
-  update(object: ScheduledBudgetOperation) {
-    return this.http.put<ScheduledBudgetOperation>(this.path + '/' + object.id, object).pipe(
+  update(object: T) {
+    return this.http.put<T>(this.path + '/' + object.id, object).pipe(
       tap(_ => { this.log(this.path); this.refreshResource(); }),
       catchError(this.handleError<any>(this.path, null)),
     );
   }
 
-  create(object: ScheduledBudgetOperation) {
-    return this.http.post<ScheduledBudgetOperation>(this.path, object).pipe(
+  create(object: T) {
+    return this.http.post<T>(this.path, object).pipe(
       tap(_ => { this.log(this.path); this.refreshResource(); }),
       catchError(this.handleError<any>(this.path, null)),
     );
@@ -76,7 +83,7 @@ export class ScheduledOperationsService implements ResourceServiceInterface<Sche
 
 
   private log(msg: string) {
-    console.log('ScheduledOperationsService> ' + msg);
+    console.log('ResourceService> ' + msg);
   }
   private handleError<T>(operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {

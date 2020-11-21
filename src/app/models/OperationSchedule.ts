@@ -1,8 +1,9 @@
 import { InvokeFunctionExpr } from '@angular/compiler';
+import { AbstractResource } from './AbstractResource';
 
-export class OperationSchedule {
+export class OperationSchedule extends AbstractResource {
 
-    id?: number;
+    //id?: number;
     user_id?: number;
     timestamp?: Date;
 
@@ -13,7 +14,8 @@ export class OperationSchedule {
 
 
     constructor() {
-        this.id = null;
+        super();
+        //this.id = null;
         this.user_id = null;
         this.timestamp = null;
         this.year = [];

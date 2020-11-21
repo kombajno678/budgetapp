@@ -61,6 +61,14 @@ export class SidenavComponent implements OnInit {
 
 
     },
+    {
+      title: 'Fixed points',
+      url: '/fixedpoints',
+      icon: 'insights',
+      loginRequired: true,
+
+
+    },
   ];
 
   constructor(public auth: AuthService) { }

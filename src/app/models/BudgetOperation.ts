@@ -1,6 +1,8 @@
-export class BudgetOperation {
+import { AbstractResource } from './AbstractResource';
 
-    id?: number;
+export class BudgetOperation extends AbstractResource {
+
+    // id?: number;
     user_id?: number;
     name?: string;
     value?: number;
@@ -9,7 +11,8 @@ export class BudgetOperation {
     timestamp?: Date;
 
     constructor() {
-        this.id = null;
+        super();
+        //this.id = null;
         this.user_id = null;
         this.scheduled_operation_id = null;
 
