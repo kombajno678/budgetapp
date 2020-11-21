@@ -8,8 +8,8 @@ import { AppComponent } from './app.component';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
-import { HomeComponent, CustomSnackbarComponent } from './pages/home/home.component';
-import { ProfileComponent } from './pages/profile/profile.component';
+import { HomeComponent } from './pages/home/home.component';
+import { ProfileComponent, CustomSnackbarComponent } from './pages/profile/profile.component';
 import { NavBarComponent } from './components/nav-bar/nav-bar.component';
 
 
@@ -23,18 +23,20 @@ import { environment as env, environment } from '../environments/environment';
 import { SidenavComponent } from './components/sidenav/sidenav.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { UserAvatarComponent } from './components/nav-bar/user-avatar/user-avatar.component';
-import { BudgetComponent } from './pages/budget/budget.component';
+import { OperationsComponent } from './pages/operations/operations.component';
 import { RecentOperationsTableComponent } from './components/tables/recent-operations-table/recent-operations-table.component';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
 import { CreateNewOperationDialogComponent } from './components/dialogs/create-new-operation-dialog/create-new-operation-dialog.component';
+import { CreateNewScheduledOperationDialogComponent } from './components/dialogs/create-new-scheduled-operation-dialog/create-new-scheduled-operation-dialog.component';
 
 
 
 import { MAT_DATE_LOCALE, DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import { MAT_MOMENT_DATE_ADAPTER_OPTIONS, MAT_MOMENT_DATE_FORMATS, MomentDateAdapter } from '@angular/material-moment-adapter';
+import { ScheduledOperationsComponent } from './pages/scheduled-operations/scheduled-operations.component';
 
 function tokenGetter(): string {
   return localStorage.getItem('budgetapp-token')
@@ -49,9 +51,11 @@ function tokenGetter(): string {
     SidenavComponent,
     CustomSnackbarComponent,
     UserAvatarComponent,
-    BudgetComponent,
+    OperationsComponent,
     RecentOperationsTableComponent,
     CreateNewOperationDialogComponent,
+    CreateNewScheduledOperationDialogComponent,
+    ScheduledOperationsComponent
 
   ],
   entryComponents: [CustomSnackbarComponent],

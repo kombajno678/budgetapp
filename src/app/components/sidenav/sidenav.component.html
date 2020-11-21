@@ -17,9 +17,10 @@
 
     <mat-nav-list>
 
-        <ng-container *ngFor="let link of links">
+        <ng-container *ngFor="let link of topLinks">
             <a mat-list-item
-               [routerLink]="link.url">
+               [routerLink]="link.url"
+               (click)="close()">
                 <mat-icon>
                     {{link.icon}}
                 </mat-icon>
@@ -27,8 +28,35 @@
             </a>
 
         </ng-container>
-        <button mat-menu-item
-                (click)="handleChangeThemeClick()"> Change theme</button>
+        <mat-divider>
+
+        </mat-divider>
+        <ng-container *ngFor="let link of links">
+            <a mat-list-item
+               [routerLink]="link.url"
+               (click)="close()"
+               [disabled]="link.disabled">
+                <mat-icon>
+                    {{link.icon}}
+                </mat-icon>
+                {{link.title}}
+            </a>
+
+        </ng-container>
+
+
+        <mat-divider></mat-divider>
+
+        <a mat-list-item
+           [routerLink]="''"
+           (click)="handleChangeThemeClick()">
+            <mat-icon>
+                moon
+            </mat-icon>
+            Change theme
+        </a>
+
+
 
     </mat-nav-list>
 </div>

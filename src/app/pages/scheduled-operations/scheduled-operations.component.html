@@ -1,0 +1,24 @@
+<ul>
+
+
+    <ng-container *ngFor="let so of scheduledOperations">
+        <li>
+            {{ so.id + ' ' + so.name + ' ' + so.value }}
+            <button mat-button
+                    (click)="deleteOperation(so)">
+                Delete
+            </button>
+            <button mat-button
+                    (click)="modifyOperation(so)">
+                Modify
+            </button>
+        </li>
+    </ng-container>
+
+</ul>
+
+
+<button mat-button
+        (click)="onNewClick()">
+    New
+</button>

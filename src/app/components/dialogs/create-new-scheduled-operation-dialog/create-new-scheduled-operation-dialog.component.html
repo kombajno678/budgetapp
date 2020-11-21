@@ -1,0 +1,148 @@
+<h1 mat-dialog-title>{{title}}</h1>
+<mat-dialog-content>
+    <form [formGroup]="form">
+
+        <div class="row">
+            <div class="col">
+
+                <mat-button-toggle-group name="operation-type"
+                                         class="w-100"
+                                         #operationTypeOption="matButtonToggleGroup"
+                                         aria-label="Operation type">
+                    <mat-button-toggle value="expense"
+                                       class="w-100"
+                                       checked>Expense</mat-button-toggle>
+                    <mat-button-toggle value="income"
+                                       class="w-100">Income</mat-button-toggle>
+                </mat-button-toggle-group>
+
+
+            </div>
+        </div>
+
+
+
+        <div class="row">
+            <div class="col">
+
+                <mat-form-field appearance="fill"
+                                class="w-100">
+                    <mat-label>
+                        Value
+                    </mat-label>
+                    <input matInput
+                           type="number"
+                           placeholder="0.00"
+                           formControlName="value">
+                    <mat-icon matSuffix>money</mat-icon>
+                    <span matPrefix>{{ operationTypeOption.value == 'income' ?' + ' : ' - ' }}</span>
+
+                </mat-form-field>
+
+
+            </div>
+        </div>
+
+
+        <div class="row">
+            <div class="col">
+                <mat-form-field appearance="fill"
+                                class="w-100">
+                    <mat-label>
+                        Operation title
+                    </mat-label>
+                    <input matInput
+                           formControlName="name">
+                </mat-form-field>
+
+            </div>
+        </div>
+
+
+        <div class="row p-2">
+            <div class="col">
+
+                <mat-tab-group [selectedIndex]="selectedTab"
+                               (selectedIndexChange)="onScheduleTypeChange($event)">
+                    <mat-tab label="Daily">
+
+                        operation will be added every day
+
+                    </mat-tab>
+                    <mat-tab label="Weekly">
+
+                        operation will be added every week, select on which days:
+
+
+                        <mat-selection-list #daysOfWeekSelectionList>
+                            <mat-list-option *ngFor="let dayOfWeek of daysOfWeek"
+                                             [value]="dayOfWeek">
+                                {{dayOfWeek.display}}
+                            </mat-list-option>
+                        </mat-selection-list>
+                        <p>
+                            Options selected: {{daysOfWeekSelectionList.selectedOptions.selected}}
+                        </p>
+
+                    </mat-tab>
+                    <mat-tab label="Monthly">
+
+                        operation will be added every month, select on which days:
+
+
+                        <mat-selection-list #daysOfMonthsSelectionList>
+                            <mat-list-option *ngFor="let dayOfMonth of daysOfMonth"
+                                             [value]="dayOfMonth">
+                                {{dayOfMonth}}
+                            </mat-list-option>
+                        </mat-selection-list>
+
+
+
+
+                    </mat-tab>
+                    <mat-tab label="Annually">
+
+                        operation will be added every year, select month and day:
+
+
+                        <mat-selection-list #monthsSelectionList>
+                            <mat-list-option *ngFor="let month of months"
+                                             [value]="month">
+                                {{month.display}}
+                            </mat-list-option>
+                        </mat-selection-list>
+                        <mat-selection-list #annuallyDaysOfMonthsSelectionList>
+                            <mat-list-option *ngFor="let dayOfMonth of daysOfMonth"
+                                             [value]="dayOfMonth">
+                                {{dayOfMonth}}
+                            </mat-list-option>
+                        </mat-selection-list>
+
+
+                    </mat-tab>
+                </mat-tab-group>
+
+
+
+
+
+
+
+            </div>
+        </div>
+
+
+
+
+    </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-button
+            mat-dialog-close>Cancel</button>
+    <button mat-button
+            (click)="onSave()"
+            cdkFocusInitial
+            [disabled]="isFormInvalid()">{{acceptButtonTest}}</button>
+</mat-dialog-actions>

@@ -1,46 +1,110 @@
-<h1 mat-dialog-title>New Operation</h1>
-<div mat-dialog-content>
+<h1 mat-dialog-title>{{title}}</h1>
+<mat-dialog-content>
     <form [formGroup]="form">
 
-        <mat-form-field appearance="fill">
-            <mat-label>
-                Value
-            </mat-label>
-            <input matInput
-                   type="number"
-                   formControlName="value">
-        </mat-form-field>
+        <div class="row">
+            <div class="col">
 
-        <mat-form-field appearance="fill">
-            <mat-label>
-                Name
-            </mat-label>
-            <input matInput
-                   formControlName="name">
-        </mat-form-field>
+                <mat-button-toggle-group name="operation-type"
+                                         class="w-100"
+                                         #operationTypeOption="matButtonToggleGroup"
+                                         aria-label="Operation type">
+                    <mat-button-toggle value="expense"
+                                       class="w-100"
+                                       checked>Expense</mat-button-toggle>
+                    <mat-button-toggle value="income"
+                                       class="w-100">Income</mat-button-toggle>
+                </mat-button-toggle-group>
 
 
-
-        <mat-form-field appearance="fill">
-            <mat-label>
-                When
-            </mat-label>
-            <input matInput
-                   [matDatepicker]="picker2"
-                   formControlName="when">
-            <mat-datepicker-toggle matSuffix
-                                   [for]="picker2"></mat-datepicker-toggle>
-            <mat-datepicker #picker2></mat-datepicker>
-        </mat-form-field>
+            </div>
+        </div>
 
 
 
+        <div class="row">
+            <div class="col">
+
+                <mat-form-field appearance="fill"
+                                class="w-100">
+                    <mat-label>
+                        Value
+                    </mat-label>
+                    <input matInput
+                           type="number"
+                           placeholder="0.00"
+                           formControlName="value">
+                    <mat-icon matSuffix>money</mat-icon>
+                    <span matPrefix>{{ operationTypeOption.value == 'income' ?' + ' : ' - ' }}</span>
+
+                </mat-form-field>
+
+
+            </div>
+        </div>
+
+
+        <div class="row">
+            <div class="col">
+                <mat-form-field appearance="fill"
+                                class="w-100">
+                    <mat-label>
+                        Operation title
+                    </mat-label>
+                    <input matInput
+                           formControlName="name">
+                </mat-form-field>
+
+            </div>
+        </div>
+
+
+        <div class="row">
+            <div class="col">
+
+                <mat-button-toggle-group name="operation-date"
+                                         class="w-100"
+                                         #operationDateOption="matButtonToggleGroup"
+                                         aria-label="Operation date">
+                    <mat-button-toggle value="yesterday"
+                                       class="w-100">Yesterday</mat-button-toggle>
+                    <mat-button-toggle value="today"
+                                       class="w-100"
+                                       checked>Today</mat-button-toggle>
+                    <mat-button-toggle value="other"
+                                       class="w-100">Other ...</mat-button-toggle>
+                </mat-button-toggle-group>
+
+
+                <ng-container *ngIf="operationDateOption.value == 'other'">
+                    <mat-form-field appearance="fill"
+                                    class="w-100">
+                        <mat-label>
+                            Date
+                        </mat-label>
+                        <input matInput
+                               [matDatepicker]="picker2"
+                               formControlName="when">
+                        <mat-datepicker-toggle matSuffix
+                                               [for]="picker2"></mat-datepicker-toggle>
+                        <mat-datepicker #picker2></mat-datepicker>
+                    </mat-form-field>
+                </ng-container>
 
 
 
-        <button mat-button
-                [mat-dialog-close]="onSave()"> Save </button>
 
+            </div>
+        </div>
 
     </form>
-</div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-button
+            mat-dialog-close>Cancel</button>
+    <button mat-button
+            (click)="onSave()"
+            cdkFocusInitial
+            [disabled]="this.form.invalid">{{acceptButtonTest}}</button>
+</mat-dialog-actions>

@@ -8,14 +8,6 @@ import { BudgetService } from 'src/app/services/budget/budget.service';
 
 //BudgetOperation
 
-// TODO: replace this with real data from your application
-const EXAMPLE_DATA: BudgetOperation[] = [
-  { id: 1, value: 12, name: 'Hydrogen' },
-  { id: 2, value: 12, name: 'Helium' },
-  { id: 3, value: 12, name: 'Lithium' },
-  { id: 4, value: 12, name: 'Beryllium' },
-];
-
 /**
  * Data source for the RecentOperationsTable view. This class should
  * encapsulate all logic for fetching and manipulating the displayed data
@@ -37,7 +29,10 @@ export class RecentOperationsTableDataSource extends DataSource<BudgetOperation>
     this.budgetService.getOperations().pipe(
       finalize(() => this.loadingSubject.next(false))
     )
-      .subscribe(_operations => this.operationsSubject.next(_operations));
+      .subscribe(_operations => {
+        let sorted = _operations.sort((a, b) => b.when.getTime() - a.when.getTime());
+        this.operationsSubject.next(sorted);
+      });
   }
 
 

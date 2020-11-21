@@ -16,3 +16,12 @@
   max-width: fit-content;
   margin: auto;
 }
+
+mat-icon{
+  margin-right:1rem;
+}
+
+.mat-list-item-disabled{
+  color: rgb(127, 127, 127) !important;
+  background-color:rgba(0, 0, 0, 0) !important;
+}

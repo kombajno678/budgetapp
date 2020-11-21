@@ -1,4 +1,5 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { MatSidenav } from '@angular/material/sidenav';
 import { AuthService } from '@auth0/auth0-angular';
 
 @Component({
@@ -10,23 +11,54 @@ export class SidenavComponent implements OnInit {
   @Output()
   changeTheme = new EventEmitter();
 
+  @Input()
+  sidenav: MatSidenav;
 
-  links = [
+  topLinks = [
     {
       title: 'Home',
       url: '/',
       icon: 'home',
+      loginRequired: false,
     },
     {
       title: 'Profile',
       url: '/profile',
       icon: 'person',
+      loginRequired: true,
+
+
+    }
+
+  ];
+
+
+  links = [
+
+    {
+      title: 'Predictions',
+      url: '/predictions',
+      icon: 'show_chart',
+      loginRequired: true,
+      disabled: true,
+
+
+    },
+
+    {
+      title: 'Operations',
+      url: '/operations',
+      icon: 'money',
+      loginRequired: true,
+
 
     },
     {
-      title: 'Budget',
-      url: '/budget',
-      icon: 'home',
+      title: 'Scheduled operations',
+      url: '/scheduledoperations',
+      icon: 'event',
+      loginRequired: true,
+
 
     },
   ];
@@ -37,6 +69,10 @@ export class SidenavComponent implements OnInit {
   }
   handleChangeThemeClick() {
     this.changeTheme.emit();
+    this.sidenav.close();
+  }
+  close() {
+    this.sidenav.close();
   }
 
 }

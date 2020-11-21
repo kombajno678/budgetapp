@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, of, Subject } from 'rxjs';
-import { catchError, finalize, share, tap } from 'rxjs/operators';
+import { catchError, finalize, map, share, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 
 import { BudgetOperation } from 'src/app/models/BudgetOperation';
@@ -25,6 +25,10 @@ export class BudgetService {
     let path = this.operationsPath;
     this.getAllOperationsObservable = this.http.get<BudgetOperation[]>(path).pipe(
       tap(_ => this.log(path)),
+      map(_operations => {
+        _operations.forEach(o => o.when = new Date(o.when));
+        return _operations;
+      }),
       catchError(this.handleError<BudgetOperation[]>(path, null)),
       share(),
     )
@@ -80,6 +84,9 @@ export class BudgetService {
       finalize(() => this.refreshOperations())
     )
   }
+
+
+
 
 
   testToken() {

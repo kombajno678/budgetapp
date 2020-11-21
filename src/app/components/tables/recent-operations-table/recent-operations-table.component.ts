@@ -1,4 +1,5 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTable } from '@angular/material/table';
@@ -20,7 +21,21 @@ export class RecentOperationsTableComponent implements AfterViewInit, OnInit {
   /** Columns displayed in the table. Columns IDs can be added, removed, or reordered. */
   displayedColumns = ['name', 'value', 'when', 'action'];
 
-  constructor(private budget: BudgetService) { }
+  @Output()
+  deleteEvent: EventEmitter<BudgetOperation>;
+
+  @Output()
+  modifyEvent: EventEmitter<BudgetOperation>;
+
+  @Output()
+  createEvent: EventEmitter<void>;
+
+
+  constructor(private budget: BudgetService) {
+    this.deleteEvent = new EventEmitter<BudgetOperation>();
+    this.modifyEvent = new EventEmitter<BudgetOperation>();
+    this.createEvent = new EventEmitter<void>();
+  }
 
   ngOnInit() {
     //console.log('RecentOperationsTableComponent ngOnInit');
@@ -41,8 +56,23 @@ export class RecentOperationsTableComponent implements AfterViewInit, OnInit {
 
 
   onDeleteClick(operation: BudgetOperation) {
-    this.budget.deleteOperation(operation).subscribe(r => {
-      console.log('deleteOperation result = ', r);
-    })
+    this.deleteEvent.emit(operation);
+  }
+
+  onModifyClick(operation: BudgetOperation) {
+    console.log('emiting modify event, ', operation)
+    this.modifyEvent.emit(operation);
+  }
+
+  onCrateClick() {
+    this.createEvent.emit();
+  }
+
+
+
+  displayDate(row: BudgetOperation) {
+
+    return row ? new Date(row.when).toISOString().substr(0, 10) : '';
+
   }
 }

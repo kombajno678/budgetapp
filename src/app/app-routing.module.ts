@@ -1,9 +1,10 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { AuthGuard } from '@auth0/auth0-angular';
-import { BudgetComponent } from './pages/budget/budget.component';
+import { OperationsComponent } from './pages/operations/operations.component';
 import { HomeComponent } from './pages/home/home.component';
 import { ProfileComponent } from './pages/profile/profile.component';
+import { ScheduledOperationsComponent } from './pages/scheduled-operations/scheduled-operations.component';
 
 const routes: Routes = [
   {
@@ -12,8 +13,13 @@ const routes: Routes = [
     canActivate: [AuthGuard],
   },
   {
-    path: 'budget',
-    component: BudgetComponent,
+    path: 'operations',
+    component: OperationsComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'scheduledoperations',
+    component: ScheduledOperationsComponent,
     canActivate: [AuthGuard],
   },
   {

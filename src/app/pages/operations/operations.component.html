@@ -1,0 +1,8 @@
+<app-recent-operations-table (createEvent)="onNewClick()"
+                             (deleteEvent)="deleteOperation($event)"
+                             (modifyEvent)="modifyOperation($event)">...</app-recent-operations-table>
+
+<button mat-button
+        (click)="onNewClick()">
+    Add new
+</button>

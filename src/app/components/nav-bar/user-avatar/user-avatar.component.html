@@ -1,49 +1,63 @@
-<ng-container *ngIf="auth.user$ | async as user; else notLoggedIn">
+<div *ngIf="(auth.isLoading$ | async); else loaded"
+     class="">
 
-    <!--
+</div>
+<ng-template #loaded>
+
+
+
+
+    <ng-container *ngIf="auth.user$ | async as user; else notLoggedIn">
+
+        <!--
     <img [src]="user.picture"
          [matMenuTriggerFor]="myMenu"
          class="avatar "
          alt="...">
          -->
-    <div [matMenuTriggerFor]="myMenu"
-         class="img-wrapper text-center rounded rounded-circle border"
-         [style.background-image]="'url(' + user.picture + ')'">
-    </div>
+        <div [matMenuTriggerFor]="myMenu"
+             class="img-wrapper text-center rounded rounded-circle border"
+             [style.background-image]="'url(' + user.picture + ')'">
+        </div>
 
 
 
-    <mat-menu #myMenu="matMenu"
-              xPosition="before"
-              yPosition="below">
-        <span mat-menu-item
-              *ngIf="user">
+        <mat-menu #myMenu="matMenu"
+                  xPosition="before"
+                  yPosition="below">
+            <span mat-menu-item
+                  *ngIf="user">
 
-            Hello {{ user.name }}
+                Hello {{ user.name }}
 
-        </span>
+            </span>
 
 
-        <button mat-menu-item
-                *ngIf="this.user"
-                (click)="testToken()"
-                id="qsLogoutBtn">
-            Test token auth
+            <button mat-menu-item
+                    *ngIf="this.user"
+                    (click)="testToken()"
+                    id="qsLogoutBtn">
+                Test token auth
+            </button>
+
+
+            <button mat-menu-item
+                    *ngIf="this.user"
+                    (click)="logout()"
+                    id="qsLogoutBtn">
+                Log out
+            </button>
+        </mat-menu>
+    </ng-container>
+
+
+    <ng-template #notLoggedIn>
+        <button mat-button
+                id="qsLoginBtn"
+                (click)="loginWithRedirect()">
+            Log in
         </button>
+    </ng-template>
 
 
-        <button mat-menu-item
-                *ngIf="this.user"
-                (click)="logout()"
-                id="qsLogoutBtn">
-            Log out
-        </button>
-    </mat-menu>
-</ng-container>
-<ng-template #notLoggedIn>
-    <button mat-button
-            id="qsLoginBtn"
-            (click)="loginWithRedirect()">
-        Log in
-    </button>
 </ng-template>
