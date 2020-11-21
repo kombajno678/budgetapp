@@ -5,6 +5,7 @@ import { OperationSchedule } from 'src/app/models/OperationSchedule';
 import { ScheduledBudgetOperation } from 'src/app/models/ScheduledBudgetOperation';
 import { ScheduledOperationsService } from 'src/app/services/budget/scheduled-operations.service';
 import { OperationSchedulesService } from 'src/app/services/budget/operation-schedules.service';
+import { forkJoin, merge, zip } from 'rxjs';
 
 @Component({
   templateUrl: './scheduled-operations.component.html',
@@ -24,9 +25,33 @@ export class ScheduledOperationsComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this.scheduledOperationsService.getAll().subscribe(r => this.scheduledOperations = r);
-    this.schedulesService.getAll().subscribe(r => this.operationSchedules = r);
+    let scheduledOperationsObservable = this.scheduledOperationsService.getAll();
 
+    let schedulesObservable = this.schedulesService.getAll();
+
+
+
+
+
+    let both = zip(
+      scheduledOperationsObservable,
+      schedulesObservable
+    ).subscribe(
+      r => {
+        // if result is null that means that nothing has been emitted yet
+        if (r[0] && r[1]) {
+          this.scheduledOperations = r[0];
+          this.operationSchedules = r[1];
+
+          this.scheduledOperations.forEach(op => {
+            op.schedule = this.operationSchedules.find(s => s.id === op.schedule_id);
+          })
+        }
+
+      },
+      err => console.error('both: error : ', err),
+      () => console.log('both completed')
+    );
 
   }
 
@@ -94,12 +119,32 @@ export class ScheduledOperationsComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        console.log(result);
-        let operation: ScheduledBudgetOperation = result;
+        let modified_operation: ScheduledBudgetOperation = result;
+        //console.log(result);
+        //check if selected schedule exists
+        let existing_schedule = this.operationSchedules.find(schedule => OperationSchedule.areEqual(schedule, modified_operation.schedule));
+        if (existing_schedule) {
+          modified_operation.schedule = existing_schedule;
+          modified_operation.schedule_id = modified_operation.schedule.id;
+          console.log(modified_operation);
+          this.scheduledOperationsService.update(modified_operation).subscribe(r => {
+            console.log('result od add operation = ', r);
+          })
 
-        this.scheduledOperationsService.update(operation).subscribe(r => {
-          console.log('result = ', r);
-        })
+        } else {
+          //if not, then create and get its id
+          this.schedulesService.create(modified_operation.schedule).subscribe(r => {
+            console.log('create schedule result = ', r);
+            //assign this id to scheduled operation
+            modified_operation.schedule = r;
+            modified_operation.schedule_id = r.id;
+            console.log(modified_operation);
+            this.scheduledOperationsService.update(modified_operation).subscribe(r => {
+              console.log('result od add operation = ', r);
+            })
+          })
+        }
+
 
 
       }
