@@ -4,4 +4,12 @@
             <app-prediction-chart [data$]="getPredictions()"> ... </app-prediction-chart>
         </div>
     </div>
+    <div class="row">
+        <mat-list>
+            <mat-list-item *ngFor="let pp of predictions$ | async">
+                <div mat-line>{{pp.date.toISOString().substr(0, 10)}}</div>
+                <div mat-line>{{pp.value}}</div>
+            </mat-list-item>
+        </mat-list>
+    </div>
 </div>

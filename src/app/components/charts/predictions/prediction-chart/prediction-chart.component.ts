@@ -19,12 +19,34 @@ export class PredictionChartComponent implements OnInit {
 
 
   public lineChartData: ChartDataSets[] = [
-    { data: [], label: 'Series A' },
+    {
+      data: [],
+      label: 'Series A',
+
+
+    },
   ];
   public lineChartLabels: Label[] = [];
   public lineChartOptions: ChartOptions = {
     responsive: true,
     maintainAspectRatio: false,
+    elements: {
+      line: {
+        tension: 0
+      }
+    },
+    scales: {
+      xAxes: [
+        {
+          id: 'days',
+          ticks: {
+            //sampleSize: 1
+            autoSkipPadding: 14
+          }
+        }
+      ]
+    }
+
 
   };
   public lineChartColors: Color[] = [
