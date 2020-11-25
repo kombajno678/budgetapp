@@ -21,7 +21,13 @@ export class FixedPointsComponent implements OnInit {
 
   ngOnInit(): void {
     this.fixedPoints$ = this.fixedPointsService.getAll();
-    this.fixedPoints$.subscribe(r => this.fixedPoints = r ? r : null);
+    this.fixedPoints$.subscribe(r => {
+      console.log('received fixed points = ', r);
+      if (r) {
+        this.fixedPoints = r;
+
+      }
+    });
 
   }
 

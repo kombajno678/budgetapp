@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import { catchError, map, tap } from 'rxjs/operators';
 import { AbstractResource } from 'src/app/models/AbstractResource';
 import { environment } from 'src/environments/environment';
 import { ResourceServiceInterface } from './ResourceServiceInterface';
@@ -21,7 +21,7 @@ export abstract class AbstractResourceService<T extends AbstractResource> implem
 
   public resource: BehaviorSubject<T[]>;
 
-  constructor(pathSuffix: string, private http: HttpClient) {
+  constructor(pathSuffix: string, customMap, public http: HttpClient) {
     this.pathSuffix = pathSuffix;
     if (!this.pathSuffix) {
       throw 'pathSuffix not sppecified';
@@ -29,6 +29,10 @@ export abstract class AbstractResourceService<T extends AbstractResource> implem
     this.path = this.url + this.pathSuffix;
 
     this.resource = new BehaviorSubject<T[]>(null);
+    if (customMap) {
+      this.mapWhenRefreshing = customMap;
+
+    }
     this.refreshResource();
 
 
@@ -38,10 +42,13 @@ export abstract class AbstractResourceService<T extends AbstractResource> implem
 
     this.http.get<T[]>(this.path).pipe(
       tap(_ => this.log(this.path)),
+      map(this.mapWhenRefreshing),
       catchError(this.handleError<any>(this.path, null)),
     ).subscribe(result => this.resource.next(result))
 
   }
+
+  public mapWhenRefreshing = (resource) => { console.log('default map'); return resource };
 
 
   getAll() {
@@ -82,10 +89,10 @@ export abstract class AbstractResourceService<T extends AbstractResource> implem
 
 
 
-  private log(msg: string) {
+  log(msg: string) {
     console.log('ResourceService> ' + msg);
   }
-  private handleError<T>(operation = 'operation', result?: T) {
+  handleError<T>(operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
 
       // TODO: send the error to remote logging infrastructure
