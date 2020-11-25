@@ -6,6 +6,7 @@ import { HomeComponent } from './pages/home/home.component';
 import { ProfileComponent } from './pages/profile/profile.component';
 import { ScheduledOperationsComponent } from './pages/scheduled-operations/scheduled-operations.component';
 import { FixedPointsComponent } from './pages/fixed-points/fixed-points.component';
+import { PredictionsComponent } from './pages/predictions/predictions.component';
 
 const routes: Routes = [
   {
@@ -26,6 +27,11 @@ const routes: Routes = [
   {
     path: 'fixedpoints',
     component: FixedPointsComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'predictions',
+    component: PredictionsComponent,
     canActivate: [AuthGuard],
   },
   {

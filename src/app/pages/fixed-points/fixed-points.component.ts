@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { Observable } from 'rxjs';
 import { CreateNewFixedPointDialogComponent } from 'src/app/components/dialogs/create-new-fixed-point-dialog/create-new-fixed-point-dialog.component';
 import { FixedPoint } from 'src/app/models/FixedPoint';
 import { FixedPointsService } from 'src/app/services/budget/fixed-points.service';
@@ -14,9 +15,13 @@ export class FixedPointsComponent implements OnInit {
 
   fixedPoints: FixedPoint[];
 
+  fixedPoints$: Observable<FixedPoint[]>;
+
+
 
   ngOnInit(): void {
-    this.fixedPointsService.getAll().subscribe(r => this.fixedPoints = r);
+    this.fixedPoints$ = this.fixedPointsService.getAll();
+    this.fixedPoints$.subscribe(r => this.fixedPoints = r ? r : null);
 
   }
 

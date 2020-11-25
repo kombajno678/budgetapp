@@ -39,6 +39,14 @@ import { MAT_MOMENT_DATE_ADAPTER_OPTIONS, MAT_MOMENT_DATE_FORMATS, MomentDateAda
 import { ScheduledOperationsComponent } from './pages/scheduled-operations/scheduled-operations.component';
 import { FixedPointsComponent } from './pages/fixed-points/fixed-points.component';
 import { CreateNewFixedPointDialogComponent } from './components/dialogs/create-new-fixed-point-dialog/create-new-fixed-point-dialog.component';
+import { PredictionsComponent } from './pages/predictions/predictions.component';
+
+
+import { GoogleChartsModule } from 'angular-google-charts';
+import { ChartsModule } from 'ng2-charts';
+import { PredictionChartComponent } from './components/charts/predictions/prediction-chart/prediction-chart.component';
+import { FixedpointsChartComponent } from './components/charts/fixedpoints/fixedpoints-chart/fixedpoints-chart.component';
+
 
 function tokenGetter(): string {
   return localStorage.getItem('budgetapp-token')
@@ -59,7 +67,10 @@ function tokenGetter(): string {
     CreateNewScheduledOperationDialogComponent,
     ScheduledOperationsComponent,
     FixedPointsComponent,
-    CreateNewFixedPointDialogComponent
+    CreateNewFixedPointDialogComponent,
+    PredictionsComponent,
+    PredictionChartComponent,
+    FixedpointsChartComponent
 
   ],
   entryComponents: [CustomSnackbarComponent],
@@ -72,6 +83,8 @@ function tokenGetter(): string {
     FormsModule,
     BrowserAnimationsModule,
     MaterialModule,
+    GoogleChartsModule,
+    ChartsModule,
     AuthModule.forRoot({
       ...env.auth,
       httpInterceptor: {

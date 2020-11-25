@@ -40,9 +40,6 @@ export class SidenavComponent implements OnInit {
       url: '/predictions',
       icon: 'show_chart',
       loginRequired: true,
-      disabled: true,
-
-
     },
 
     {
