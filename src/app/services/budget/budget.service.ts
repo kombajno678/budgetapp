@@ -12,14 +12,15 @@ import { BudgetOperation } from 'src/app/models/BudgetOperation';
 export class BudgetService {
 
   private url: string = (environment.apiUrl.endsWith('/') ? environment.apiUrl.slice(0, environment.apiUrl.length - 1) : environment.apiUrl);
-  private operationsPath = this.url + '/users/0/operations';
+  //private operationsPath = this.url + '/users/0/operations';
 
-  private getAllOperationsObservable: Observable<BudgetOperation[]>;
-  public allOperationsSubject: Subject<BudgetOperation[]> = new Subject<BudgetOperation[]>();
+  //private getAllOperationsObservable: Observable<BudgetOperation[]>;
+  //public allOperationsSubject: Subject<BudgetOperation[]> = new Subject<BudgetOperation[]>();
 
 
   constructor(private http: HttpClient) { }
 
+  /*
   refreshOperations() {
 
     let path = this.operationsPath;
@@ -88,7 +89,7 @@ export class BudgetService {
 
 
 
-
+*/
   testToken() {
     let path = environment.apiUrl + '/testtoken';
 

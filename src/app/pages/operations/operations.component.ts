@@ -2,7 +2,7 @@ import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { BudgetOperation } from 'src/app/models/BudgetOperation';
 import { ScheduledBudgetOperation } from 'src/app/models/ScheduledBudgetOperation';
-import { BudgetService } from 'src/app/services/budget/budget.service';
+import { BudgetOperationService } from 'src/app/services/budget/budget-operation.service';
 import { CreateNewOperationDialogComponent } from 'src/app/components/dialogs/create-new-operation-dialog/create-new-operation-dialog.component'
 import { CreateNewScheduledOperationDialogComponent } from 'src/app/components/dialogs/create-new-scheduled-operation-dialog/create-new-scheduled-operation-dialog.component'
 @Component({
@@ -13,11 +13,8 @@ export class OperationsComponent implements OnInit, AfterViewInit {
 
   //allOperations: BudgetOperation[];
 
-
-
-
   constructor(
-    private budget: BudgetService,
+    private operationService: BudgetOperationService,
     private dialog: MatDialog
   ) { }
 
@@ -26,7 +23,7 @@ export class OperationsComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.budget.refreshOperations();
+    //this.operationService.refreshOperations();
   }
 
   onNewClick() {
@@ -37,7 +34,7 @@ export class OperationsComponent implements OnInit, AfterViewInit {
       if (result) {
         console.log(result);
         let new_operation: BudgetOperation = result;
-        this.budget.addOperation(new_operation).subscribe(r => {
+        this.operationService.create(new_operation).subscribe(r => {
           console.log('result od add operation = ', r);
           //this.budget.refreshOperations();
         })
@@ -53,7 +50,7 @@ export class OperationsComponent implements OnInit, AfterViewInit {
 
   deleteOperation(operation: BudgetOperation) {
     console.log('receiver delete event, ', operation);
-    this.budget.deleteOperation(operation).subscribe(r => {
+    this.operationService.delete(operation).subscribe(r => {
       console.log('deleteOperation result = ', r);
     })
   }
@@ -68,7 +65,7 @@ export class OperationsComponent implements OnInit, AfterViewInit {
       if (result) {
         console.log(result);
         let operation: BudgetOperation = result;
-        this.budget.updateOperation(operation).subscribe(r => {
+        this.operationService.update(operation).subscribe(r => {
           console.log('result = ', r);
           //this.budget.refreshOperations();
         })

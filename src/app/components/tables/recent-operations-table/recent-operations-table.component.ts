@@ -4,7 +4,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTable } from '@angular/material/table';
 import { BudgetOperation } from 'src/app/models/BudgetOperation';
-import { BudgetService } from 'src/app/services/budget/budget.service';
+import { BudgetOperationService } from 'src/app/services/budget/budget-operation.service';
 import { RecentOperationsTableDataSource } from './recent-operations-table-datasource';
 
 @Component({
@@ -31,7 +31,7 @@ export class RecentOperationsTableComponent implements AfterViewInit, OnInit {
   createEvent: EventEmitter<void>;
 
 
-  constructor(private budget: BudgetService) {
+  constructor(private opeartionService: BudgetOperationService) {
     this.deleteEvent = new EventEmitter<BudgetOperation>();
     this.modifyEvent = new EventEmitter<BudgetOperation>();
     this.createEvent = new EventEmitter<void>();
@@ -39,7 +39,7 @@ export class RecentOperationsTableComponent implements AfterViewInit, OnInit {
 
   ngOnInit() {
     //console.log('RecentOperationsTableComponent ngOnInit');
-    this.dataSource = new RecentOperationsTableDataSource(this.budget);
+    this.dataSource = new RecentOperationsTableDataSource(this.opeartionService);
 
   }
 

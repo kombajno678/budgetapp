@@ -74,13 +74,12 @@ export class FixedpointsChartComponent implements OnInit {
         this.lineChartLabels = [];
 
         //this.data = [];
-        r.forEach(fp => this.lineChartData[0].data.push(
-          fp.exact_value,
-        ));
+        r.forEach(fp => {
+          this.lineChartLabels.push(fp.when.toISOString().substr(0, 10));
+          this.lineChartData[0].data.push(fp.exact_value);
+        });
         //this.labels = [];
-        r.forEach(fp => this.lineChartLabels.push(
-          fp.when.toISOString().substr(0, 10)
-        ));
+        //r.forEach(fp => this.lineChartLabels.push(fp.when.toISOString().substr(0, 10)));
 
       }
 

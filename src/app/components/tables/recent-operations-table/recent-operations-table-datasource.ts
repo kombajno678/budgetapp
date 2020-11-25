@@ -4,7 +4,7 @@ import { MatSort } from '@angular/material/sort';
 import { finalize, map } from 'rxjs/operators';
 import { Observable, of as observableOf, merge, BehaviorSubject } from 'rxjs';
 import { BudgetOperation } from 'src/app/models/BudgetOperation';
-import { BudgetService } from 'src/app/services/budget/budget.service';
+import { BudgetOperationService } from 'src/app/services/budget/budget-operation.service';
 
 //BudgetOperation
 
@@ -26,18 +26,20 @@ export class RecentOperationsTableDataSource extends DataSource<BudgetOperation>
 
   loadOperations() {
     this.loadingSubject.next(true);
-    this.budgetService.getOperations().pipe(
+    this.operationService.getAll().pipe(
       finalize(() => this.loadingSubject.next(false))
-    )
-      .subscribe(_operations => {
+    ).subscribe(_operations => {
+      if (_operations) {
         let sorted = _operations.sort((a, b) => b.when.getTime() - a.when.getTime());
         this.operationsSubject.next(sorted);
-      });
+      }
+
+    });
   }
 
 
 
-  constructor(private budgetService: BudgetService) {
+  constructor(private operationService: BudgetOperationService) {
     super();
 
   }
