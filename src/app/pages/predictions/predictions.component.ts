@@ -58,8 +58,7 @@ export class PredictionsComponent implements OnInit {
     let x = combineLatest([
       this.fixedPointService.getAll(),
       this.operationsService.getAll()
-    ]
-    ).subscribe(r => {
+    ]).subscribe(r => {
       console.log('x : forkJoin\'d = ', r);
       if (r[0] && r[1]) {
 

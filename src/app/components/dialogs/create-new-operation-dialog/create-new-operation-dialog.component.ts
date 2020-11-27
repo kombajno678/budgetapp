@@ -68,6 +68,10 @@ export class CreateNewOperationDialogComponent implements OnInit {
       this.operation = data;
       this.acceptButtonTest = this.updateButtonText;
       this.title = this.updateTitle;
+
+
+
+
     } else {
       this.operation = new BudgetOperation();
       this.operation.value = null;
@@ -87,6 +91,16 @@ export class CreateNewOperationDialogComponent implements OnInit {
       scheduled: new FormControl(false, [Validators.required]),
       schedule_id: new FormControl(null, []),
     })
+  }
+
+  ngAfterViewInit() {
+    if (this.operation.value < 0) {
+      this.operationTypeOption.value = 'expense';
+      this.operationTypeOption.value = -this.operationTypeOption.value;
+
+    } else {
+      this.operationTypeOption.value = 'income';
+    }
   }
 
   onSave() {

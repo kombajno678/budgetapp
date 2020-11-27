@@ -13,12 +13,10 @@ export class ScheduledBudgetOperation extends AbstractResource {
     schedule?: OperationSchedule;
 
 
-    constructor() {
+    constructor(user_id: number = null, schedule_id: number = null) {
         super();
-
-        //this.id = null;
-        this.user_id = null;
-        this.schedule_id = null;
+        this.user_id = user_id;
+        this.schedule_id = schedule_id;
     }
 
     static getCopy(original: ScheduledBudgetOperation) {
@@ -29,6 +27,9 @@ export class ScheduledBudgetOperation extends AbstractResource {
         copy.value = original.value;
         copy.schedule_id = original.schedule_id;
         copy.timestamp = original.timestamp;
+
+        copy.schedule = original.schedule ? OperationSchedule.getCopy(original.schedule) : null;
+
         return copy;
     }
 

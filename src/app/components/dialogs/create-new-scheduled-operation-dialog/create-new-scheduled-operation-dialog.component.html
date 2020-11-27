@@ -11,9 +11,10 @@
                                          aria-label="Operation type">
                     <mat-button-toggle value="expense"
                                        class="w-100"
-                                       checked>Expense</mat-button-toggle>
+                                       [checked]="this.operationValueSign < 0">Expense</mat-button-toggle>
                     <mat-button-toggle value="income"
-                                       class="w-100">Income</mat-button-toggle>
+                                       class="w-100"
+                                       [checked]="this.operationValueSign > 0">Income</mat-button-toggle>
                 </mat-button-toggle-group>
 
 
@@ -62,71 +63,116 @@
         <div class="row p-2">
             <div class="col">
 
-                <mat-tab-group [selectedIndex]="selectedTab"
-                               (selectedIndexChange)="onScheduleTypeChange($event)">
-                    <mat-tab label="Daily">
+                <label> Choose schedule type: </label>
+                <mat-radio-group class="example-radio-group"
+                                 formControlName="formScheduleType"
+                                 aria-label="Select schedule type:">
+                    <mat-radio-button class="example-radio-button"
+                                      [value]="0">Daily</mat-radio-button>
+                    <mat-radio-button class="example-radio-button"
+                                      [value]="1">Weekly</mat-radio-button>
+                    <mat-radio-button class="example-radio-button"
+                                      [value]="2">Monthly</mat-radio-button>
+                    <mat-radio-button class="example-radio-button"
+                                      [value]="3">Annually</mat-radio-button>
+                </mat-radio-group>
 
-                        operation will be added every day
+                <ng-container [ngSwitch]="this.scheduleType">
 
-                    </mat-tab>
-                    <mat-tab label="Weekly">
+                    <div *ngSwitchCase="0">
 
-                        operation will be added every week, select on which days:
+                    </div>
 
-
-                        <mat-selection-list #daysOfWeekSelectionList>
-                            <mat-list-option *ngFor="let dayOfWeek of daysOfWeek"
-                                             [value]="dayOfWeek">
-                                {{dayOfWeek.display}}
-                            </mat-list-option>
-                        </mat-selection-list>
-                        <p>
-                            Options selected: {{daysOfWeekSelectionList.selectedOptions.selected}}
-                        </p>
-
-                    </mat-tab>
-                    <mat-tab label="Monthly">
-
-                        operation will be added every month, select on which days:
+                    <div *ngSwitchCase="1">
 
 
-                        <mat-selection-list #daysOfMonthsSelectionList>
+                        <mat-form-field appearance="fill">
+                            <mat-label>Day of week</mat-label>
+                            <mat-select formControlName="formDaysOfWeek"
+                                        #daysOfWeekSelectionList
+                                        multiple>
+                                <mat-option *ngFor="let dayOfWeek of daysOfWeek"
+                                            [value]="dayOfWeek.value">{{dayOfWeek.display}}</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+
+
+
+
+                    </div>
+
+                    <div *ngSwitchCase="2">
+
+                        <!--
+
+                        <mat-selection-list #daysOfMonthsSelectionList
+                                            formControlName="formDaysOfMonths">
                             <mat-list-option *ngFor="let dayOfMonth of daysOfMonth"
                                              [value]="dayOfMonth">
                                 {{dayOfMonth}}
                             </mat-list-option>
                         </mat-selection-list>
+                        -->
 
 
 
+                        <mat-form-field appearance="fill">
+                            <mat-label>Day of month</mat-label>
+                            <mat-select formControlName="formDaysOfMonths"
+                                        #daysOfMonthsSelectionList
+                                        multiple>
+                                <mat-option *ngFor="let dayOfMonth of daysOfMonth"
+                                            [value]="dayOfMonth">{{dayOfMonth}}</mat-option>
+                            </mat-select>
+                        </mat-form-field>
 
-                    </mat-tab>
-                    <mat-tab label="Annually">
-
-                        operation will be added every year, select month and day:
 
 
-                        <mat-selection-list #monthsSelectionList>
+                    </div>
+
+                    <div *ngSwitchCase="3">
+
+
+                        <!--
+
+                        <mat-selection-list #monthsSelectionList
+                                            formControlName="formMonths">
                             <mat-list-option *ngFor="let month of months"
-                                             [value]="month">
+                                             [value]="month.value">
                                 {{month.display}}
                             </mat-list-option>
                         </mat-selection-list>
-                        <mat-selection-list #annuallyDaysOfMonthsSelectionList>
-                            <mat-list-option *ngFor="let dayOfMonth of daysOfMonth"
-                                             [value]="dayOfMonth">
-                                {{dayOfMonth}}
-                            </mat-list-option>
-                        </mat-selection-list>
+                        -->
 
 
-                    </mat-tab>
-                </mat-tab-group>
+                        <mat-form-field appearance="fill">
+                            <mat-label>Month:</mat-label>
+                            <mat-select formControlName="formMonths"
+                                        #monthsSelectionList
+                                        multiple>
+                                <mat-option *ngFor="let month of months"
+                                            [value]="month.value">{{month.display}}</mat-option>
+                            </mat-select>
+                        </mat-form-field>
 
 
 
 
 
+                        <mat-form-field appearance="fill">
+                            <mat-label>Day of month</mat-label>
+                            <mat-select formControlName="formDaysOfMonths"
+                                        #daysOfMonthsSelectionList
+                                        multiple>
+                                <mat-option *ngFor="let dayOfMonth of daysOfMonth"
+                                            [value]="dayOfMonth">{{dayOfMonth}}</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+
+
+                    <div *ngSwitchDefault>(error: unknown schedule type)</div>
+                </ng-container>
 
 
             </div>
@@ -139,10 +185,11 @@
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
-    <button mat-button
+    <button mat-flat-button
             mat-dialog-close>Cancel</button>
     <button mat-button
             (click)="onSave()"
-            cdkFocusInitial
-            [disabled]="isFormInvalid()">{{acceptButtonTest}}</button>
+            [disabled]="this.form.invalid">
+        {{acceptButtonTest}}
+    </button>
 </mat-dialog-actions>

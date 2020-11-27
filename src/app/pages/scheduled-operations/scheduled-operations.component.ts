@@ -5,7 +5,7 @@ import { OperationSchedule } from 'src/app/models/OperationSchedule';
 import { ScheduledBudgetOperation } from 'src/app/models/ScheduledBudgetOperation';
 import { ScheduledOperationsService } from 'src/app/services/budget/scheduled-operations.service';
 import { OperationSchedulesService } from 'src/app/services/budget/operation-schedules.service';
-import { forkJoin, merge, zip } from 'rxjs';
+import { combineLatest, forkJoin, merge, zip } from 'rxjs';
 
 @Component({
   templateUrl: './scheduled-operations.component.html',
@@ -33,11 +33,12 @@ export class ScheduledOperationsComponent implements OnInit {
 
 
 
-    let both = zip(
+    let both = combineLatest([
       scheduledOperationsObservable,
       schedulesObservable
-    ).subscribe(
+    ]).subscribe(
       r => {
+        console.log('combineLatest  = ', r);
         // if result is null that means that nothing has been emitted yet
         if (r[0] && r[1]) {
           this.scheduledOperations = r[0];
@@ -122,7 +123,12 @@ export class ScheduledOperationsComponent implements OnInit {
         let modified_operation: ScheduledBudgetOperation = result;
         //console.log(result);
         //check if selected schedule exists
-        let existing_schedule = this.operationSchedules.find(schedule => OperationSchedule.areEqual(schedule, modified_operation.schedule));
+        let existing_schedule = this.operationSchedules.find(schedule => {
+          let result = OperationSchedule.areEqual(schedule, modified_operation.schedule);
+          console.log('caomparing schedules ', schedule, modified_operation.schedule, 'result = ', result);
+          return result;
+        }
+        );
         if (existing_schedule) {
           modified_operation.schedule = existing_schedule;
           modified_operation.schedule_id = modified_operation.schedule.id;

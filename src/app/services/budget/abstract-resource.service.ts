@@ -65,21 +65,30 @@ export abstract class AbstractResourceService<T extends AbstractResource> implem
 
   delete(object: T) {
     return this.http.delete<T>(this.path + '/' + object.id).pipe(
-      tap(_ => { this.log(this.path); this.refreshResource(); }),
+      tap(_ => {
+        this.log(this.path);
+        this.refreshResource();
+      }),
       catchError(this.handleError<any>(this.path, null)),
     )
   }
 
   update(object: T) {
     return this.http.put<T>(this.path + '/' + object.id, object).pipe(
-      tap(_ => { this.log(this.path); this.refreshResource(); }),
+      tap(_ => {
+        this.log(this.path);
+        this.refreshResource();
+      }),
       catchError(this.handleError<any>(this.path, null)),
     );
   }
 
   create(object: T) {
     return this.http.post<T>(this.path, object).pipe(
-      tap(_ => { this.log(this.path); this.refreshResource(); }),
+      tap(_ => {
+        this.log(this.path);
+        this.refreshResource();
+      }),
       catchError(this.handleError<any>(this.path, null)),
     );
   }

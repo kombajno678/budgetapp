@@ -1,27 +1,23 @@
-import { Component, Inject, Input, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, Inject, Input, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatButtonToggleGroup } from '@angular/material/button-toggle';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSelectionList } from '@angular/material/list';
 import { OperationSchedule } from 'src/app/models/OperationSchedule';
 import { ScheduledBudgetOperation } from 'src/app/models/ScheduledBudgetOperation';
+import { ScheduleType } from 'src/app/models/internal/ScheduleType';
 
 
 
-export enum ScheduleType {
-  daily,
-  weekly,
-  monthly,
-  annually
-}
+
 
 @Component({
   templateUrl: './create-new-scheduled-operation-dialog.component.html',
   styleUrls: ['./create-new-scheduled-operation-dialog.component.scss']
 })
-export class CreateNewScheduledOperationDialogComponent implements OnInit {
+export class CreateNewScheduledOperationDialogComponent implements OnInit, AfterViewInit {
 
-  selectedTab = 0;
+  //selectedTab = 0;
 
   form: FormGroup;
 
@@ -29,6 +25,7 @@ export class CreateNewScheduledOperationDialogComponent implements OnInit {
 
   @ViewChild('operationTypeOption')
   operationTypeOption: MatButtonToggleGroup;
+  operationValueSign = -1; // 1 or -1
 
   @ViewChild('operationDateOption')
   operationDateOption: MatButtonToggleGroup;
@@ -86,18 +83,34 @@ export class CreateNewScheduledOperationDialogComponent implements OnInit {
   title: string = null;
 
 
-  constructor(public dialogRef: MatDialogRef<CreateNewScheduledOperationDialogComponent>, @Inject(MAT_DIALOG_DATA) public data: ScheduledBudgetOperation) {
+  constructor(
+    public dialogRef: MatDialogRef<CreateNewScheduledOperationDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: ScheduledBudgetOperation,
+  ) {
     if (data) {
 
 
       this.operation = data;
       this.acceptButtonTest = this.updateButtonText;
       this.title = this.updateTitle;
+      this.operationValueSign = this.operation.value;
+
+      this.operation.value = this.operation.value < 0 ? -this.operation.value : this.operation.value;
+
+      console.log(this.operation);
+      //check what chedule it is
+      if (!this.operation.schedule.scheduleType) {
+        OperationSchedule.initScheduleType(this.operation.schedule);
+      }
+      this.scheduleType = this.operation.schedule.scheduleType;
+
+
     } else {
       this.operation = new ScheduledBudgetOperation();
       this.operation.value = null;
       this.operation.name = null;
       //this.operation.when = new Date();
+      this.operation.schedule = new OperationSchedule();
 
       this.acceptButtonTest = this.createButtonText;
       this.title = this.createTitle;
@@ -111,11 +124,38 @@ export class CreateNewScheduledOperationDialogComponent implements OnInit {
       //when: new FormControl(this.operation.when, [Validators.required]),
       //scheduled: new FormControl(false, [Validators.required]),
       //schedule_id: new FormControl(null, []),
+      formScheduleType: new FormControl(this.scheduleType, [Validators.min(0), Validators.max(3)]),
+      formDaysOfWeek: new FormControl(this.operation.schedule.day_of_week, []),
+      formDaysOfMonths: new FormControl(this.operation.schedule.day_of_month, []),
+      formMonths: new FormControl(this.operation.schedule.month, []),
+    })
+
+    this.form.controls.formScheduleType.valueChanges.subscribe(newValue => {
+      if (this.form.controls.formScheduleType.valid) {
+        this.scheduleType = newValue;
+
+      }
     })
   }
 
+  ngOnInit(): void {
+
+  }
+
+
+  ngAfterViewInit() {
+
+  }
+
+
+
+
   onSave() {
     console.log('dialog on save');
+
+    if (this.isFormInvalid()) {
+      return;
+    }
 
 
     if (this.operationTypeOption.value == 'expense') {
@@ -133,16 +173,15 @@ export class CreateNewScheduledOperationDialogComponent implements OnInit {
       case ScheduleType.daily:
         break;
       case ScheduleType.weekly:
-        schedule.day_of_week = this.daysOfWeekSelectionList.selectedOptions.selected.map(mlo => mlo.value).map(v => v.value);//TODO: get from form
-
-
+        schedule.day_of_week = this.form.controls.formDaysOfWeek.value.sort();
         break;
       case ScheduleType.monthly:
-        schedule.day_of_month = this.daysOfMonthSelectionList.selectedOptions.selected.map(mlo => mlo.value);//TODO: get from form
+        schedule.day_of_month = this.form.controls.formDaysOfMonths.value.sort();
+        schedule.day_of_month = this.form.controls.formDaysOfMonths.value.sort();
         break;
       case ScheduleType.annually:
-        schedule.month = this.monthsSelectionList.selectedOptions.selected.map(mlo => mlo.value).map(v => v.value);//TODO: get from form
-        schedule.day_of_month = this.annuallyDaysOfMonthSelectionList.selectedOptions.selected.map(mlo => mlo.value);//TODO: get from form
+        schedule.month = this.form.controls.formMonths.value;
+        schedule.day_of_month = this.form.controls.formDaysOfMonths.value.sort();
         break;
       default:
         console.error('this.scheduleType is null');
@@ -162,63 +201,46 @@ export class CreateNewScheduledOperationDialogComponent implements OnInit {
 
   }
 
-  ngOnInit(): void {
-
-    this.updateScheduleType();
 
 
 
-
-  }
   isFormInvalid() {
+    if (this.form.invalid) {
+      return false;
+    }
 
     let checkSchedule: boolean = true;
+
     switch (this.scheduleType) {
       case ScheduleType.daily:
+        //checkSchedule = true;
         break;
       case ScheduleType.weekly:
-        checkSchedule = this.daysOfWeekSelectionList.selectedOptions.selected.length >= 1;
+        checkSchedule = this.form.controls.formDaysOfWeek.value.length >= 1;
+        //checkSchedule = this.daysOfWeekSelectionList?.selectedOptions.selected.length >= 1;
+        // if (!checkSchedule) {
+        //   //console.warn('incorrent daysOfWeekSelectionList');
+        // }
         break;
       case ScheduleType.monthly:
-        checkSchedule = this.daysOfMonthSelectionList.selectedOptions.selected.length >= 1;
+        checkSchedule = this.form.controls.formDaysOfMonths.value.length >= 1;
+        //checkSchedule = this.daysOfMonthSelectionList?.selectedOptions.selected.length >= 1;
+        // if (!checkSchedule) {
+        //   //console.warn('incorrent daysOfMonthSelectionList');
+        // }
         break;
       case ScheduleType.annually:
-        checkSchedule = this.monthsSelectionList.selectedOptions.selected.length >= 1 &&
-          this.annuallyDaysOfMonthSelectionList.selectedOptions.selected.length >= 1;
+        checkSchedule = this.form.controls.formMonths.value.length >= 1 &&
+          this.form.controls.formDaysOfMonths.value.length >= 1;
+        // if (!checkSchedule) {
+        //   //console.warn('incorrent monthsSelectionList or annuallyDaysOfMonthSelectionList');
+        // }
         break;
       default:
         //error
-        return false;
+        checkSchedule = false;
     }
-    return this.form.invalid || !checkSchedule;
-  }
-
-
-  updateScheduleType() {
-    switch (this.selectedTab) {
-      case 0:
-        this.scheduleType = ScheduleType.daily;
-        break;
-      case 1:
-        this.scheduleType = ScheduleType.weekly;
-        break;
-      case 2:
-        this.scheduleType = ScheduleType.monthly;
-        break;
-      case 3:
-        this.scheduleType = ScheduleType.annually;
-        break;
-      default:
-        this.scheduleType = null;
-    }
-  }
-
-
-  onScheduleTypeChange(event) {
-    if (typeof event !== 'undefined') {
-      this.selectedTab = event;
-      this.updateScheduleType();
-    }
+    return !checkSchedule;
   }
 
 
