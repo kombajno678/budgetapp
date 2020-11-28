@@ -10,11 +10,15 @@ export class BudgetOperation extends AbstractResource {
     scheduled_operation_id?: number;
     timestamp?: Date;
 
-    constructor() {
+    constructor(name = null, value = null, when = null, scheduled_operation_id = null) {
         super();
         //this.id = null;
         this.user_id = null;
-        this.scheduled_operation_id = null;
+
+        this.name = name;
+        this.value = value;
+        this.when = when;
+        this.scheduled_operation_id = scheduled_operation_id;
 
     }
 

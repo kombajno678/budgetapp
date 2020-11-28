@@ -8,7 +8,10 @@ import { environment } from 'src/environments/environment';
 import { AbstractResourceService } from './abstract-resource.service';
 
 const pathSuffix = '/users/0/schedules';
-const customMap = (resource) => resource;
+const customMap = (resource) => {
+  resource.forEach(OperationSchedule.initScheduleType)
+  return resource;
+};
 
 @Injectable({
   providedIn: 'root'

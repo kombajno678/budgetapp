@@ -1,57 +1,43 @@
-<mat-list>
-    <div mat-subheader>Scheduled operations</div>
-    <ng-container *ngFor="let so of scheduledOperations">
+<div class="row p-2">
+    <div class="col">
+        <span class="mat-display-1">
+            Scheduled operations
+        </span>
+    </div>
+</div>
 
-        <mat-list-item>
-            <mat-icon mat-list-icon>event</mat-icon>
-            <div mat-line>{{so.name}} : {{so.value}}</div>
-            <div mat-line> id:{{ so.schedule.id}};
-                dw:[{{ so.schedule.day_of_week}}];
-                dm:[{{ so.schedule.day_of_month}}];
-                m:[{{ so.schedule.month}}];
-                y:[{{ so.schedule.year}}]
-            </div>
+<div class="row p-2">
+    <div class="col">
 
-            <button mat-icon-button
-                    [matMenuTriggerFor]="menu"
-                    aria-label="Example icon-button with a menu">
-                <mat-icon>more_vert</mat-icon>
-            </button>
-
-
-            <mat-menu #menu="matMenu">
-                <button mat-menu-item
-                        color="warn"
-                        (click)="deleteOperation(so)">
-                    <mat-icon>delete</mat-icon>
-                    <span>Delete</span>
-                </button>
-                <button mat-menu-item
-                        color="accent"
-                        (click)="modifyOperation(so)">
-                    <mat-icon>edit</mat-icon>
-                    <span>Modify</span>
-                </button>
-                <button mat-menu-item
-                        disabled>
-                    <mat-icon>notifications_off</mat-icon>
-                    <span>Placeholder</span>
-                </button>
-            </mat-menu>
+        <button mat-flat-button
+                color="primary"
+                (click)="onNewClick()">
+            New
+        </button>
+    </div>
+</div>
 
 
-        </mat-list-item>
+<div class="row no-gutters">
+    <div class="col">
 
-    </ng-container>
+        <mat-list>
+
+            <ng-container *ngFor="let type of getScheduleTypes()">
+                <div mat-subheader>{{getScheduleTypeName(type)}}</div>
+                <ng-container *ngFor="let so of this.getScheduledOperationsByType(type)">
+
+                    <app-scheduled-operation-list-element [so]="so"
+                                                          (onDelete)="deleteOperation($event)"
+                                                          (onModify)="modifyOperation($event)"
+                                                          (onChangeActiveState)="chnageActiveState($event)">
+                        ...
+                    </app-scheduled-operation-list-element>
+
+                </ng-container>
+            </ng-container>
 
 
-</mat-list>
-
-
-
-
-
-<button mat-flat-button
-        (click)="onNewClick()">
-    New
-</button>
+        </mat-list>
+    </div>
+</div>

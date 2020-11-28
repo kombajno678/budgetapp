@@ -5,6 +5,7 @@ import { ScheduledBudgetOperation } from 'src/app/models/ScheduledBudgetOperatio
 import { BudgetOperationService } from 'src/app/services/budget/budget-operation.service';
 import { CreateNewOperationDialogComponent } from 'src/app/components/dialogs/create-new-operation-dialog/create-new-operation-dialog.component'
 import { CreateNewScheduledOperationDialogComponent } from 'src/app/components/dialogs/create-new-scheduled-operation-dialog/create-new-scheduled-operation-dialog.component'
+import { BudgetService } from 'src/app/services/budget/budget.service';
 @Component({
   templateUrl: './operations.component.html',
   styleUrls: ['./operations.component.scss']
@@ -15,6 +16,7 @@ export class OperationsComponent implements OnInit, AfterViewInit {
 
   constructor(
     private operationService: BudgetOperationService,
+    private budgetService: BudgetService,
     private dialog: MatDialog
   ) { }
 
@@ -24,6 +26,24 @@ export class OperationsComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
     //this.operationService.refreshOperations();
+  }
+
+
+  generate() {
+    this.budgetService.generateOperations();
+  }
+
+  deleteAllOperations() {
+
+    this.operationService.getAll().subscribe(ops => {
+      if (ops) {
+        console.log('deleting ' + ops.length + ' operations ...');
+        ops.forEach(op => {
+          this.operationService.delete(op, false).subscribe(r => console.log(r));
+        })
+      }
+    })
+
   }
 
   onNewClick() {

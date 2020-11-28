@@ -9,6 +9,8 @@ export class ScheduledBudgetOperation extends AbstractResource {
     value?: number;
     schedule_id?: number;
     timestamp?: Date;
+    active?: boolean;// when false then wont generate new operations
+    hidden?: boolean;//true when deleted
 
     schedule?: OperationSchedule;
 

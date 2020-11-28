@@ -46,6 +46,7 @@ import { GoogleChartsModule } from 'angular-google-charts';
 import { ChartsModule } from 'ng2-charts';
 import { PredictionChartComponent } from './components/charts/predictions/prediction-chart/prediction-chart.component';
 import { FixedpointsChartComponent } from './components/charts/fixedpoints/fixedpoints-chart/fixedpoints-chart.component';
+import { ScheduledOperationListElementComponent } from './components/list-elements/scheduled-operation-list-element/scheduled-operation-list-element.component';
 
 
 function tokenGetter(): string {
@@ -70,7 +71,8 @@ function tokenGetter(): string {
     CreateNewFixedPointDialogComponent,
     PredictionsComponent,
     PredictionChartComponent,
-    FixedpointsChartComponent
+    FixedpointsChartComponent,
+    ScheduledOperationListElementComponent
 
   ],
   entryComponents: [CustomSnackbarComponent],

@@ -11,9 +11,10 @@
                                          aria-label="Operation type">
                     <mat-button-toggle value="expense"
                                        class="w-100"
-                                       checked>Expense</mat-button-toggle>
+                                       [checked]="this.operationValueSign < 0">Expense</mat-button-toggle>
                     <mat-button-toggle value="income"
-                                       class="w-100">Income</mat-button-toggle>
+                                       class="w-100"
+                                       [checked]="this.operationValueSign > 0">Income</mat-button-toggle>
                 </mat-button-toggle-group>
 
 

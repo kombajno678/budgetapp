@@ -39,37 +39,39 @@ export class OperationSchedule extends AbstractResource {
 
     static initScheduleType(schedule: OperationSchedule): void {
         if (
-            schedule.year.length === 0 &&
-            schedule.month.length === 0 &&
-            schedule.day_of_month.length === 0 &&
-            schedule.day_of_week.length === 0
+            schedule.year?.length === 0 &&
+            schedule.month?.length === 0 &&
+            schedule.day_of_month?.length === 0 &&
+            schedule.day_of_week?.length === 0
         ) {
             // if all arrays empty -> daily
             schedule.scheduleType = ScheduleType.daily;
         } else if (
-            schedule.year.length === 0 &&
-            schedule.month.length === 0 &&
-            schedule.day_of_month.length === 0 &&
-            schedule.day_of_week.length > 0
+            schedule.year?.length === 0 &&
+            schedule.month?.length === 0 &&
+            schedule.day_of_month?.length === 0 &&
+            schedule.day_of_week?.length > 0
         ) {
             // if only day of week -> weekly
             schedule.scheduleType = ScheduleType.weekly;
         } else if (
-            schedule.year.length === 0 &&
-            schedule.month.length === 0 &&
-            schedule.day_of_month.length > 0 &&
-            schedule.day_of_week.length === 0
+            schedule.year?.length === 0 &&
+            schedule.month?.length === 0 &&
+            schedule.day_of_month?.length > 0 &&
+            schedule.day_of_week?.length === 0
         ) {
             // if only day of month -> monthly
             schedule.scheduleType = ScheduleType.monthly;
         } else if (
-            schedule.year.length === 0 &&
-            schedule.month.length > 0 &&
-            schedule.day_of_month.length > 0 &&
-            schedule.day_of_week.length === 0
+            schedule.year?.length === 0 &&
+            schedule.month?.length > 0 &&
+            schedule.day_of_month?.length > 0 &&
+            schedule.day_of_week?.length === 0
         ) {
             // if both month and day of month -> annualy
             schedule.scheduleType = ScheduleType.annually;
+        } else {
+            schedule.scheduleType = null;
         }
     }
 

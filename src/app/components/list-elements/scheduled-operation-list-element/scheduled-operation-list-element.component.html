@@ -1,0 +1,62 @@
+<mat-list-item>
+    <mat-icon mat-list-icon>
+
+        {{ so.value >= 0 ? 'add' : 'remove'}}
+
+
+    </mat-icon>
+    <div mat-line>
+        <span class="mat-title">{{so.value}}</span>
+        {{ so.active ? '' : '(Disabled)' }}
+
+    </div>
+    <div mat-line
+         class="">
+        <span class="mat-subheading-2">{{so.name}}</span>
+        <span class="schedule-desc">{{ this.getScheduleTypeDescription(so.schedule.scheduleType) }}</span>
+
+
+    </div>
+
+    <ng-container *ngIf="displayButton">
+        <button mat-icon-button
+                [matMenuTriggerFor]="menu"
+                aria-label="Example icon-button with a menu">
+            <mat-icon>more_vert</mat-icon>
+        </button>
+
+
+        <mat-menu #menu="matMenu">
+
+
+            <button mat-menu-item
+                    color="warn"
+                    (click)="onDelete.emit(so)">
+                <mat-icon>delete</mat-icon>
+                <span>Delete</span>
+            </button>
+
+
+
+
+            <button mat-menu-item
+                    color="warn"
+                    (click)="changeActiveState()">
+                <mat-icon>{{ so.active ? 'pause' : 'play_arrow' }}</mat-icon>
+                <span> {{ so.active ? 'Disable' : 'Activate' }}</span>
+            </button>
+
+
+            <button mat-menu-item
+                    color="accent"
+                    (click)="onModify.emit(so)">
+                <mat-icon>edit</mat-icon>
+                <span>Modify</span>
+            </button>
+
+        </mat-menu>
+    </ng-container>
+
+
+
+</mat-list-item>

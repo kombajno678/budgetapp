@@ -20,6 +20,7 @@ export abstract class AbstractResourceService<T extends AbstractResource> implem
   pathSuffix: string;
 
   public resource: BehaviorSubject<T[]>;
+  public mapWhenRefreshing = (resource) => { console.log('default map'); return resource };
 
   constructor(pathSuffix: string, customMap, public http: HttpClient) {
     this.pathSuffix = pathSuffix;
@@ -48,12 +49,19 @@ export abstract class AbstractResourceService<T extends AbstractResource> implem
 
   }
 
-  public mapWhenRefreshing = (resource) => { console.log('default map'); return resource };
 
 
-  getAll() {
+  getAll(): Observable<T[]> {
 
     return this.resource.asObservable();
+  }
+
+  getAllOnce(): Observable<T[]> {
+    return this.http.get<T[]>(this.path).pipe(
+      tap(_ => this.log(this.path)),
+      map(this.mapWhenRefreshing),
+      catchError(this.handleError<any>(this.path, null)),
+    );
   }
 
   get(id: number) {
@@ -63,31 +71,31 @@ export abstract class AbstractResourceService<T extends AbstractResource> implem
     );
   }
 
-  delete(object: T) {
+  delete(object: T, refresh: boolean = true, log: boolean = true) {
     return this.http.delete<T>(this.path + '/' + object.id).pipe(
       tap(_ => {
-        this.log(this.path);
-        this.refreshResource();
+        if (log) this.log(this.path);
+        if (refresh) this.refreshResource();
       }),
       catchError(this.handleError<any>(this.path, null)),
     )
   }
 
-  update(object: T) {
+  update(object: T, refresh: boolean = true, log: boolean = true) {
     return this.http.put<T>(this.path + '/' + object.id, object).pipe(
       tap(_ => {
-        this.log(this.path);
-        this.refreshResource();
+        if (log) this.log(this.path);
+        if (refresh) this.refreshResource();
       }),
       catchError(this.handleError<any>(this.path, null)),
     );
   }
 
-  create(object: T) {
+  create(object: T, refresh: boolean = true, log: boolean = true) {
     return this.http.post<T>(this.path, object).pipe(
       tap(_ => {
-        this.log(this.path);
-        this.refreshResource();
+        if (log) this.log(this.path);
+        if (refresh) this.refreshResource();
       }),
       catchError(this.handleError<any>(this.path, null)),
     );

@@ -7,7 +7,7 @@ import { OperationSchedule } from 'src/app/models/OperationSchedule';
 import { ScheduledBudgetOperation } from 'src/app/models/ScheduledBudgetOperation';
 import { ScheduleType } from 'src/app/models/internal/ScheduleType';
 
-
+import { VerboseDateStuff } from 'src/app/models/internal/VerboseDateStuff';
 
 
 
@@ -47,31 +47,9 @@ export class CreateNewScheduledOperationDialogComponent implements OnInit, After
 
 
 
-  months = [
-    { value: 1, display: 'Januray' },
-    { value: 2, display: 'February' },
-    { value: 3, display: 'March' },
-    { value: 4, display: 'April' },
-    { value: 5, display: 'May' },
-    { value: 6, display: 'June' },
-    { value: 7, display: 'July' },
-    { value: 8, display: 'August' },
-    { value: 9, display: 'September' },
-    { value: 10, display: 'October' },
-    { value: 11, display: 'November' },
-    { value: 12, display: 'December' }
-  ];
-  daysOfWeek = [
-    { value: 1, display: 'Monday' },
-    { value: 2, display: 'Tuesday' },
-    { value: 3, display: 'Wednesday' },
-    { value: 4, display: 'Thursday' },
-    { value: 5, display: 'Friday' },
-    { value: 6, display: 'Saturday' },
-    { value: 0, display: 'Sunday' }
-  ];
-
-  daysOfMonth = Array.from(Array(31), (_, x) => x + 1);
+  months = VerboseDateStuff.months;
+  daysOfWeek = VerboseDateStuff.daysOfWeek;
+  daysOfMonth = VerboseDateStuff.daysOfMonth;
 
 
   createTitle: string = 'New Operation';
@@ -97,7 +75,7 @@ export class CreateNewScheduledOperationDialogComponent implements OnInit, After
 
       this.operation.value = this.operation.value < 0 ? -this.operation.value : this.operation.value;
 
-      console.log(this.operation);
+      //console.log(this.operation);
       //check what chedule it is
       if (!this.operation.schedule.scheduleType) {
         OperationSchedule.initScheduleType(this.operation.schedule);
@@ -154,6 +132,7 @@ export class CreateNewScheduledOperationDialogComponent implements OnInit, After
     console.log('dialog on save');
 
     if (this.isFormInvalid()) {
+      console.warn('isFormInvalid returned true');
       return;
     }
 

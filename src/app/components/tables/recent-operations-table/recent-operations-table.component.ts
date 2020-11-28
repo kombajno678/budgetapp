@@ -71,8 +71,11 @@ export class RecentOperationsTableComponent implements AfterViewInit, OnInit {
 
 
   displayDate(row: BudgetOperation) {
-
-    return row ? new Date(row.when).toISOString().substr(0, 10) : '';
-
+    if (row) {
+      let d = new Date(row.when);
+      return `${d.getFullYear()}-${d.getMonth() < 10 ? '0' + d.getMonth() : d.getMonth()}-${d.getDate() < 10 ? '0' + d.getDate() : d.getDate()}`;
+    } else {
+      return '?';
+    }
   }
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { CreateNewScheduledOperationDialogComponent } from 'src/app/components/dialogs/create-new-scheduled-operation-dialog/create-new-scheduled-operation-dialog.component';
 import { OperationSchedule } from 'src/app/models/OperationSchedule';
@@ -6,16 +6,21 @@ import { ScheduledBudgetOperation } from 'src/app/models/ScheduledBudgetOperatio
 import { ScheduledOperationsService } from 'src/app/services/budget/scheduled-operations.service';
 import { OperationSchedulesService } from 'src/app/services/budget/operation-schedules.service';
 import { combineLatest, forkJoin, merge, zip } from 'rxjs';
+import { getScheduleTypeName, ScheduleType } from 'src/app/models/internal/ScheduleType';
 
 @Component({
   templateUrl: './scheduled-operations.component.html',
   styleUrls: ['./scheduled-operations.component.scss']
 })
-export class ScheduledOperationsComponent implements OnInit {
+export class ScheduledOperationsComponent implements OnInit, OnDestroy {
+
+  public ScheduleType = ScheduleType;
 
 
   scheduledOperations: ScheduledBudgetOperation[];
   operationSchedules: OperationSchedule[];
+
+  public displayedScheduletypes: ScheduleType[] = [ScheduleType.daily, ScheduleType.weekly, ScheduleType.monthly, ScheduleType.annually];
 
 
   constructor(
@@ -24,16 +29,9 @@ export class ScheduledOperationsComponent implements OnInit {
     private schedulesService: OperationSchedulesService) { }
 
   ngOnInit(): void {
-
     let scheduledOperationsObservable = this.scheduledOperationsService.getAll();
-
     let schedulesObservable = this.schedulesService.getAll();
-
-
-
-
-
-    let both = combineLatest([
+    combineLatest([
       scheduledOperationsObservable,
       schedulesObservable
     ]).subscribe(
@@ -43,6 +41,9 @@ export class ScheduledOperationsComponent implements OnInit {
         if (r[0] && r[1]) {
           this.scheduledOperations = r[0];
           this.operationSchedules = r[1];
+          this.operationSchedules.forEach(s => {
+            OperationSchedule.initScheduleType(s);
+          })
 
           this.scheduledOperations.forEach(op => {
             op.schedule = this.operationSchedules.find(s => s.id === op.schedule_id);
@@ -56,8 +57,23 @@ export class ScheduledOperationsComponent implements OnInit {
 
   }
 
+  ngOnDestroy(): void {
+    this.scheduledOperations = null;
+    this.operationSchedules = null;
+  }
+
+  getScheduleTypeName(type: ScheduleType) {
+    return getScheduleTypeName(type);
+  }
 
 
+  getScheduleTypes(): ScheduleType[] {
+    return this.displayedScheduletypes;
+  }
+
+  getScheduledOperationsByType(type: ScheduleType) {
+    return this.scheduledOperations?.filter(op => op.schedule.scheduleType === type);
+  }
 
   onNewClick() {
 
@@ -134,7 +150,7 @@ export class ScheduledOperationsComponent implements OnInit {
           modified_operation.schedule_id = modified_operation.schedule.id;
           console.log(modified_operation);
           this.scheduledOperationsService.update(modified_operation).subscribe(r => {
-            console.log('result od add operation = ', r);
+            console.log('result od update operation = ', r);
           })
 
         } else {
@@ -146,7 +162,7 @@ export class ScheduledOperationsComponent implements OnInit {
             modified_operation.schedule_id = r.id;
             console.log(modified_operation);
             this.scheduledOperationsService.update(modified_operation).subscribe(r => {
-              console.log('result od add operation = ', r);
+              console.log('result od update operation = ', r);
             })
           })
         }
@@ -156,6 +172,14 @@ export class ScheduledOperationsComponent implements OnInit {
       }
     })
 
+
+  }
+
+  chnageActiveState(operation: ScheduledBudgetOperation) {
+
+    this.scheduledOperationsService.update(operation).subscribe(r => {
+      console.log('result od update operation = ', r);
+    })
 
   }
 

@@ -19,6 +19,8 @@ export class CreateNewOperationDialogComponent implements OnInit {
 
   @ViewChild('operationTypeOption')
   operationTypeOption: MatButtonToggleGroup;
+  operationValueSign = -1; // 1 or -1
+
 
 
   @ViewChild('operationDateOption')
@@ -68,6 +70,10 @@ export class CreateNewOperationDialogComponent implements OnInit {
       this.operation = data;
       this.acceptButtonTest = this.updateButtonText;
       this.title = this.updateTitle;
+
+      this.operationValueSign = this.operation.value;
+
+      this.operation.value = this.operation.value < 0 ? -this.operation.value : this.operation.value;
 
 
 
