@@ -1,0 +1,27 @@
+<mat-card>
+    <mat-card-header>
+
+
+
+        <a mat-list-item
+           [routerLink]="link.url">
+
+            {{link.title}}
+        </a>
+
+
+    </mat-card-header>
+
+    <mat-card-content>
+        <mat-list dense>
+            <ng-container *ngFor="let so of this.operations">
+                <app-scheduled-operation-list-element [so]="so"
+                                                      [displayButton]="false"
+                                                      [compact]="true">
+                </app-scheduled-operation-list-element>
+            </ng-container>
+        </mat-list>
+    </mat-card-content>
+
+
+</mat-card>

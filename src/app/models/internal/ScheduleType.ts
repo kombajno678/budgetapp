@@ -16,7 +16,7 @@ export function getScheduleTypeName(type: ScheduleType) {
     case ScheduleType.annually:
       return 'Annually';
     default:
-      return '(unknown)';
+      return '';
   }
 
 }

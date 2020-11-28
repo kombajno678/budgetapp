@@ -26,4 +26,23 @@ export class FixedPointsService extends AbstractResourceService<FixedPoint> {
   constructor(public http: HttpClient) {
     super(pathSuffix, customMap, http);
   }
+
+  getLatest() {
+    return this.getAllOnce().pipe(
+      map(fps => {
+        let latestFixedPoint = null;
+        fps.forEach(fp => {
+          if (!latestFixedPoint) {
+            latestFixedPoint = fp;
+          } else {
+            //if fp date newer than latestFixedPoint date then replace
+            if (fp.when > latestFixedPoint.when) {
+              latestFixedPoint = fp;
+            }
+          }
+        })
+        return latestFixedPoint;
+      })
+    )
+  }
 }

@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, of, Subject } from 'rxjs';
+import { combineLatest, Observable, of, Subject } from 'rxjs';
 import { catchError, finalize, map, share, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 
@@ -10,6 +10,9 @@ import { ScheduledOperationsService } from './scheduled-operations.service';
 import { BudgetOperationService } from './budget-operation.service';
 import { OperationSchedulesService } from './operation-schedules.service';
 import { ScheduleType } from 'src/app/models/internal/ScheduleType';
+import { OperationSchedule } from 'src/app/models/OperationSchedule';
+import { Globals } from 'src/app/Globals';
+import { PredicionPoint } from 'src/app/models/internal/PredictionPoint';
 
 @Injectable({
   providedIn: 'root'
@@ -56,6 +59,80 @@ export class BudgetService {
       catchError(this.handleError<any>(path, null))
     )
   }
+
+
+
+
+
+  generatePredictionsBetweenDates(start: Date, end: Date): Observable<PredicionPoint[]> {
+
+    let daysRange = Globals.getDaysInRange(start, end);
+    let predictions = daysRange.map(p => new PredicionPoint(p, 0));
+    let predictions$: Subject<PredicionPoint[]> = new Subject<PredicionPoint[]>();
+
+    combineLatest([
+      this.fixedPointsService.getAll(),
+      this.operationsService.getAll()
+    ]).subscribe(r => {
+      if (r[0] && r[1]) {
+        /*
+        let fixedPoints = r[0];
+        fixedPoints.forEach(fp => {
+          predictions.filter(p => (p.date >= fp.when)).forEach(pp => pp.value = fp.exact_value);
+          predictions.filter(p => Globals.compareDates(p.date, fp.when)).forEach(p => p.fixedPoint = fp);
+        });
+        let operations = r[1];
+        operations.forEach(op => {
+          predictions.filter(pr => (pr.date >= op.when)).forEach(pp => pp.value = pp.value + op.value);
+          predictions.filter(p => Globals.compareDates(p.date, op.when)).forEach(p => p.operations.push(op));
+        });
+        for (let i = 1; i < predictions.length; i++) {
+          predictions[i].delta = predictions[i].value - predictions[i - 1].value;
+        }
+        */
+        let fixedPoints = r[0];
+        let operations = r[1];
+
+        fixedPoints = fixedPoints.filter(fp => fp.when >= start && fp.when <= end);
+        operations = operations.filter(op => op.when >= start && op.when <= end);
+
+        fixedPoints.forEach(fp => {
+          predictions.find(p => Globals.compareDates(p.date, fp.when)).fixedPoint = fp;
+        });
+
+        operations.forEach(op => {
+          predictions.find(p => Globals.compareDates(p.date, op.when)).operations.push(op);
+        });
+
+
+
+        for (let i = 0; i < predictions.length; i++) {
+
+
+
+          predictions[i].delta = predictions[i].operations.length > 0 ? predictions[i].operations.map(op => op.value).reduce((p, c, i, a) => p = p + c) : 0;
+          predictions[i].value = (i > 0 ? predictions[i - 1].value : 0) + predictions[i].delta;
+
+          if (predictions[i].fixedPoint) {
+            predictions[i].value = predictions[i].fixedPoint.exact_value;
+          }
+
+          /*
+          if(i > 0){
+            predictions[i].delta = predictions[i].value - predictions[i - 1].value;
+          }
+          */
+        }
+
+
+        predictions$.next(predictions);
+      }
+    })
+
+    return predictions$.asObservable();
+
+  }
+
 
 
 
@@ -114,40 +191,9 @@ export class BudgetService {
             console.log('iterating through ' + days.length + ' days ...');
             days.forEach(d => {
               //let thisDaysOperations = operations.filter(operation => operation.when.getTime() === d.getTime());
-              let scheduleMatches: boolean = false;
 
               sos.forEach(so => {
-                //console.log('so.schedule.scheduleType = ', so.schedule.scheduleType);
-                switch (so.schedule.scheduleType) {
-                  case ScheduleType.daily:
-                    //scheduled operation is on daily schedule, 
-                    scheduleMatches = true;
-                    break;
-                  case ScheduleType.weekly:
-                    //check day of week
-                    scheduleMatches = (so.schedule.day_of_week.includes(d.getDay()));
-                    // if (!scheduleMatches) {
-                    //   console.log(d.getDay(), 'not in ', so.schedule.day_of_week)
-                    // }
-                    break;
-                  case ScheduleType.monthly:
-                    //check day of month
-                    scheduleMatches = (so.schedule.day_of_month.includes(d.getDate()));
-                    // if (!scheduleMatches) {
-                    //   console.log(d.getDate(), 'not in ', so.schedule.day_of_month)
-                    // }
-                    break;
-                  case ScheduleType.annually:
-                    //check day of month and month
-                    scheduleMatches = (so.schedule.day_of_month.includes(d.getDate()) && so.schedule.month.includes(d.getMonth()));
-                    // if (!scheduleMatches) {
-                    //   console.log(d.getDate(), 'not in ', so.schedule.day_of_month)
-                    //   console.log(d.getMonth(), 'not in ', so.schedule.month)
-                    // }
-                    break;
-                  default:
-                    break;
-                }
+                let scheduleMatches: boolean = OperationSchedule.matchSceduleWithDate(so.schedule, d);
                 if (scheduleMatches) {
                   //proceed to check if operation from this schedule alredy exists
                   if (operations.find(op => this.compareDates(op.when, d) && op.scheduled_operation_id === so.id)) {

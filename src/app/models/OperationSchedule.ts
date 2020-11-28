@@ -37,6 +37,27 @@ export class OperationSchedule extends AbstractResource {
 
     }
 
+    static matchSceduleWithDate(schedule: OperationSchedule, date: Date): boolean {
+        switch (schedule.scheduleType) {
+            case ScheduleType.daily:
+                //scheduled operation is on daily schedule, 
+                return true;
+            case ScheduleType.weekly:
+                //check day of week
+                return (schedule.day_of_week.includes(date.getDay()));
+            case ScheduleType.monthly:
+                //check day of month
+                return (schedule.day_of_month.includes(date.getDate()));
+            case ScheduleType.annually:
+                //check day of month and month
+                return (schedule.day_of_month.includes(date.getDate()) && schedule.month.includes(date.getMonth()));
+            default:
+                return false;
+        }
+    }
+
+
+
     static initScheduleType(schedule: OperationSchedule): void {
         if (
             schedule.year?.length === 0 &&

@@ -99,14 +99,14 @@ export class CreateNewOperationDialogComponent implements OnInit {
     })
   }
 
-  ngAfterViewInit() {
-    if (this.operation.value < 0) {
-      this.operationTypeOption.value = 'expense';
-      this.operationTypeOption.value = -this.operationTypeOption.value;
+  ngOnInit(): void {
 
-    } else {
-      this.operationTypeOption.value = 'income';
-    }
+
+
+  }
+
+  ngAfterViewInit() {
+
   }
 
   onSave() {
@@ -138,12 +138,7 @@ export class CreateNewOperationDialogComponent implements OnInit {
 
   }
 
-  ngOnInit(): void {
 
-    console.log('operationTypeOption = ', this.operationTypeOption);
-
-
-  }
 
 
 

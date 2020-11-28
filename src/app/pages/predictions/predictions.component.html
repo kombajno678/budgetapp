@@ -5,10 +5,48 @@
         </div>
     </div>
     <div class="row">
-        <mat-list>
-            <mat-list-item *ngFor="let pp of predictions$ | async">
-                <div mat-line>{{pp.date.toISOString().substr(0, 10)}} - {{pp.value}}</div>
-            </mat-list-item>
-        </mat-list>
+
+
+
+
+        <mat-accordion class="example-headers-align"
+                       multi>
+
+
+
+            <mat-expansion-panel *ngFor="let pp of predictions$ | async">
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        {{pp.date.toISOString().substr(0, 10)}} - {{pp.value}}
+                    </mat-panel-title>
+                    <mat-panel-description>
+                        {{ pp.delta }}
+                    </mat-panel-description>
+                </mat-expansion-panel-header>
+
+
+                <div *ngIf="pp.fixedPoint">
+                    fixed point : {{ pp.fixedPoint.exact_value }}
+                </div>
+
+
+                <mat-list>
+                    <div mat-subheader>operations</div>
+                    <mat-list-item *ngFor="let op of pp.operations">
+                        <app-operation-list-element [op]="op"
+                                                    [compact]="true"
+                                                    [displayButton]="true">...</app-operation-list-element>
+                    </mat-list-item>
+                </mat-list>
+
+            </mat-expansion-panel>
+
+
+
+
+
+        </mat-accordion>
+
+
     </div>
 </div>

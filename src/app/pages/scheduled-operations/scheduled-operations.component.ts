@@ -9,6 +9,8 @@ import { combineLatest, forkJoin, merge, zip } from 'rxjs';
 import { getScheduleTypeName, ScheduleType } from 'src/app/models/internal/ScheduleType';
 
 @Component({
+  selector: 'app-scheduled-operations',
+
   templateUrl: './scheduled-operations.component.html',
   styleUrls: ['./scheduled-operations.component.scss']
 })

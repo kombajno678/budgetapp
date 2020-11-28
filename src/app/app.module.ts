@@ -47,6 +47,10 @@ import { ChartsModule } from 'ng2-charts';
 import { PredictionChartComponent } from './components/charts/predictions/prediction-chart/prediction-chart.component';
 import { FixedpointsChartComponent } from './components/charts/fixedpoints/fixedpoints-chart/fixedpoints-chart.component';
 import { ScheduledOperationListElementComponent } from './components/list-elements/scheduled-operation-list-element/scheduled-operation-list-element.component';
+import { OperationListElementComponent } from './components/list-elements/operation-list-element/operation-list-element.component';
+import { OperationsCardComponent } from './components/dashboard-cards/operations-card/operations-card.component';
+import { ScheduledOperationsCardComponent } from './components/dashboard-cards/scheduled-operations-card/scheduled-operations-card.component';
+import { CurrentPredictionCardComponent } from './components/dashboard-cards/current-prediction-card/current-prediction-card.component';
 
 
 function tokenGetter(): string {
@@ -72,7 +76,11 @@ function tokenGetter(): string {
     PredictionsComponent,
     PredictionChartComponent,
     FixedpointsChartComponent,
-    ScheduledOperationListElementComponent
+    ScheduledOperationListElementComponent,
+    OperationListElementComponent,
+    OperationsCardComponent,
+    ScheduledOperationsCardComponent,
+    CurrentPredictionCardComponent
 
   ],
   entryComponents: [CustomSnackbarComponent],

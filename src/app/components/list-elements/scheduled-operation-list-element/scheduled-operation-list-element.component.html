@@ -5,21 +5,43 @@
 
 
     </mat-icon>
-    <div mat-line>
-        <span class="mat-title">{{so.value}}</span>
-        {{ so.active ? '' : '(Disabled)' }}
-
-    </div>
-    <div mat-line
-         class="">
-        <span class="mat-subheading-2">{{so.name}}</span>
-        <span class="schedule-desc">{{ this.getScheduleTypeDescription(so.schedule.scheduleType) }}</span>
 
 
-    </div>
+
+    <ng-container *ngIf="!compact ; else compact">
+        <div mat-line>
+            <span class="mat-title">{{so.value < 0 ? -so.value : so.value}}</span>
+            {{ so.active ? '' : '(Disabled)' }}
+
+        </div>
+        <div mat-line
+             class="">
+            <span class="mat-subheading-2">{{so.name}}</span>
+            <span class="schedule-desc">{{ this.getScheduleTypeDescription(so.schedule.scheduleType) }}</span>
+
+
+        </div>
+
+    </ng-container>
+
+
+    <ng-template #compact>
+        <div mat-line>
+            <span class="mat-title">{{so.value < 0 ? -so.value : so.value}}</span>{{ so.active ? '' : '(Disabled)' }}
+            <span class="mat-subheading-2">{{so.name}}</span>
+            <span class="schedule-desc">{{ this.getScheduleTypeDescription(so.schedule?.scheduleType) }}</span>
+
+
+        </div>
+
+    </ng-template>
+
+
+
 
     <ng-container *ngIf="displayButton">
         <button mat-icon-button
+                type="button"
                 [matMenuTriggerFor]="menu"
                 aria-label="Example icon-button with a menu">
             <mat-icon>more_vert</mat-icon>
@@ -30,6 +52,7 @@
 
 
             <button mat-menu-item
+                    type="button"
                     color="warn"
                     (click)="onDelete.emit(so)">
                 <mat-icon>delete</mat-icon>
@@ -40,6 +63,7 @@
 
 
             <button mat-menu-item
+                    type="button"
                     color="warn"
                     (click)="changeActiveState()">
                 <mat-icon>{{ so.active ? 'pause' : 'play_arrow' }}</mat-icon>
@@ -48,6 +72,7 @@
 
 
             <button mat-menu-item
+                    type="button"
                     color="accent"
                     (click)="onModify.emit(so)">
                 <mat-icon>edit</mat-icon>
