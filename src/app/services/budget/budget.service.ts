@@ -102,7 +102,7 @@ export class BudgetService {
         sos = sos.filter(so => so.active && !so.hidden);
         this.schedulesService.getAllOnce().subscribe(schedules => {
           if (!schedules || schedules.length == 0) return;
-          console.log('schedules : ', schedules);
+          //console.log('schedules : ', schedules);
           sos.forEach(so => so.schedule = schedules.find(s => s.id === so.schedule_id));
           sos = sos.filter(so => so.schedule);
 
@@ -117,7 +117,7 @@ export class BudgetService {
               let scheduleMatches: boolean = false;
 
               sos.forEach(so => {
-                console.log('so.schedule.scheduleType = ', so.schedule.scheduleType);
+                //console.log('so.schedule.scheduleType = ', so.schedule.scheduleType);
                 switch (so.schedule.scheduleType) {
                   case ScheduleType.daily:
                     //scheduled operation is on daily schedule, 
@@ -126,24 +126,24 @@ export class BudgetService {
                   case ScheduleType.weekly:
                     //check day of week
                     scheduleMatches = (so.schedule.day_of_week.includes(d.getDay()));
-                    if (!scheduleMatches) {
-                      console.log(d.getDay(), 'not in ', so.schedule.day_of_week)
-                    }
+                    // if (!scheduleMatches) {
+                    //   console.log(d.getDay(), 'not in ', so.schedule.day_of_week)
+                    // }
                     break;
                   case ScheduleType.monthly:
                     //check day of month
                     scheduleMatches = (so.schedule.day_of_month.includes(d.getDate()));
-                    if (!scheduleMatches) {
-                      console.log(d.getDate(), 'not in ', so.schedule.day_of_month)
-                    }
+                    // if (!scheduleMatches) {
+                    //   console.log(d.getDate(), 'not in ', so.schedule.day_of_month)
+                    // }
                     break;
                   case ScheduleType.annually:
                     //check day of month and month
                     scheduleMatches = (so.schedule.day_of_month.includes(d.getDate()) && so.schedule.month.includes(d.getMonth()));
-                    if (!scheduleMatches) {
-                      console.log(d.getDate(), 'not in ', so.schedule.day_of_month)
-                      console.log(d.getMonth(), 'not in ', so.schedule.month)
-                    }
+                    // if (!scheduleMatches) {
+                    //   console.log(d.getDate(), 'not in ', so.schedule.day_of_month)
+                    //   console.log(d.getMonth(), 'not in ', so.schedule.month)
+                    // }
                     break;
                   default:
                     break;
@@ -152,14 +152,14 @@ export class BudgetService {
                   //proceed to check if operation from this schedule alredy exists
                   if (operations.find(op => this.compareDates(op.when, d) && op.scheduled_operation_id === so.id)) {
                     //no need, already exists
-                    console.log(d, so, 'already exists');
+                    //console.log(d, so, 'already exists');
                   } else {
-                    console.log('operationsToAdd = ' + operationsToAdd.length);
+                    //console.log('operationsToAdd = ' + operationsToAdd.length);
                     operationsToAdd.push(new BudgetOperation(so.name, so.value, d, so.id));
 
                   }
                 } else {
-                  console.log(d, so, ' schedule not match');
+                  //console.log(d, so, ' schedule not match');
                 }
 
               })
@@ -167,16 +167,16 @@ export class BudgetService {
 
             //gone through all days, now add operations
             console.log('execcuting operationsToAdd = ' + operationsToAdd.length);
-            operationsToAdd.forEach(newOp => {
-              this.operationsService.create(newOp, false).subscribe(r => {
-                if (r) {
-                  console.log('generator: created ', newOp)
-                } else {
-                  console.error('generator:  error ', newOp)
-                }
-              });
+
+
+
+            this.operationsService.createMany(operationsToAdd).subscribe(r => {
+              if (r) {
+                console.log('generator: created ', operationsToAdd.length)
+              } else {
+                console.error('generator:  error ')
+              };
             })
-            console.log('done');
           })
         })
       })

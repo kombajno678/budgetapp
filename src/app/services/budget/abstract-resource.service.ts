@@ -91,8 +91,19 @@ export abstract class AbstractResourceService<T extends AbstractResource> implem
     );
   }
 
-  create(object: T, refresh: boolean = true, log: boolean = true) {
+  create(object: T, refresh: boolean = true, log: boolean = true): Observable<T> {
     return this.http.post<T>(this.path, object).pipe(
+      tap(_ => {
+        if (log) this.log(this.path);
+        if (refresh) this.refreshResource();
+      }),
+      catchError(this.handleError<any>(this.path, null)),
+    );
+  }
+
+
+  createMany(objects: T[], refresh: boolean = true, log: boolean = true): Observable<T[]> {
+    return this.http.post<T[]>(this.path, objects).pipe(
       tap(_ => {
         if (log) this.log(this.path);
         if (refresh) this.refreshResource();
