@@ -3,75 +3,76 @@
         {{ op.value >= 0 ? 'add' : 'remove'}}
     </mat-icon>
 
-    <ng-container *ngIf="!compact ; else compact">
+
+
+    <div mat-line
+         *ngIf="!compact">
+        <span class="mat-title">{{op.value < 0 ? -op.value : op.value}} </span>
+        <span *ngIf="op.scheduled_operation_id">
+            <mat-icon>
+                schedule
+            </mat-icon>
+        </span>
+    </div>
+
+    <div mat-line
+         *ngIf="!compact">
+        <span class="mat-subheading-2"> {{op.name}}</span>
+
+    </div>
 
 
 
-        <div mat-line>
-            <span class="mat-title">{{op.value < 0 ? -op.value : op.value}} </span>
-        </div>
-        <div mat-line
-             class="">
-            <span class="mat-subheading-2"> {{op.name}}</span>
-            <span class="schedule-desc">{{ op.scheduled_operation_id }}</span>
-        </div>
+    <div mat-line
+         *ngIf="compact">
+        <span class="mat-title">{{op.value < 0 ? -op.value : op.value}}</span>
+        <span *ngIf="op.scheduled_operation_id">
+            <mat-icon>
+                schedule
+            </mat-icon>
+        </span>
+        {{' '}}
+        <span class="mat-subheading-2">{{op.name}}</span>
 
+    </div>
 
-    </ng-container>
-
-
-
-    <ng-template #compact>
-        <div mat-line>
-            <span class="mat-title">{{op.value < 0 ? -op.value : op.value}}</span>
-            {{' '}}
-            <span class="mat-subheading-2">{{op.name}}</span>
-        </div>
-
-    </ng-template>
 
 
     <ng-container *ngIf="displayButton">
+        <div>
+            <button mat-icon-button
+                    [matMenuTriggerFor]="menu"
+                    aria-label="menu">
+                <mat-icon>more_vert</mat-icon>
+            </button>
+
+
+
+            <mat-menu #menu="matMenu">
+
+                <button mat-menu-item
+                        color="accent"
+                        (click)="onModify.emit(op)">
+                    <mat-icon>edit</mat-icon>
+                    <span>Modify</span>
+                </button>
+
+                <button mat-menu-item
+                        color="warn"
+                        (click)="onDelete.emit(op)">
+                    <mat-icon>delete</mat-icon>
+                    <span>Delete</span>
+                </button>
+
+
+
+            </mat-menu>
+        </div>
     </ng-container>
 
-    <button mat-button
-            type="button"
-            (click)="test()">
-        test
-    </button>
-    <button type="button"
-            (click)="test()">
-        test
-    </button>
-
-
-    <button mat-icon-button
-            [matMenuTriggerFor]="menu"
-            aria-label="menu">
-        <mat-icon>more_vert</mat-icon>
-    </button>
 
 
 
-    <mat-menu #menu="matMenu">
-
-
-        <button mat-menu-item
-                color="warn"
-                (click)="onDelete.emit(op)">
-            <mat-icon>delete</mat-icon>
-            <span>Delete</span>
-        </button>
-
-
-        <button mat-menu-item
-                color="accent"
-                (click)="onModify.emit(op)">
-            <mat-icon>edit</mat-icon>
-            <span>Modify</span>
-        </button>
-
-    </mat-menu>
 
 
 

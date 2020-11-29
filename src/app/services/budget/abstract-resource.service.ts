@@ -20,7 +20,7 @@ export abstract class AbstractResourceService<T extends AbstractResource> implem
   pathSuffix: string;
 
   public resource: BehaviorSubject<T[]>;
-  public mapWhenRefreshing = (resource) => { console.log('default map'); return resource };
+  public mapWhenRefreshing = (resource) => resource;
 
   constructor(pathSuffix: string, customMap, public http: HttpClient) {
     this.pathSuffix = pathSuffix;
@@ -40,13 +40,7 @@ export abstract class AbstractResourceService<T extends AbstractResource> implem
   }
 
   refreshResource() {
-
-    this.http.get<T[]>(this.path).pipe(
-      tap(_ => this.log(this.path)),
-      map(this.mapWhenRefreshing),
-      catchError(this.handleError<any>(this.path, null)),
-    ).subscribe(result => this.resource.next(result))
-
+    this.getAllOnce().subscribe(result => this.resource.next(result))
   }
 
 
@@ -71,6 +65,10 @@ export abstract class AbstractResourceService<T extends AbstractResource> implem
     );
   }
 
+
+
+
+
   delete(object: T, refresh: boolean = true, log: boolean = true) {
     return this.http.delete<T>(this.path + '/' + object.id).pipe(
       tap(_ => {
@@ -81,6 +79,10 @@ export abstract class AbstractResourceService<T extends AbstractResource> implem
     )
   }
 
+
+
+
+
   update(object: T, refresh: boolean = true, log: boolean = true) {
     return this.http.put<T>(this.path + '/' + object.id, object).pipe(
       tap(_ => {
@@ -90,6 +92,10 @@ export abstract class AbstractResourceService<T extends AbstractResource> implem
       catchError(this.handleError<any>(this.path, null)),
     );
   }
+
+
+
+
 
   create(object: T, refresh: boolean = true, log: boolean = true): Observable<T> {
     return this.http.post<T>(this.path, object).pipe(

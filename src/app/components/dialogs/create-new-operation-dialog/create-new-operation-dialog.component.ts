@@ -3,6 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatButtonToggleGroup } from '@angular/material/button-toggle';
 import { JAN } from '@angular/material/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import moment, { Moment } from 'moment';
 import { BudgetOperation } from 'src/app/models/BudgetOperation';
 
 
@@ -125,21 +126,25 @@ export class CreateNewOperationDialogComponent implements OnInit {
 
     if (this.operationDateOption.value == 'today') {
       this.operation.when = new Date();
+      this.operation.when.setUTCHours(0, 0, 0, 0);
+      let temp: Moment = moment(this.operation.when);
+      temp.add(12, 'hours');
+      this.operation.when = temp.toDate();
+
     } else if (this.operationDateOption.value == 'yesterday') {
       let yesterday = new Date();
       yesterday.setDate(yesterday.getDate() - 1);
       this.operation.when = yesterday;
+      this.operation.when.setUTCHours(0, 0, 0, 0);
+      let temp: Moment = moment(this.operation.when);
+      temp.add(12, 'hours');
+      this.operation.when = temp.toDate();
+
     } else {
-      this.operation.when = this.form.controls.when.value;
+      this.operation.when = this.form.controls.when.value.add(12, 'hours');
     }
-
+    console.log(this.operation.when);
     this.dialogRef.close(this.operation);
-
-
   }
-
-
-
-
 
 }

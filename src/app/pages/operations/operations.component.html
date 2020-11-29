@@ -29,28 +29,9 @@
 
 
 
-        <!--
-        <form [formGroup]="form"
-              (submit)="onFormSubmit()">
-            <mat-form-field appearance="fill">
-                <mat-label>Enter a date range</mat-label>
-                <mat-date-range-input [rangePicker]="picker">
-                    <input matStartDate
-                           formControlName="startDate"
-                           placeholder="Start date">
-                    <input matEndDate
-                           formControlName="endDate"
-                           placeholder="End date">
-                </mat-date-range-input>
-                <mat-datepicker-toggle matSuffix
-                                       [for]="picker"></mat-datepicker-toggle>
-                <mat-date-range-picker #picker></mat-date-range-picker>
-            </mat-form-field>
-            <button mat-button>
-                Get operations
-            </button>
-        </form>
-        -->
+
+
+
 
 
 
@@ -61,109 +42,95 @@
 <div class="row no-gutters">
     <div class="col">
 
-        <mat-list>
 
-            <ng-container *ngFor="let d of getDistinctDays()">
-                <div mat-subheader>{{ d.toISOString().substr(0, 10)}}</div>
-                <ng-container *ngFor="let op of this.getOperationsByDate(d)">
-                    <!--
+        <mat-button-toggle-group name="rangeType"
+                                 #rangeTypeGroup="matButtonToggleGroup"
+                                 aria-label="rangeType"
+                                 (change)="onRangeTypeChange($event)">
+            <mat-button-toggle value="month">Last month</mat-button-toggle>
+            <mat-button-toggle value="week"
+                               checked>Last week</mat-button-toggle>
+            <mat-button-toggle value="custom">Custom</mat-button-toggle>
+        </mat-button-toggle-group>
+
+
+
+        <form [formGroup]="form"
+              (submit)="onFormSubmit()">
+            <ng-container *ngIf="rangeTypeGroup.value == 'custom'">
+                <mat-form-field appearance="fill">
+                    <mat-label>Enter a date range</mat-label>
+                    <mat-date-range-input [rangePicker]="picker">
+                        <input matStartDate
+                               formControlName="startDate"
+                               placeholder="Start date">
+                        <input matEndDate
+                               formControlName="endDate"
+                               placeholder="End date">
+                    </mat-date-range-input>
+                    <mat-datepicker-toggle matSuffix
+                                           [for]="picker"></mat-datepicker-toggle>
+                    <mat-date-range-picker #picker></mat-date-range-picker>
+                </mat-form-field>
+
+            </ng-container>
+
+
+
+        </form>
+
+
+
+    </div>
+    <div class="col">
+        <mat-button-toggle-group name="operationsType"
+                                 #operationsTypeGroup="matButtonToggleGroup"
+                                 aria-label="operationsType"
+                                 (change)="onOperationsTypeChange($event)">
+            <mat-button-toggle value="all"
+                               checked>All</mat-button-toggle>
+            <mat-button-toggle value="income">Income</mat-button-toggle>
+            <mat-button-toggle value="expenses">Expenses</mat-button-toggle>
+        </mat-button-toggle-group>
+    </div>
+</div>
+
+
+<div class="row no-gutters">
+    <div class="col">
+
+        <ng-container *ngIf="(this.displayedOperations$ | async) as list">
+            <div class="mat-caption">
+                Displaying {{ list.length }} {{ list.length == 1 ? 'operation' : 'operations'}}
+                from : {{this.startDate.toISOString().substr(0, 10)}}
+                to : {{this.endDate.toISOString().substr(0, 10)}}
+
+            </div>
+            <mat-list dense>
+
+
+                <ng-container *ngFor="let op of list; index as i; first as isFirst">
+
+                    <ng-container *ngIf="isFirst || !compareDates(op.when, list[i-1].when)">
+                        <mat-divider *ngIf="!isFirst"></mat-divider>
+                        <div mat-subheader>{{ op.when.toISOString().substr(0, 10)}}</div>
+
+                    </ng-container>
                     <app-operation-list-element [op]="op"
+                                                [compact]="false"
                                                 (onDelete)="deleteOperation($event)"
                                                 (onModify)="modifyOperation($event)">
                         ...
                     </app-operation-list-element>
-
--->
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                    <mat-list-item>
-                        <mat-icon mat-list-icon>
-                            {{ op.value >= 0 ? 'add' : 'remove'}}
-                        </mat-icon>
-
-
-
-
-
-                        <div mat-line>
-                            <span class="mat-title">{{op.value < 0 ? -op.value : op.value}} </span>
-                        </div>
-                        <div mat-line
-                             class="">
-                            <span class="mat-subheading-2"> {{op.name}}</span>
-                            <span class="schedule-desc">{{ op.scheduled_operation_id }}</span>
-                        </div>
-
-
-                        <button mat-icon-button
-                                type="button"
-                                [matMenuTriggerFor]="menu"
-                                aria-label="menu">
-                            <mat-icon>more_vert</mat-icon>
-                        </button>
-
-
-
-                        <mat-menu #menu="matMenu">
-
-
-                            <button mat-menu-item
-                                    type="button"
-                                    color="warn"
-                                    (click)="deleteOperation(op)">
-                                <mat-icon>delete</mat-icon>
-                                <span>Delete</span>
-                            </button>
-
-
-                            <button mat-menu-item
-                                    type="button"
-                                    color="accent"
-                                    (click)="modifyOperation(op)">
-                                <mat-icon>edit</mat-icon>
-                                <span>Modify</span>
-                            </button>
-
-                        </mat-menu>
-
-
-
-                    </mat-list-item>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                 </ng-container>
-            </ng-container>
+
+            </mat-list>
+        </ng-container>
 
 
-        </mat-list>
+
+
+
+
     </div>
 </div>

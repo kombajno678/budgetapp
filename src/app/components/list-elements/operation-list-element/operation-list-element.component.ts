@@ -15,7 +15,7 @@ export class OperationListElementComponent implements OnInit, OnDestroy {
   @Input()
   public displayButton: boolean = true;
   @Input()
-  public compact: boolean = false;
+  public compact: boolean;
 
   @Output()
   onDelete: EventEmitter<BudgetOperation> = new EventEmitter<BudgetOperation>();

@@ -1,37 +1,27 @@
 <mat-list-item>
     <mat-icon mat-list-icon>
-
         {{ so.value >= 0 ? 'add' : 'remove'}}
-
-
     </mat-icon>
-
 
 
     <ng-container *ngIf="!compact ; else compact">
         <div mat-line>
             <span class="mat-title">{{so.value < 0 ? -so.value : so.value}}</span>
             {{ so.active ? '' : '(Disabled)' }}
-
         </div>
         <div mat-line
              class="">
             <span class="mat-subheading-2">{{so.name}}</span>
             <span class="schedule-desc">{{ this.getScheduleTypeDescription(so.schedule.scheduleType) }}</span>
-
-
         </div>
 
     </ng-container>
-
 
     <ng-template #compact>
         <div mat-line>
             <span class="mat-title">{{so.value < 0 ? -so.value : so.value}}</span>{{ so.active ? '' : '(Disabled)' }}
             <span class="mat-subheading-2">{{so.name}}</span>
             <span class="schedule-desc">{{ this.getScheduleTypeDescription(so.schedule?.scheduleType) }}</span>
-
-
         </div>
 
     </ng-template>
@@ -50,17 +40,13 @@
 
         <mat-menu #menu="matMenu">
 
-
             <button mat-menu-item
                     type="button"
-                    color="warn"
-                    (click)="onDelete.emit(so)">
-                <mat-icon>delete</mat-icon>
-                <span>Delete</span>
+                    color="accent"
+                    (click)="onModify.emit(so)">
+                <mat-icon>edit</mat-icon>
+                <span>Modify</span>
             </button>
-
-
-
 
             <button mat-menu-item
                     type="button"
@@ -70,13 +56,12 @@
                 <span> {{ so.active ? 'Disable' : 'Activate' }}</span>
             </button>
 
-
             <button mat-menu-item
                     type="button"
-                    color="accent"
-                    (click)="onModify.emit(so)">
-                <mat-icon>edit</mat-icon>
-                <span>Modify</span>
+                    color="warn"
+                    (click)="onDelete.emit(so)">
+                <mat-icon>delete</mat-icon>
+                <span>Delete</span>
             </button>
 
         </mat-menu>

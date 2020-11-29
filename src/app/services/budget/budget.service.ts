@@ -65,31 +65,22 @@ export class BudgetService {
 
 
   generatePredictionsBetweenDates(start: Date, end: Date): Observable<PredicionPoint[]> {
+    console.log('GENERATOR ionvoked ');
 
-    let daysRange = Globals.getDaysInRange(start, end);
-    let predictions = daysRange.map(p => new PredicionPoint(p, 0));
     let predictions$: Subject<PredicionPoint[]> = new Subject<PredicionPoint[]>();
+    let daysRange = Globals.getDaysInRange(start, end);
 
     combineLatest([
       this.fixedPointsService.getAll(),
-      this.operationsService.getAll()
+      this.operationsService.getAll(),
+      this.scheduledOperations.getAll(),
+      this.schedulesService.getAll(),
+
     ]).subscribe(r => {
-      if (r[0] && r[1]) {
-        /*
-        let fixedPoints = r[0];
-        fixedPoints.forEach(fp => {
-          predictions.filter(p => (p.date >= fp.when)).forEach(pp => pp.value = fp.exact_value);
-          predictions.filter(p => Globals.compareDates(p.date, fp.when)).forEach(p => p.fixedPoint = fp);
-        });
-        let operations = r[1];
-        operations.forEach(op => {
-          predictions.filter(pr => (pr.date >= op.when)).forEach(pp => pp.value = pp.value + op.value);
-          predictions.filter(p => Globals.compareDates(p.date, op.when)).forEach(p => p.operations.push(op));
-        });
-        for (let i = 1; i < predictions.length; i++) {
-          predictions[i].delta = predictions[i].value - predictions[i - 1].value;
-        }
-        */
+      if (r.every(x => x)) {
+        console.log('GENERATOR START ');
+
+        let predictions = daysRange.map(p => new PredicionPoint(p, 0));
         let fixedPoints = r[0];
         let operations = r[1];
 
@@ -105,31 +96,45 @@ export class BudgetService {
         });
 
 
+        let today = new Date();
+        if (end > today) {
+          let scheduledOps = r[2];
+          let schedules = r[3];
+          //consider futur operations
+          let futureOperations = [];
+
+          scheduledOps.forEach(so => so.schedule = schedules.find(s => s.id === so.schedule_id));
+
+
+          daysRange.filter(d => d > today).forEach(d => {
+            scheduledOps.forEach(so => {
+              if (OperationSchedule.matchSceduleWithDate(so.schedule, d)) {
+                futureOperations.push(new BudgetOperation(so.name, so.value, d, so.id));
+              }
+            })
+          });
+
+
+          futureOperations.forEach(op => {
+            predictions.find(p => Globals.compareDates(p.date, op.when)).operations.push(op);
+          });
+
+        }
 
         for (let i = 0; i < predictions.length; i++) {
-
-
-
           predictions[i].delta = predictions[i].operations.length > 0 ? predictions[i].operations.map(op => op.value).reduce((p, c, i, a) => p = p + c) : 0;
           predictions[i].value = (i > 0 ? predictions[i - 1].value : 0) + predictions[i].delta;
-
           if (predictions[i].fixedPoint) {
             predictions[i].value = predictions[i].fixedPoint.exact_value;
           }
-
-          /*
-          if(i > 0){
-            predictions[i].delta = predictions[i].value - predictions[i - 1].value;
-          }
-          */
         }
-
-
+        console.log('GENERATOR NEXT ', predictions.length);
         predictions$.next(predictions);
       }
     })
 
-    return predictions$.asObservable();
+    console.log('GENERATOR RETURN ', predictions$);
+    return predictions$;
 
   }
 

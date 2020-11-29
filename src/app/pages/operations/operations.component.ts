@@ -7,14 +7,14 @@ import { BudgetOperation } from 'src/app/models/BudgetOperation';
 
 import { Globals } from 'src/app/Globals';
 
-
-/*
 import { ScheduledBudgetOperation } from 'src/app/models/ScheduledBudgetOperation';
 import { CreateNewScheduledOperationDialogComponent } from 'src/app/components/dialogs/create-new-scheduled-operation-dialog/create-new-scheduled-operation-dialog.component'
 import { getLocaleTimeFormat } from '@angular/common';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import moment from 'moment';
-*/
+import { MatButtonToggleChange } from '@angular/material/button-toggle';
+import { BehaviorSubject } from 'rxjs';
+
 @Component({
   selector: 'app-operations',
   templateUrl: './operations.component.html',
@@ -23,31 +23,62 @@ import moment from 'moment';
 export class OperationsComponent implements OnInit, AfterViewInit {
 
   allOperations: BudgetOperation[];
+  displayedOperations$: BehaviorSubject<BudgetOperation[]>;
 
-  distinctDays: Set<Date>;
+  //distinctDays: Set<Date>;
 
   startDate: Date;
   endDate: Date;
 
-  howManyDays = 5;
+  filterShowIncome: boolean = true;
+  filtershowExponses: boolean = true;
 
-  //form: FormGroup;
+  dateRangeDynamic: boolean = false;
+
+  //howManyDays = 5;
+
+  public compareDates = Globals.compareDates;
+
+
+  form: FormGroup;
 
 
   constructor(
     private operationService: BudgetOperationService,
     private budgetService: BudgetService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private fb: FormBuilder
   ) {
+
+
+
+
+  }
+
+  setDateRangeWeek() {
+    //console.log('setDateRangeWeek');
+
     this.endDate = new Date();
-    this.endDate.setUTCHours(0, 0, 0, 0);
+    this.endDate.setUTCHours(12, 0, 0, 0);
 
     this.startDate = new Date(this.endDate);
-    this.startDate.setDate(this.startDate.getDate() - this.howManyDays);
+    this.startDate.setDate(this.startDate.getDate() - 7);
+
+    this.form.controls.endDate.setValue(this.endDate);
+    this.form.controls.startDate.setValue(this.startDate);
+  }
+  setDateRageMonth() {
+    //console.log('setDateRageMonth');
 
 
+    this.endDate = new Date();
+    this.endDate.setUTCHours(12, 0, 0, 0);
 
+    this.startDate = new Date(this.endDate);
+    this.startDate.setMonth(this.startDate.getMonth() - 1);
 
+    this.form.controls.endDate.setValue(this.endDate);
+    this.form.controls.startDate.setValue(this.startDate);
   }
 
   getDaysInRange = function (startDate: Date, endDate: Date) {
@@ -59,20 +90,86 @@ export class OperationsComponent implements OnInit, AfterViewInit {
     return daysRange;
   }
 
+  onOperationsTypeChange(event: MatButtonToggleChange) {
+    switch (event.value) {
+      case 'all':
+        this.filterShowIncome = true;
+        this.filtershowExponses = true;
+        this.updateDisplayedOperations();
+        break;
+      case 'income':
+        this.filterShowIncome = true;
+        this.filtershowExponses = false;
+        this.updateDisplayedOperations();
+        break;
+      case 'expenses':
+        this.filterShowIncome = false;
+        this.filtershowExponses = true;
+        this.updateDisplayedOperations();
+        break;
+      default:
+        break;
+    }
+  }
+
+  onRangeTypeChange(event: MatButtonToggleChange) {
+    switch (event.value) {
+      case 'week':
+        this.dateRangeDynamic = false;
+
+
+        this.setDateRangeWeek();
+        this.updateDisplayedOperations();
+        break;
+      case 'month':
+        this.dateRangeDynamic = false;
+        this.setDateRageMonth();
+        this.updateDisplayedOperations();
+        break;
+      default:
+        this.dateRangeDynamic = true;
+        break;
+    }
+  }
 
   ngOnInit(): void {
+
+    this.displayedOperations$ = new BehaviorSubject([]);
+
+
+    this.form = this.fb.group({
+      startDate: [moment(), { validators: [Validators.required], updateOn: 'blur' }],
+      endDate: [moment(), { validators: [Validators.required], updateOn: 'blur' }]
+    })
     /*
-        this.form = new FormGroup({
-          startDate: new FormControl(moment(this.startDate.toISOString()), []),
-          endDate: new FormControl(moment(this.endDate.toISOString()), []),
-        })
-        */
+
+    this.form = new FormGroup({
+      startDate: new FormControl(moment(), []),
+      endDate: new FormControl(moment(), []),
+      
+    });*/
+
+
+
+    this.setDateRangeWeek();
+
+
     //this.getOperations();
     this.operationService.getAll().subscribe(r => {
       if (r) {
-        this.allOperations = r;
-        this.distinctDays = new Set(this.allOperations.map(op => op.when).sort((a, b) => a.getTime() - b.getTime()));
+        this.allOperations = r.sort((a, b) => b.when.getTime() - a.when.getTime());
+        this.updateDisplayedOperations();
+        //this.distinctDays = new Set(this.allOperations.map(op => op.when).sort((a, b) => a.getTime() - b.getTime()));
       }
+    });
+    //TODO get only those that fit selected daterange
+
+
+    this.form.controls.startDate.valueChanges.subscribe(r => {
+      if (this.dateRangeDynamic) this.onDateRangeSelectionchange();
+    });
+    this.form.controls.endDate.valueChanges.subscribe(r => {
+      if (this.dateRangeDynamic) this.onDateRangeSelectionchange();
     });
 
   }
@@ -82,17 +179,43 @@ export class OperationsComponent implements OnInit, AfterViewInit {
   }
 
 
+
+  onDateRangeSelectionchange() {
+    this.onFormSubmit();
+  }
   onFormSubmit() {
-    /*
+    //console.log('onFormSubmit');
+
     this.startDate = new Date(this.form.controls.startDate.value);
     this.endDate = new Date(this.form.controls.endDate.value);
-    */
+    this.updateDisplayedOperations();
+
+
+
+
+  }
+  updateDisplayedOperations() {
+    let x = this.allOperations?.filter(op => {
+      let filter = true;
+      if (this.filterShowIncome && this.filtershowExponses) filter = true;
+      else if (!this.filterShowIncome && this.filtershowExponses) filter = op.value < 0;
+      else if (this.filterShowIncome && !this.filtershowExponses) filter = op.value >= 0;
+      return filter && op.when >= this.startDate && op.when <= this.endDate;
+    });
+
+    this.displayedOperations$.next(x);
 
   }
 
+
   getDistinctDays(): Date[] {
     if (this.allOperations) {
-      return this.getDaysInRange(this.startDate, this.endDate).reverse().filter(d => this.allOperations.map(op => op.when).find(when => Globals.compareDates(when, d)));
+      return this.getDaysInRange(this.startDate, this.endDate)
+        .reverse()
+        .filter(d =>
+          this.allOperations.map(op => op.when)
+            .find(when => Globals.compareDates(when, d))
+        );
 
     } else {
       return [];
@@ -101,10 +224,15 @@ export class OperationsComponent implements OnInit, AfterViewInit {
 
   }
   getOperationsByDate(d: Date) {
+    if (this.allOperations) {
+      return this.allOperations.filter(op => {
+        return Globals.compareDates(op.when, d);
+      });
+    } else {
+      return [];
+    }
 
-    return this.allOperations?.filter(op => {
-      return op.when.getDate() === d.getDate() && op.when.getMonth() === d.getMonth() && op.when.getFullYear() === d.getFullYear();
-    });
+
 
   }
 
@@ -129,7 +257,7 @@ export class OperationsComponent implements OnInit, AfterViewInit {
   onNewClick() {
 
     //open dialog for creating new operation
-    let dialogRef = this.dialog.open(CreateNewOperationDialogComponent, { width: '100%' });
+    let dialogRef = this.dialog.open(CreateNewOperationDialogComponent, { width: '500px' });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         console.log(result);
@@ -159,7 +287,7 @@ export class OperationsComponent implements OnInit, AfterViewInit {
 
     //open dialog
 
-    let dialogRef = this.dialog.open(CreateNewOperationDialogComponent, { width: '100%', data: BudgetOperation.getCopy(operation) });
+    let dialogRef = this.dialog.open(CreateNewOperationDialogComponent, { width: '500px', data: BudgetOperation.getCopy(operation) });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {

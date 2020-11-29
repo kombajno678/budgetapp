@@ -1,4 +1,6 @@
+import { Moment } from 'moment';
 import { AbstractResource } from './AbstractResource';
+import { ScheduledBudgetOperation } from './ScheduledBudgetOperation';
 
 export class BudgetOperation extends AbstractResource {
 
@@ -9,6 +11,8 @@ export class BudgetOperation extends AbstractResource {
     when?: Date;
     scheduled_operation_id?: number;
     timestamp?: Date;
+
+    scheduled_operation?: ScheduledBudgetOperation;
 
     constructor(name = null, value = null, when = null, scheduled_operation_id = null) {
         super();
