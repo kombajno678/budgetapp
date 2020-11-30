@@ -4,6 +4,9 @@ import { AuthService } from '@auth0/auth0-angular';
 import { ChartOptions } from 'chart.js';
 import { ThemeService } from 'ng2-charts';
 import { environment } from 'src/environments/environment';
+import { User } from './models/User';
+import { BudgetService } from './services/budget/budget.service';
+import { Router } from "@angular/router"
 
 type Theme = 'light-theme' | 'dark-theme';
 
@@ -18,6 +21,9 @@ export class AppComponent implements OnInit {
   title = 'budgetapp';
   isDarkTheme = JSON.parse(localStorage.getItem('isDarkTheme'));
   isHandsetLayout: boolean = false;
+
+
+  user: User = null;
 
 
 
@@ -57,7 +63,9 @@ export class AppComponent implements OnInit {
   constructor(
     public auth: AuthService,
     public breakpointObserver: BreakpointObserver,
-    private themeService: ThemeService
+    private themeService: ThemeService,
+    private budget: BudgetService,
+    private router: Router
   ) {
 
     breakpointObserver.observe([
@@ -69,12 +77,26 @@ export class AppComponent implements OnInit {
       }
     });
 
+    this.budget.user$.asObservable().subscribe(u => {
+      this.user = u;
+      console.log('received new user : ', u);
+      if (u) {
+        if (!u.last_generated_operations_at) {
+          // beep boop, alert, new user has logged in
+          console.log('redirect to quick start');
+          this.router.navigate(['/quickstart'])
+
+        }
+      }
+    })
+
     if (this.isDarkTheme) {
       this.setCurrentTheme('dark-theme');
     } else {
       this.setCurrentTheme('light-theme');
 
     }
+    this.budget.afterLogin();
 
 
 
@@ -84,16 +106,18 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.getToken();
 
   }
 
-  getToken() {
-    this.auth.getAccessTokenSilently({ ignoreCache: true, audience: environment.auth.audience }).subscribe(token => {
-      console.log('received token, ', token)
-      localStorage.setItem('budgetapp-token', token);
-    })
-  }
+
+  // getToken() {
+  //   this.auth.getAccessTokenSilently({ ignoreCache: true, audience: environment.auth.audience }).subscribe(token => {
+  //     console.log('received token, ', token)
+  //     localStorage.setItem('budgetapp-token', token);
+  //   })
+  // }
+
+
 
   changeTheme() {
     this.isDarkTheme = !this.isDarkTheme;

@@ -24,17 +24,24 @@
         <mat-list>
 
             <ng-container *ngFor="let type of getScheduleTypes()">
-                <div mat-subheader>{{getScheduleTypeName(type)}}</div>
-                <ng-container *ngFor="let so of this.getScheduledOperationsByType(type)">
+                <ng-container *ngIf="this.getScheduledOperationsByType(type) as list ">
+                    <div mat-subheader
+                         *ngIf="list.length > 0">{{getScheduleTypeName(type)}}</div>
 
-                    <app-scheduled-operation-list-element [so]="so"
-                                                          (onDelete)="deleteOperation($event)"
-                                                          (onModify)="modifyOperation($event)"
-                                                          (onChangeActiveState)="chnageActiveState($event)">
-                        ...
-                    </app-scheduled-operation-list-element>
+                    <ng-container *ngFor="let so of list">
+
+                        <app-scheduled-operation-list-element [so]="so"
+                                                              (onDelete)="deleteOperation($event)"
+                                                              (onModify)="modifyOperation($event)"
+                                                              (onChangeActiveState)="chnageActiveState($event)">
+                            ...
+                        </app-scheduled-operation-list-element>
+
+                    </ng-container>
+
 
                 </ng-container>
+
             </ng-container>
 
 

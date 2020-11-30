@@ -67,6 +67,14 @@ export class SidenavComponent implements OnInit {
 
 
     },
+    {
+      title: 'Quick start',
+      url: '/quickstart',
+      icon: 'help',
+      loginRequired: true,
+
+
+    },
   ];
 
   constructor(public auth: AuthService) { }

@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { combineLatest, Observable, of, Subject } from 'rxjs';
+import { BehaviorSubject, combineLatest, Observable, of, Subject } from 'rxjs';
 import { catchError, finalize, map, share, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 
@@ -10,9 +10,11 @@ import { ScheduledOperationsService } from './scheduled-operations.service';
 import { BudgetOperationService } from './budget-operation.service';
 import { OperationSchedulesService } from './operation-schedules.service';
 import { ScheduleType } from 'src/app/models/internal/ScheduleType';
+import { User } from 'src/app/models/User';
 import { OperationSchedule } from 'src/app/models/OperationSchedule';
 import { Globals } from 'src/app/Globals';
 import { PredicionPoint } from 'src/app/models/internal/PredictionPoint';
+import { AuthService } from '@auth0/auth0-angular';
 
 @Injectable({
   providedIn: 'root'
@@ -20,8 +22,13 @@ import { PredicionPoint } from 'src/app/models/internal/PredictionPoint';
 export class BudgetService {
 
 
+  public user$: BehaviorSubject<User> = new BehaviorSubject<User>(null);
+
+
   constructor(
     private http: HttpClient,
+
+    public auth: AuthService,
 
     private fixedPointsService: FixedPointsService,
     private operationsService: BudgetOperationService,
@@ -58,6 +65,33 @@ export class BudgetService {
       tap(_ => this.log(path)),
       catchError(this.handleError<any>(path, null))
     )
+  }
+
+
+  onLogout() {
+    localStorage.removeItem('budgetapp-token');
+    localStorage.removeItem('user');
+    this.user$.next(null);
+  }
+
+
+  afterLogin() {
+    this.auth.getAccessTokenSilently({ ignoreCache: true, audience: environment.auth.audience }).subscribe(token => {
+      console.log('received token, ', token)
+      localStorage.setItem('budgetapp-token', token);
+      this.getUser().subscribe(u => {
+        localStorage.setItem('user', JSON.stringify(u));
+        this.user$.next(u);
+      });
+
+    })
+  }
+
+  getUser(): Observable<User> {
+    let path = environment.apiUrl + '/users/0';
+    return this.http.get<User>(path).pipe(
+      catchError(this.handleError<any>(path, null))
+    );
   }
 
 

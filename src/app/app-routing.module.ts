@@ -7,6 +7,7 @@ import { ProfileComponent } from './pages/profile/profile.component';
 import { ScheduledOperationsComponent } from './pages/scheduled-operations/scheduled-operations.component';
 import { FixedPointsComponent } from './pages/fixed-points/fixed-points.component';
 import { PredictionsComponent } from './pages/predictions/predictions.component';
+import { QuickStartComponent } from './pages/quick-start/quick-start.component';
 
 const routes: Routes = [
   {
@@ -32,6 +33,11 @@ const routes: Routes = [
   {
     path: 'predictions',
     component: PredictionsComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'quickstart',
+    component: QuickStartComponent,
     canActivate: [AuthGuard],
   },
   {

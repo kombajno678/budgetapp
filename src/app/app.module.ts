@@ -51,6 +51,7 @@ import { OperationListElementComponent } from './components/list-elements/operat
 import { OperationsCardComponent } from './components/dashboard-cards/operations-card/operations-card.component';
 import { ScheduledOperationsCardComponent } from './components/dashboard-cards/scheduled-operations-card/scheduled-operations-card.component';
 import { CurrentPredictionCardComponent } from './components/dashboard-cards/current-prediction-card/current-prediction-card.component';
+import { QuickStartComponent } from './pages/quick-start/quick-start.component';
 
 
 function tokenGetter(): string {
@@ -80,7 +81,8 @@ function tokenGetter(): string {
     OperationListElementComponent,
     OperationsCardComponent,
     ScheduledOperationsCardComponent,
-    CurrentPredictionCardComponent
+    CurrentPredictionCardComponent,
+    QuickStartComponent
 
   ],
   entryComponents: [CustomSnackbarComponent],

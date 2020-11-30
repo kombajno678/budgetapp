@@ -1,0 +1,258 @@
+<div class="row">
+    <div class="col text-center p-3">
+
+        <span class="mat-display-1 ">
+            Quick start
+        </span>
+
+    </div>
+
+</div>
+<div class="row">
+    <div class="col">
+
+
+
+        <mat-vertical-stepper [linear]="true"
+                              #stepper>
+
+            <mat-step>
+                <ng-template matStepLabel>Tell app how much money you have right now</ng-template>
+
+                <div class="p-3">
+
+
+
+                    <h2>App needs a starting point.</h2>
+                    <p>
+
+                        Please, add a new "Fixed point" which tells app exactly how much moeny you had on a given day.
+                        You can add more fixed points later which will help app better predict yout future budget :)
+                    </p>
+
+                    <button mat-flat-button
+                            color="accent"
+                            [disabled]="createdFixedPoint"
+                            (click)="addFixedPoint()">Add</button>
+
+                    <div *ngIf="createdFixedPoint as fp">
+                        <mat-list>
+                            <mat-list-item>
+
+                                <mat-icon mat-list-icon>insights</mat-icon>
+                                <div mat-line>
+                                    {{fp.when.toISOString().substr(0, 10)}}
+                                </div>
+                                <div mat-line>
+                                    {{fp.exact_value}}
+                                </div>
+
+                                <button mat-icon-button
+                                        [matMenuTriggerFor]="menu"
+                                        aria-label="Example icon-button with a menu">
+                                    <mat-icon>more_vert</mat-icon>
+                                </button>
+
+
+                                <mat-menu #menu="matMenu">
+                                    <button mat-menu-item
+                                            color="warn"
+                                            (click)="deleteFixedPoint(fp)">
+                                        <mat-icon>delete</mat-icon>
+                                        <span>Delete</span>
+                                    </button>
+                                    <button mat-menu-item
+                                            color="accent"
+                                            (click)="modifyFixedPoint(fp)">
+                                        <mat-icon>edit</mat-icon>
+                                        <span>Modify</span>
+                                    </button>
+                                </mat-menu>
+
+                            </mat-list-item>
+                        </mat-list>
+
+
+
+
+
+
+                    </div>
+                </div>
+
+
+
+
+                <div>
+                    <button mat-flat-button
+                            color="primary"
+                            [disabled]="createdFixedPoint === null"
+                            matStepperNext>Next step</button>
+                </div>
+            </mat-step>
+
+
+
+
+
+            <mat-step>
+                <ng-template matStepLabel>Add some recurring operations</ng-template>
+
+
+                <div class="p-3">
+
+                    <h2>
+                        Now it's time to tell app what's happening in your budget
+                    </h2>
+                    <p>
+                        For example :
+
+                    </p>
+
+
+
+                    <mat-list>
+                        <mat-list-item>
+                            <mat-icon matListIcon>work</mat-icon>
+                            <h3 matLine> work income +4 000 </h3>
+                            <p matLine>
+                                once a month, on 15th day of every month
+                            </p>
+                        </mat-list-item>
+                        <mat-list-item>
+                            <mat-icon matListIcon>shopping_cart</mat-icon>
+                            <h3 matLine> groceries -150 </h3>
+                            <p matLine>
+                                once a week, every Saturday
+                            </p>
+
+                        </mat-list-item>
+                        <mat-list-item>
+                            <mat-icon matListIcon>local_cafe</mat-icon>
+                            <h3 matLine> coffee -5.23 </h3>
+                            <p matLine>
+                                everyday
+                            </p>
+                        </mat-list-item>
+                    </mat-list>
+
+                    <mat-card class="mat-elevation-z4 m-3">
+
+                        <app-scheduled-operations> ... </app-scheduled-operations>
+                    </mat-card>
+                </div>
+
+                <div>
+                    <button mat-button
+                            matStepperPrevious>Back</button>
+                    <button mat-flat-button
+                            color="primary"
+                            matStepperNext>Next</button>
+
+
+                </div>
+            </mat-step>
+
+
+
+
+
+
+            <mat-step optional>
+                <ng-template matStepLabel>Single operations</ng-template>
+                <div class="p-3">
+
+
+                    <h2>You can also add single budget operations</h2>
+
+                    <p>
+                        Those are operations that happened (or will happen) only once, for example :
+                    </p>
+
+
+                    <mat-list>
+                        <mat-list-item>
+                            <mat-icon matListIcon>directions_car</mat-icon>
+                            <h3 matLine> sold car +10 000 </h3>
+                            <p matLine>
+                                2020-11-02
+                            </p>
+                        </mat-list-item>
+                        <mat-list-item>
+                            <mat-icon matListIcon>flight</mat-icon>
+                            <h3 matLine> plane tickets -350 </h3>
+                            <p matLine>
+                                2020-12-20
+                            </p>
+
+                        </mat-list-item>
+                        <mat-list-item>
+                            <mat-icon matListIcon>local_cafe</mat-icon>
+                            <h3 matLine> very fancy coffee -21.37 </h3>
+                            <p matLine>
+                                2020-04-20
+                            </p>
+                        </mat-list-item>
+                    </mat-list>
+
+
+                    <button mat-flat-button
+                            color="accent"
+                            (click)="goToOperations()">
+                        Go add some operations now
+                    </button>
+
+
+                </div>
+
+
+
+
+
+                <div>
+                    <button mat-button
+                            matStepperPrevious>Back</button>
+                    <button mat-flat-button
+                            color="primary"
+                            matStepperNext>Next</button>
+
+
+                </div>
+            </mat-step>
+
+
+
+
+
+
+
+            <mat-step>
+                <ng-template matStepLabel>Done</ng-template>
+                <h2>Application is now set up :) </h2>
+
+                <div>
+
+                    <button mat-flat-button
+                            color="primary"
+                            (click)="goToHome()">Go to home page</button>
+                </div>
+            </mat-step>
+
+
+
+
+
+
+        </mat-vertical-stepper>
+
+
+
+    </div>
+
+</div>
+<div class="row">
+    <div class="col">
+
+    </div>
+
+</div>
