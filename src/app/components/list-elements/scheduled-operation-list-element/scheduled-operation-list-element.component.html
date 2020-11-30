@@ -59,6 +59,16 @@
             <button mat-menu-item
                     type="button"
                     color="warn"
+                    disabled>
+                <mat-icon>delete</mat-icon>
+                <span>Delete all operations from this schedules</span>
+            </button>
+
+
+
+            <button mat-menu-item
+                    type="button"
+                    color="warn"
                     (click)="onDelete.emit(so)">
                 <mat-icon>delete</mat-icon>
                 <span>Delete</span>

@@ -3,6 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { CreateNewFixedPointDialogComponent } from 'src/app/components/dialogs/create-new-fixed-point-dialog/create-new-fixed-point-dialog.component';
 import { FixedPoint } from 'src/app/models/FixedPoint';
+import { BudgetService } from 'src/app/services/budget/budget.service';
 import { FixedPointsService } from 'src/app/services/budget/fixed-points.service';
 
 @Component({
@@ -14,10 +15,13 @@ export class QuickStartComponent implements OnInit {
 
   createdFixedPoint: FixedPoint = null;
 
+  n: number = null;
+
   constructor(
     private dialog: MatDialog,
     private fixedPointsService: FixedPointsService,
-    private router: Router
+    private router: Router,
+    private budget: BudgetService,
 
 
   ) { }
@@ -25,6 +29,13 @@ export class QuickStartComponent implements OnInit {
   ngOnInit(): void {
     this.fixedPointsService.getLatest().subscribe(latest => this.createdFixedPoint = latest);
 
+  }
+
+  check() {
+    this.budget.checkIfNeedToGenerateOperations().subscribe(n => {
+      this.n = n;
+      console.log('need to generate ' + n + ' operations')
+    })
   }
 
   goToHome() {
@@ -73,6 +84,7 @@ export class QuickStartComponent implements OnInit {
         this.fixedPointsService.create(new_fixedPoint).subscribe(r => {
           if (r) {
             this.createdFixedPoint = r;
+            this.createdFixedPoint.when = new Date(this.createdFixedPoint.when);
           }
           console.log('result od add new_fixedPoint = ', r);
         })

@@ -228,7 +228,11 @@
 
             <mat-step>
                 <ng-template matStepLabel>Done</ng-template>
-                <h2>Application is now set up :) </h2>
+                <h2 (click)="check()">Application is now set up :) </h2>
+
+                <p>
+                    {{ n }}
+                </p>
 
                 <div>
 

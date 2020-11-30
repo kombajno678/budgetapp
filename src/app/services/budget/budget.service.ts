@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, combineLatest, Observable, of, Subject } from 'rxjs';
+import { BehaviorSubject, combineLatest, Observable, of, ReplaySubject, Subject } from 'rxjs';
 import { catchError, finalize, map, share, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 
@@ -23,6 +23,7 @@ export class BudgetService {
 
 
   public user$: BehaviorSubject<User> = new BehaviorSubject<User>(null);
+  private user: User = null;
 
 
   constructor(
@@ -34,7 +35,10 @@ export class BudgetService {
     private operationsService: BudgetOperationService,
     private scheduledOperations: ScheduledOperationsService,
     private schedulesService: OperationSchedulesService
-  ) { }
+  ) {
+    this.user$.subscribe(u => this.user = u);
+
+  }
 
 
 
@@ -82,6 +86,15 @@ export class BudgetService {
       this.getUser().subscribe(u => {
         localStorage.setItem('user', JSON.stringify(u));
         this.user$.next(u);
+
+        let last = new Date(u.last_generated_operations_at);
+        if (Globals.daysDifference(new Date(), last) >= 1) {
+          this.generateOperations();
+        }
+
+
+
+
       });
 
     })
@@ -174,6 +187,112 @@ export class BudgetService {
 
 
 
+  checkIfNeedToGenerateOperations(): Observable<number> {
+    //check when was last time operations were generated
+
+    let subject = new ReplaySubject<number>();
+
+
+    let whenLast: Date = this.user.last_generated_operations_at;
+
+    this.fixedPointsService.getLatest().subscribe(fpl => {
+
+      //never, new user
+      if (whenLast == null) {
+        whenLast = new Date(fpl.when);
+      }
+
+
+
+
+      if (Globals.compareDates(new Date(), whenLast)) {
+        //today, no need to generate again
+        subject.next(0);
+        return subject.asObservable();
+      }
+
+
+
+
+      //check how many new operations to add between last generated date and now
+      this.generateListOfOperationsToAdd(whenLast).subscribe(ops => {
+        if (ops && ops.length > 0) {
+          console.log('ye, i need to generate thoose ', ops.length, ' operations');
+          subject.next(ops.length);
+
+        }
+      });
+
+
+
+
+    });
+
+
+
+
+
+    return subject.asObservable();
+
+  }
+
+
+
+  generateListOfOperationsToAdd(since: Date): Observable<BudgetOperation[]> {
+
+
+
+    let operationsToAdd: BudgetOperation[] = [];
+    let subject = new ReplaySubject<BudgetOperation[]>();
+
+
+
+    let days: Date[] = this.getDaysInRange(since, new Date());
+    if (!days || days.length == 0) {
+      //today, no need to generate again
+      subject.next(operationsToAdd);
+      subject.complete();
+      return subject.asObservable();
+    }
+    //get all active scheduled operations 
+
+    this.scheduledOperations.getAllOnce().subscribe(sos => {
+      if (!sos || sos.length == 0) return;
+      sos = sos.filter(so => so.active && !so.hidden);
+      this.schedulesService.getAllOnce().subscribe(schedules => {
+        if (!schedules || schedules.length == 0) return;
+        //console.log('schedules : ', schedules);
+        sos.forEach(so => so.schedule = schedules.find(s => s.id === so.schedule_id));
+        sos = sos.filter(so => so.schedule);
+        // TODO : date filter in API
+        this.operationsService.getAllOnce().subscribe(operations => {
+          operations = operations.filter(operation => operation.scheduled_operation_id && operation.when > since);
+          //iterate throught days and match scheduled operations 
+          days.forEach(d => {
+            sos.forEach(so => {
+              if (OperationSchedule.matchSceduleWithDate(so.schedule, d)) {
+                //proceed to check if operation from this schedule alredy exists
+                if (!operations.find(op => this.compareDates(op.when, d) && op.scheduled_operation_id === so.id)) {
+                  operationsToAdd.push(new BudgetOperation(so.name, so.value, d, so.id));
+                }
+              }
+            })
+          })
+
+
+          subject.next(operationsToAdd);
+          subject.complete();
+
+
+        })
+      })
+    })
+
+
+
+    return subject.asObservable();
+
+  }
 
   generateOperations() {
     //determine date range

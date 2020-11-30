@@ -14,5 +14,9 @@ export class Globals {
         return d1.getDate() === d2.getDate() && d1.getMonth() === d2.getMonth() && d1.getFullYear() === d2.getFullYear();
     }
 
+    static daysDifference(d1: Date, d2: Date) {
+        return (d1.getTime() - d2.getTime()) / (3600000 * 24);
+    }
+
 
 }
