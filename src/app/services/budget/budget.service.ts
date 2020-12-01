@@ -106,6 +106,13 @@ export class BudgetService {
       catchError(this.handleError<any>(path, null))
     );
   }
+  updateUser() {
+    let path = environment.apiUrl + '/users/0';
+    return this.http.put<User>(path, this.user).pipe(
+      catchError(this.handleError<any>(path, null))
+    );
+
+  }
 
 
 
@@ -376,7 +383,12 @@ export class BudgetService {
 
             this.operationsService.createMany(operationsToAdd).subscribe(r => {
               if (r) {
-                console.log('generator: created ', operationsToAdd.length)
+                console.log('generator: created ', operationsToAdd.length);
+                this.user.last_generated_operations_at = new Date();
+                this.updateUser().subscribe(r => {
+                  console.log('last_generated_operations_at updated');
+                });
+
               } else {
                 console.error('generator:  error ')
               };

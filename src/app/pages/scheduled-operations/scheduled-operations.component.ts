@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { CreateNewScheduledOperationDialogComponent } from 'src/app/components/dialogs/create-new-scheduled-operation-dialog/create-new-scheduled-operation-dialog.component';
 import { OperationSchedule } from 'src/app/models/OperationSchedule';
@@ -17,6 +17,9 @@ import { getScheduleTypeName, ScheduleType } from 'src/app/models/internal/Sched
 export class ScheduledOperationsComponent implements OnInit, OnDestroy {
 
   public ScheduleType = ScheduleType;
+
+  @Input()
+  displayTitle: boolean = true;
 
 
   scheduledOperations: ScheduledBudgetOperation[];
