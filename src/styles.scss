@@ -22,3 +22,72 @@ body {
   justify-content: center;
   align-items: center;
 }
+
+
+
+.animated-loading-bg {
+  background: linear-gradient(228deg, #1a1a1a, #780085);
+  background-size: 400% 400%;
+
+  -webkit-animation: AnimationName1 3s ease infinite;
+  -moz-animation: AnimationName1 3s ease infinite;
+  -o-animation: AnimationName1 3s ease infinite;
+  animation: AnimationName1 3s ease infinite;
+}
+
+@-webkit-keyframes AnimationName1 {
+  0%{background-position:0% 92%}
+  50%{background-position:100% 9%}
+  100%{background-position:0% 92%}
+}
+@-moz-keyframes AnimationName1 {
+  0%{background-position:0% 92%}
+  50%{background-position:100% 9%}
+  100%{background-position:0% 92%}
+}
+@-o-keyframes AnimationName1 {
+  0%{background-position:0% 92%}
+  50%{background-position:100% 9%}
+  100%{background-position:0% 92%}
+}
+@keyframes AnimationName1 {
+  0%{background-position:0% 92%}
+  50%{background-position:100% 9%}
+  100%{background-position:0% 92%}
+}
+
+.animated-logo-bg {
+  background: linear-gradient(228deg, #00dbff80, #e700ff80);
+  background-size: 400% 400%;
+
+  -webkit-animation: AnimationName 120s ease infinite;
+  -moz-animation: AnimationName 120s ease infinite;
+  -o-animation: AnimationName 120s ease infinite;
+  animation: AnimationName 120s ease infinite;
+}
+
+@-webkit-keyframes AnimationName {
+  0%{background-position:0% 92%}
+  50%{background-position:100% 9%}
+  100%{background-position:0% 92%}
+}
+@-moz-keyframes AnimationName {
+  0%{background-position:0% 92%}
+  50%{background-position:100% 9%}
+  100%{background-position:0% 92%}
+}
+@-o-keyframes AnimationName {
+  0%{background-position:0% 92%}
+  50%{background-position:100% 9%}
+  100%{background-position:0% 92%}
+}
+@keyframes AnimationName {
+  0%{background-position:0% 92%}
+  50%{background-position:100% 9%}
+  100%{background-position:0% 92%}
+}
+
+
+
+
+

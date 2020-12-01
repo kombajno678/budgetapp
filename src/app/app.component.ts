@@ -6,7 +6,7 @@ import { ThemeService } from 'ng2-charts';
 import { environment } from 'src/environments/environment';
 import { User } from './models/User';
 import { BudgetService } from './services/budget/budget.service';
-import { Router } from "@angular/router"
+import { NavigationEnd, Router } from "@angular/router"
 
 type Theme = 'light-theme' | 'dark-theme';
 
@@ -24,6 +24,8 @@ export class AppComponent implements OnInit {
 
 
   user: User = null;
+
+  animatedBg: boolean = false;
 
 
 
@@ -96,6 +98,32 @@ export class AppComponent implements OnInit {
       this.setCurrentTheme('light-theme');
 
     }
+
+
+    this.router.events.subscribe(event => {
+      //NavigationEnd 
+      if (event instanceof NavigationEnd) {
+        console.log('router : ', event);
+
+        if (event.url == '/') {
+          //is on home page
+          this.animatedBg = true;
+        } else {
+          this.animatedBg = false;
+
+        }
+
+
+
+      }
+    });
+
+
+
+
+
+
+
     this.budget.afterLogin();
 
 

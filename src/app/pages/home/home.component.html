@@ -36,29 +36,59 @@
 
 
     <ng-template #notLoggedIn>
+        <div class="">
+            <div class="row p-3">
+                <div class="col text-center"></div>
+            </div>
+            <div class="row">
 
-        <div class="row">
 
-            <div class="col-12 text-center p-3">
-                <span class="mat-display-2">
-                    Budgetapp <mat-icon>money</mat-icon>
-                </span>
-                <p class="mat-body-1">
 
-                    Sign in and start planing your home budget!
-                </p>
+                <div class="col-sm col-1 text-center"></div>
+
+                <div class="col-sm col-10 text-center">
+                    <div class="logo-container">
+                        <img class="img-fluid"
+                             src="/assets/img/budgetapp-logo.png">
+
+                    </div>
+
+                </div>
+
+                <div class="col-sm col-1 text-center"></div>
+
+
             </div>
 
-            <div class="col text-center p-3">
-                <button mat-flat-button
-                        color="accent"
-                        (click)="onSignInClick()">
-                    Sign in now
-                </button>
+            <div class="row">
+
+
+
+                <div class="col-12 text-center p-3">
+                    <span class="mat-display-2">
+                        Budgetapp <mat-icon>money</mat-icon>
+                    </span>
+                    <p class="mat-body-1">
+
+                        Sign in and start planing your home budget!
+                    </p>
+                </div>
+
+                <div class="col text-center p-3">
+                    <button mat-flat-button
+                            color="accent"
+                            (click)="onSignInClick()">
+                        Sign in now
+                    </button>
+                </div>
+
+
             </div>
-
-
         </div>
+
+
+
+
 
     </ng-template>
 

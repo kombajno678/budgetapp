@@ -17,7 +17,8 @@
        [class.light-theme]="!isDarkTheme">
 
 
-    <mat-sidenav-container class="h-100">
+    <mat-sidenav-container class="h-100 "
+                           [class.animated-logo-bg]="this.animatedBg">
 
 
       <mat-sidenav #mainSidenav
@@ -42,7 +43,7 @@
 
 
         <ng-template #router>
-          <div class="container flex-grow-1 flex-shrink-1 p-0">
+          <div class="container flex-grow-1 flex-shrink-1 p-0 content">
             <router-outlet></router-outlet>
           </div>
         </ng-template>
