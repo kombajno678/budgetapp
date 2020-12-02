@@ -59,7 +59,7 @@ export class QuickStartComponent implements OnInit {
 
     //open dialog
 
-    let dialogRef = this.dialog.open(CreateNewFixedPointDialogComponent, { width: '100%', data: FixedPoint.getCopy(fp) });
+    let dialogRef = this.dialog.open(CreateNewFixedPointDialogComponent, { width: '500px', data: FixedPoint.getCopy(fp) });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
@@ -77,7 +77,7 @@ export class QuickStartComponent implements OnInit {
 
 
     //open dialog for creating new operation
-    let dialogRef = this.dialog.open(CreateNewFixedPointDialogComponent, { width: '100%' });
+    let dialogRef = this.dialog.open(CreateNewFixedPointDialogComponent, { width: '500px' });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         let new_fixedPoint: FixedPoint = result;

@@ -46,12 +46,29 @@
 
 
         <mat-divider></mat-divider>
+        <ng-container *ngFor="let link of bottomLinks">
+            <a mat-list-item
+               [routerLink]="link.url"
+               (click)="close()"
+               [disabled]="link.disabled">
+                <mat-icon>
+                    {{link.icon}}
+                </mat-icon>
+                {{link.title}}
+            </a>
+
+        </ng-container>
+
+
+
+
+        <mat-divider></mat-divider>
 
         <a mat-list-item
            [routerLink]="''"
            (click)="handleChangeThemeClick()">
             <mat-icon>
-                moon
+                color_lens
             </mat-icon>
             Change theme
         </a>

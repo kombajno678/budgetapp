@@ -2,8 +2,8 @@
 @include mat-core();
 @import 'variables';
 
-$app-dark-primary: mat-palette($mat-pink, 700);
-$app-dark-accent: mat-palette($mat-blue-grey);
+$app-dark-primary: mat-palette($mat-purple, 700);
+$app-dark-accent: mat-palette($mat-light-blue, 900);
 
 $app-light-primary: mat-palette($mat-blue, 700);
 $app-light-accent: mat-palette($mat-amber);

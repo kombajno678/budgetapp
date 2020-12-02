@@ -1,10 +1,9 @@
-<mat-toolbar color="primary">
+<mat-toolbar color="">
     <div class="row align-items-center w-100 no-gutters">
 
 
-        <div class="col-auto  align-middle">
-            <button color="accent"
-                    (click)="handleMenuButtonClick()"
+        <div class="col-auto  align-middle menu-button">
+            <button (click)="handleMenuButtonClick()"
                     mat-icon-button
                     class=""
                     aria-label="toggle side menu">
@@ -12,7 +11,21 @@
             </button>
 
         </div>
+
+
+        <div class="col  align-middle"></div>
+
+
+        <div class="col-auto align-middle">
+            <div class="logo-nav-bar">
+                <img class="img-fluid"
+                     src="/assets/img/budgetapp-logo.png">
+
+            </div>
+        </div>
         <div class="col-auto  align-middle">
+
+
             <span>
                 Budgetapp
             </span>

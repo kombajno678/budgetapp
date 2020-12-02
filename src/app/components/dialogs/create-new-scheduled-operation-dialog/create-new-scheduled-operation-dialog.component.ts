@@ -87,8 +87,9 @@ export class CreateNewScheduledOperationDialogComponent implements OnInit, After
       this.operation = new ScheduledBudgetOperation();
       this.operation.value = null;
       this.operation.name = null;
-      //this.operation.when = new Date();
       this.operation.schedule = new OperationSchedule();
+      this.operation.schedule.scheduleType = ScheduleType.monthly;
+      this.scheduleType = this.operation.schedule.scheduleType;      //this.operation.when = new Date();
 
       this.acceptButtonTest = this.createButtonText;
       this.title = this.createTitle;

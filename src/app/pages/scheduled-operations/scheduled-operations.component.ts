@@ -83,7 +83,7 @@ export class ScheduledOperationsComponent implements OnInit, OnDestroy {
   onNewClick() {
 
     //open dialog for creating new operation
-    let dialogRef = this.dialog.open(CreateNewScheduledOperationDialogComponent, { width: '100%' });
+    let dialogRef = this.dialog.open(CreateNewScheduledOperationDialogComponent, { width: '500px' });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
 
@@ -137,7 +137,7 @@ export class ScheduledOperationsComponent implements OnInit, OnDestroy {
 
     //open dialog
 
-    let dialogRef = this.dialog.open(CreateNewScheduledOperationDialogComponent, { width: '100%', data: ScheduledBudgetOperation.getCopy(operation) });
+    let dialogRef = this.dialog.open(CreateNewScheduledOperationDialogComponent, { width: '500px', data: ScheduledBudgetOperation.getCopy(operation) });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {

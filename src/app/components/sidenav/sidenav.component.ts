@@ -67,11 +67,16 @@ export class SidenavComponent implements OnInit {
 
 
     },
+
+  ];
+
+  bottomLinks = [
     {
       title: 'Quick start',
       url: '/quickstart',
       icon: 'help',
       loginRequired: true,
+      disabled: false,
 
 
     },
