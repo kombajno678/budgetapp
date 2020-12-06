@@ -61,6 +61,18 @@ export class BudgetService {
 
 
 
+  upload(formData): Observable<any> {
+    let path = environment.apiUrl + '/upload';
+
+    return this.http.post<any>(path, formData, {
+      reportProgress: true,
+      observe: 'events'
+    });
+  }
+
+
+
+
 
   testToken() {
     let path = environment.apiUrl + '/testtoken';

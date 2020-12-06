@@ -13,7 +13,8 @@ import { getLocaleTimeFormat } from '@angular/common';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import moment from 'moment';
 import { MatButtonToggleChange } from '@angular/material/button-toggle';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, combineLatest } from 'rxjs';
+import { ScheduledOperationsService } from 'src/app/services/budget/scheduled-operations.service';
 
 @Component({
   selector: 'app-operations',
@@ -45,6 +46,7 @@ export class OperationsComponent implements OnInit, AfterViewInit {
 
   constructor(
     private operationService: BudgetOperationService,
+    private schedulesOperationsService: ScheduledOperationsService,
     private budgetService: BudgetService,
     private dialog: MatDialog,
     private fb: FormBuilder
@@ -155,13 +157,33 @@ export class OperationsComponent implements OnInit, AfterViewInit {
 
 
     //this.getOperations();
-    this.operationService.getAll().subscribe(r => {
-      if (r) {
-        this.allOperations = r.sort((a, b) => b.when.getTime() - a.when.getTime());
+
+
+
+    combineLatest([
+      this.schedulesOperationsService.getAll(),
+      this.operationService.getAll()
+    ]).subscribe(r => {
+      if (r[0] && r[1]) {
+        //console.log(r);
+        this.allOperations = r[1].sort((a, b) => b.when.getTime() - a.when.getTime());
+        this.allOperations.forEach(op => {
+          if (op.scheduled_operation_id) {
+            op.scheduled_operation = r[0].find(so => so.id === op.scheduled_operation_id);
+          }
+        })
         this.updateDisplayedOperations();
-        //this.distinctDays = new Set(this.allOperations.map(op => op.when).sort((a, b) => a.getTime() - b.getTime()));
       }
-    });
+    })
+
+    /*
+        this.operationService.getAll().subscribe(r => {
+          if (r) {
+            this.allOperations = r.sort((a, b) => b.when.getTime() - a.when.getTime());
+            this.updateDisplayedOperations();
+          }
+        });
+        */
     //TODO get only those that fit selected daterange
 
 
@@ -203,6 +225,7 @@ export class OperationsComponent implements OnInit, AfterViewInit {
       return filter && op.when >= this.startDate && op.when <= this.endDate;
     });
 
+    //console.log('next : ', x);
     this.displayedOperations$.next(x);
 
   }

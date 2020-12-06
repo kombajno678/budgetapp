@@ -52,6 +52,7 @@ import { OperationsCardComponent } from './components/dashboard-cards/operations
 import { ScheduledOperationsCardComponent } from './components/dashboard-cards/scheduled-operations-card/scheduled-operations-card.component';
 import { CurrentPredictionCardComponent } from './components/dashboard-cards/current-prediction-card/current-prediction-card.component';
 import { QuickStartComponent } from './pages/quick-start/quick-start.component';
+import { UploadComponent } from './pages/upload/upload.component';
 
 
 function tokenGetter(): string {
@@ -82,7 +83,8 @@ function tokenGetter(): string {
     OperationsCardComponent,
     ScheduledOperationsCardComponent,
     CurrentPredictionCardComponent,
-    QuickStartComponent
+    QuickStartComponent,
+    UploadComponent
 
   ],
   entryComponents: [CustomSnackbarComponent],

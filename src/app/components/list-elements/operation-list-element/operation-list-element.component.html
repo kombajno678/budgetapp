@@ -9,7 +9,7 @@
          *ngIf="!compact">
         <span class="mat-title">{{op.value < 0 ? -op.value : op.value}} </span>
         <span *ngIf="op.scheduled_operation_id">
-            <mat-icon>
+            <mat-icon [matTooltip]="op.scheduled_operation.name">
                 schedule
             </mat-icon>
         </span>
@@ -27,12 +27,15 @@
          *ngIf="compact">
         <span class="mat-title">{{op.value < 0 ? -op.value : op.value}}</span>
         <span *ngIf="op.scheduled_operation_id">
-            <mat-icon>
+            <mat-icon [matTooltip]="op.scheduled_operation?.name">
                 schedule
             </mat-icon>
         </span>
         {{' '}}
         <span class="mat-subheading-2">{{op.name}}</span>
+        {{' '}}
+        <span class="mat-caption"
+              *ngIf="op.scheduled_operation">({{ op.scheduled_operation.name }})</span>
 
     </div>
 

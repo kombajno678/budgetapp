@@ -8,6 +8,7 @@ import { ScheduledOperationsComponent } from './pages/scheduled-operations/sched
 import { FixedPointsComponent } from './pages/fixed-points/fixed-points.component';
 import { PredictionsComponent } from './pages/predictions/predictions.component';
 import { QuickStartComponent } from './pages/quick-start/quick-start.component';
+import { UploadComponent } from './pages/upload/upload.component';
 
 const routes: Routes = [
   {
@@ -38,6 +39,11 @@ const routes: Routes = [
   {
     path: 'quickstart',
     component: QuickStartComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'upload',
+    component: UploadComponent,
     canActivate: [AuthGuard],
   },
   {

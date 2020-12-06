@@ -80,6 +80,15 @@ export class SidenavComponent implements OnInit {
 
 
     },
+    {
+      title: 'Upload',
+      url: '/upload',
+      icon: 'upload',
+      loginRequired: true,
+      disabled: false,
+
+
+    },
   ];
 
   constructor(public auth: AuthService) { }
