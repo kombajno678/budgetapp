@@ -1,9 +1,22 @@
 
 import { HttpErrorResponse, HttpEventType } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { of } from 'rxjs';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { of, Subject } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
+import { BudgetOperation } from 'src/app/models/BudgetOperation';
+import { ScheduledBudgetOperation } from 'src/app/models/ScheduledBudgetOperation';
 import { BudgetService } from 'src/app/services/budget/budget.service';
+
+
+
+export interface ReportResult {
+
+  Operations: BudgetOperation[];
+  ScheduledOperations: ScheduledBudgetOperation[];
+  Categories: any[];
+
+}
 
 @Component({
   selector: 'app-upload',
@@ -12,12 +25,18 @@ import { BudgetService } from 'src/app/services/budget/budget.service';
 })
 export class UploadComponent implements OnInit {
 
-  @ViewChild("fileUpload", { static: false })
-  fileUpload: ElementRef;
+  myForm = new FormGroup({
+    file: new FormControl('', [Validators.required]),
+    fileSource: new FormControl('', [Validators.required])
+  });
 
 
-  files = [];
+  report$: Subject<ReportResult> = new Subject<ReportResult>();
 
+
+
+
+  uploadProgress: number = 0;
 
   constructor(private budgetService: BudgetService) { }
 
@@ -26,60 +45,48 @@ export class UploadComponent implements OnInit {
 
 
 
-  uploadFile(file) {
+  get f() {
+    return this.myForm.controls;
+  }
+
+  onFileChange(event) {
+
+    if (event.target.files.length > 0) {
+      const file = event.target.files[0];
+      this.myForm.patchValue({
+        fileSource: file
+      });
+    }
+  }
+
+  submit() {
     const formData = new FormData();
-    formData.append('file', file.data);
-    file.inProgress = true;
+    formData.append('file', this.myForm.get('fileSource').value);
+    this.uploadProgress = 0;
+
     this.budgetService.upload(formData).pipe(
       map(event => {
         switch (event.type) {
           case HttpEventType.UploadProgress:
-            file.progress = Math.round(event.loaded * 100 / event.total);
+            this.uploadProgress = Math.round(event.loaded * 100 / event.total);
             break;
           case HttpEventType.Response:
             return event;
         }
       }),
       catchError((error: HttpErrorResponse) => {
-        file.inProgress = false;
-        return of(`${file.data.name} upload failed.`);
+        this.uploadProgress = 0;
+        return of(`upload failed`);
       })).subscribe((event: any) => {
         if (typeof (event) === 'object') {
-          console.log(event.body);
+          console.log('upload finished', event);
+          this.report$.next(event.body);
         }
       });
+
+
+
   }
-
-
-
-
-  private uploadFiles() {
-    this.fileUpload.nativeElement.value = '';
-    this.files.forEach(file => {
-      this.uploadFile(file);
-    });
-  }
-
-
-
-
-
-
-
-  onClick() {
-    const fileUpload = this.fileUpload.nativeElement; fileUpload.onchange = () => {
-      for (let index = 0; index < fileUpload.files.length; index++) {
-        const file = fileUpload.files[index];
-        this.files.push({ data: file, inProgress: false, progress: 0 });
-      }
-      this.uploadFiles();
-    };
-    fileUpload.click();
-  }
-
-
-
-
 
 
 

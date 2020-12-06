@@ -1,6 +1,6 @@
 import { OperationSchedule } from './OperationSchedule';
 import { AbstractResource } from './AbstractResource';
-
+import { Category } from './Category'
 export class ScheduledBudgetOperation extends AbstractResource {
 
     //id?: number;
@@ -11,8 +11,10 @@ export class ScheduledBudgetOperation extends AbstractResource {
     timestamp?: Date;
     active?: boolean;// when false then wont generate new operations
     hidden?: boolean;//true when deleted
+    category_id?: number;
 
     schedule?: OperationSchedule;
+    category?: Category;
 
 
     constructor(user_id: number = null, schedule_id: number = null) {
