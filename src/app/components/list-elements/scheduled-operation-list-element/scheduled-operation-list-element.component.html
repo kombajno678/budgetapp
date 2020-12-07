@@ -3,28 +3,32 @@
         {{ so.value >= 0 ? 'add' : 'remove'}}
     </mat-icon>
 
+    <div mat-line>
 
-    <ng-container *ngIf="!compact ; else compact">
-        <div mat-line>
-            <span class="mat-title">{{so.value < 0 ? -so.value : so.value}}</span>
-            {{ so.active ? '' : '(Disabled)' }}
-        </div>
-        <div mat-line
-             class="">
-            <span class="mat-subheading-2">{{so.name}}</span>
-            <span class="schedule-desc">{{ this.getScheduleTypeDescription(so.schedule.scheduleType) }}</span>
-        </div>
+        <ng-container *ngIf="!compact ; else compact">
+            <div mat-line>
+                <span class="mat-title">{{so.value < 0 ? -so.value : so.value}}</span>
+                {{ so.active ? '' : '(Disabled)' }}
+            </div>
+            <div mat-line
+                 class="">
+                <span class="mat-subheading-2">{{so.name}}</span>
+                <span class="schedule-desc">{{ this.getScheduleTypeDescription(so.schedule.scheduleType) }}</span>
+            </div>
 
-    </ng-container>
+        </ng-container>
+    </div>
 
-    <ng-template #compact>
-        <div mat-line>
+    <div mat-line>
+
+        <ng-template #compact>
+
             <span class="mat-title">{{so.value < 0 ? -so.value : so.value}}</span>{{ so.active ? '' : '(Disabled)' }}
             <span class="mat-subheading-2">{{so.name}}</span>
             <span class="schedule-desc">{{ this.getScheduleTypeDescription(so.schedule?.scheduleType) }}</span>
-        </div>
 
-    </ng-template>
+        </ng-template>
+    </div>
 
 
 

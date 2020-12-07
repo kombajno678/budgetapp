@@ -99,7 +99,7 @@
 <div class="row no-gutters">
     <div class="col">
 
-        <ng-container *ngIf="(this.displayedOperations$ | async) as list">
+        <ng-container *ngIf="(this.displayedOperations$ | async) as list; else loading">
             <div class="mat-caption">
                 Displaying {{ list.length }} {{ list.length == 1 ? 'operation' : 'operations'}}
                 from : {{this.startDate.toISOString().substr(0, 10)}}
@@ -126,6 +126,9 @@
 
             </mat-list>
         </ng-container>
+        <ng-template #loading>
+            <app-loading-spinner></app-loading-spinner>
+        </ng-template>
 
 
 

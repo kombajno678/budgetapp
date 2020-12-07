@@ -15,6 +15,7 @@ import moment from 'moment';
 import { MatButtonToggleChange } from '@angular/material/button-toggle';
 import { BehaviorSubject, combineLatest } from 'rxjs';
 import { ScheduledOperationsService } from 'src/app/services/budget/scheduled-operations.service';
+import { modifyOperationEvent } from 'src/app/components/list-elements/operation-list-element/operation-list-element.component';
 
 @Component({
   selector: 'app-operations',
@@ -136,30 +137,32 @@ export class OperationsComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
 
-    this.displayedOperations$ = new BehaviorSubject([]);
+    this.displayedOperations$ = new BehaviorSubject(null);
 
 
     this.form = this.fb.group({
       startDate: [moment(), { validators: [Validators.required], updateOn: 'blur' }],
       endDate: [moment(), { validators: [Validators.required], updateOn: 'blur' }]
     })
-    /*
-
-    this.form = new FormGroup({
-      startDate: new FormControl(moment(), []),
-      endDate: new FormControl(moment(), []),
-      
-    });*/
-
-
 
     this.setDateRangeWeek();
 
 
-    //this.getOperations();
+    this.refresh();
+
+    //TODO get only those that fit selected daterange
 
 
+    this.form.controls.startDate.valueChanges.subscribe(r => {
+      if (this.dateRangeDynamic) this.onDateRangeSelectionchange();
+    });
+    this.form.controls.endDate.valueChanges.subscribe(r => {
+      if (this.dateRangeDynamic) this.onDateRangeSelectionchange();
+    });
 
+  }
+
+  refresh() {
     combineLatest([
       this.schedulesOperationsService.getAll(),
       this.operationService.getAll()
@@ -175,25 +178,6 @@ export class OperationsComponent implements OnInit, AfterViewInit {
         this.updateDisplayedOperations();
       }
     })
-
-    /*
-        this.operationService.getAll().subscribe(r => {
-          if (r) {
-            this.allOperations = r.sort((a, b) => b.when.getTime() - a.when.getTime());
-            this.updateDisplayedOperations();
-          }
-        });
-        */
-    //TODO get only those that fit selected daterange
-
-
-    this.form.controls.startDate.valueChanges.subscribe(r => {
-      if (this.dateRangeDynamic) this.onDateRangeSelectionchange();
-    });
-    this.form.controls.endDate.valueChanges.subscribe(r => {
-      if (this.dateRangeDynamic) this.onDateRangeSelectionchange();
-    });
-
   }
 
   ngAfterViewInit() {
@@ -266,11 +250,14 @@ export class OperationsComponent implements OnInit, AfterViewInit {
 
   deleteAllOperations() {
 
+
     this.operationService.getAll().subscribe(ops => {
-      if (ops) {
+      if (ops && ops.length > 0) {
+        this.displayedOperations$.next(null);
         console.log('deleting ' + ops.length + ' operations ...');
-        ops.forEach(op => {
-          this.operationService.delete(op, false).subscribe(r => console.log(r));
+        this.operationService.deleteMany(ops).subscribe(r => {
+          console.log('result of delete many = ', r);
+          this.refresh();
         })
       }
     })
@@ -305,25 +292,13 @@ export class OperationsComponent implements OnInit, AfterViewInit {
       console.log('deleteOperation result = ', r);
     })
   }
-  modifyOperation(operation: BudgetOperation) {
-    console.log('receiver modify event, ', operation);
+  modifyOperation(event: modifyOperationEvent) {
+    console.log('receiver modify event, ', event.new);
 
-    //open dialog
-
-    let dialogRef = this.dialog.open(CreateNewOperationDialogComponent, { width: '500px', data: BudgetOperation.getCopy(operation) });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        console.log(result);
-        let operation: BudgetOperation = result;
-        this.operationService.update(operation).subscribe(r => {
-          console.log('result = ', r);
-          //this.budget.refreshOperations();
-        })
-
-      }
+    this.operationService.update(event.new).subscribe(r => {
+      console.log('result = ', r);
+      //this.budget.refreshOperations();
     })
-
 
   }
 

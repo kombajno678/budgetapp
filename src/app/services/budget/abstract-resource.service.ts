@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { BehaviorSubject, forkJoin, merge, Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { AbstractResource } from 'src/app/models/AbstractResource';
 import { environment } from 'src/environments/environment';
@@ -77,6 +77,27 @@ export abstract class AbstractResourceService<T extends AbstractResource> implem
       }),
       catchError(this.handleError<any>(this.path, null)),
     )
+  }
+
+
+  deleteMany(objects: T[], refresh: boolean = true, log: boolean = true) {
+
+    let observableRequests = [];
+    objects.forEach(o => {
+      let x = this.http.delete<T>(this.path + '/' + o.id).pipe(
+        tap(_ => {
+          if (log) this.log(this.path);
+          if (refresh) this.refreshResource();
+        }),
+        catchError(this.handleError<any>(this.path, null)),
+      );
+      observableRequests.push(x);
+    });
+
+
+    return forkJoin(observableRequests);
+
+
   }
 
 

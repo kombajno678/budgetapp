@@ -1,89 +1,189 @@
-<div class="m-3">
-
-
-    <mat-progress-bar [value]="uploadProgress">
+<div class="row">
+    <mat-progress-bar [value]="uploadProgress"
+                      [mode]="uploadBarMode">
 
     </mat-progress-bar>
+</div>
+<div class="row">
+    <div class="col">
+        <form [formGroup]="myForm"
+              (ngSubmit)="submit()">
 
-    <form [formGroup]="myForm"
-          (ngSubmit)="submit()">
 
-
-        <div class="form-group">
-            <label for="file">mBank .csv file:</label>
-            <input formControlName="file"
-                   id="file"
-                   type="file"
-                   class="form-control"
-                   (change)="onFileChange($event)">
-            <div *ngIf="f.file.touched && f.file.invalid">
-                <div *ngIf="f.file.errors.required">
-                    File is required.
+            <div class="form-group">
+                <label for="file">mBank .csv file:</label>
+                <input formControlName="file"
+                       id="file"
+                       type="file"
+                       class="form-control"
+                       (change)="onFileChange($event)">
+                <div *ngIf="f.file.touched && f.file.invalid">
+                    <div *ngIf="f.file.errors.required">
+                        File is required.
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <button class="btn btn-primary"
-                type="submit">Submit</button>
-    </form>
-
-
-    <ng-container *ngIf="(report$ | async) as r">
-
-
-        <div class="row">
-            new scheduled operaions :
-            <mat-list dense>
-                <ng-container *ngFor="let so of r.ScheduledOperations">
-                    <app-scheduled-operation-list-element [so]="so">
-
-                    </app-scheduled-operation-list-element>
-
-
-                </ng-container>
-            </mat-list>
-
-        </div>
-
-
-        <div class="row">
-
-            new categories :
-            <mat-list>
-                <mat-list-item *ngFor="let cat of r.Categories">
-                    {{ cat.name }}
-                </mat-list-item>
-            </mat-list>
-
-
-
-
-        </div>
-
-
-        <div class="row">
-
-            new operations :
-
-
-            <mat-list dense>
-                <ng-container *ngFor="let op of r.Operations">
-                    <app-operation-list-element [op]="op">
-
-                    </app-operation-list-element>
-
-
-                </ng-container>
-            </mat-list>
-
-
-
-
-
-        </div>
-
-
-
-    </ng-container>
+            <button class="btn btn-primary"
+                    type="submit">Submit</button>
+        </form>
+    </div>
 
 </div>
+
+
+
+<ng-container *ngIf="(report$ | async) as r; else loading">
+    <div class="row">
+        <div class="col-12">
+            <h1>
+                Please review generated operations.
+            </h1>
+            <p>
+                You can make changes to them now. If you click cancel button, no changes will be made.
+            </p>
+
+        </div>
+
+        <div class="col-sm-12 col-md-6 col-lg-4">
+            <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        new scheduled operaions ({{r.ScheduledOperations.length}})
+                    </mat-panel-title>
+                    <mat-panel-description>
+                        Click to expand
+                    </mat-panel-description>
+                </mat-expansion-panel-header>
+
+                <ng-template matExpansionPanelContent>
+
+
+                    <mat-list dense
+                              class="generated-list">
+                        <ng-container *ngFor="let so of r.ScheduledOperations">
+                            <app-scheduled-operation-list-element [so]="so"
+                                                                  [compact]="true">
+
+                            </app-scheduled-operation-list-element>
+
+
+                        </ng-container>
+                    </mat-list>
+                </ng-template>
+
+                <mat-action-row>
+                    <button mat-flat-button
+                            (click)="saveScheduledOperations()">
+                        Save
+                    </button>
+                </mat-action-row>
+            </mat-expansion-panel>
+        </div>
+
+        <div class="col-sm-12 col-md-6 col-lg-4">
+
+            <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        new categories ({{r.Categories.length}})
+                    </mat-panel-title>
+                    <mat-panel-description>
+                        Click to expand
+                    </mat-panel-description>
+                </mat-expansion-panel-header>
+                <ng-template matExpansionPanelContent>
+
+
+                    <mat-list dense
+                              class="generated-list">
+                        <mat-list-item *ngFor="let cat of r.Categories">
+                            {{ cat.name }}
+                        </mat-list-item>
+                    </mat-list>
+                </ng-template>
+            </mat-expansion-panel>
+
+        </div>
+
+        <div class="col-sm-12 col-md col-lg-4">
+            <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        new operations ({{r.Operations.length}})
+                    </mat-panel-title>
+                    <mat-panel-description>
+                        Click to expand
+                    </mat-panel-description>
+                </mat-expansion-panel-header>
+                <ng-template matExpansionPanelContent>
+
+
+                    <mat-list dense
+                              class="generated-list">
+                        <ng-container *ngFor="let op of r.Operations">
+                            <app-operation-list-element [op]="op"
+                                                        [compact]="true"
+                                                        (onDelete)="deleteOperation($event)"
+                                                        (onModify)="modifyOperation($event)">
+
+                            </app-operation-list-element>
+
+
+                        </ng-container>
+                    </mat-list>
+                </ng-template>
+                <mat-action-row>
+                    <button mat-flat-button
+                            (click)="saveOperations()">
+                        Save
+                    </button>
+                </mat-action-row>
+
+            </mat-expansion-panel>
+
+
+        </div>
+
+
+
+
+    </div>
+
+    <div class="row">
+
+        <div class="col">
+
+        </div>
+        <div class="col-auto">
+            <button mat-flat-button
+                    (click)="onCancel()">
+                Cancel
+            </button>
+        </div>
+        <div class="col-auto">
+            <button mat-flat-button
+                    (click)="onSave()"
+                    color="primary">
+                Save
+            </button>
+        </div>
+
+    </div>
+</ng-container>
+
+<ng-template #loading>
+    <div class="row">
+        <div class="col"></div>
+        <div class="col-auto">
+            <mat-progress-spinner [value]="uploadProgress"
+                                  [mode]="uploadBarMode">
+
+            </mat-progress-spinner>
+
+        </div>
+        <div class="col"></div>
+    </div>
+
+
+</ng-template>

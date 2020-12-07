@@ -1,5 +1,12 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { BudgetOperation } from 'src/app/models/BudgetOperation';
+import { CreateNewOperationDialogComponent } from '../../dialogs/create-new-operation-dialog/create-new-operation-dialog.component';
+
+export interface modifyOperationEvent {
+  old: BudgetOperation;
+  new: BudgetOperation;
+}
 
 @Component({
   selector: 'app-operation-list-element',
@@ -21,12 +28,12 @@ export class OperationListElementComponent implements OnInit, OnDestroy {
   onDelete: EventEmitter<BudgetOperation> = new EventEmitter<BudgetOperation>();
 
   @Output()
-  onModify: EventEmitter<BudgetOperation> = new EventEmitter<BudgetOperation>();
+  onModify: EventEmitter<modifyOperationEvent> = new EventEmitter<modifyOperationEvent>();
 
 
 
 
-  constructor() { }
+  constructor(private dialog: MatDialog) { }
 
   ngOnInit(): void {
   }
@@ -39,9 +46,23 @@ export class OperationListElementComponent implements OnInit, OnDestroy {
   }
 
 
-
   test() {
     console.log('button clickd');
+  }
+
+
+  modifyOperation(operation: BudgetOperation) {
+    let dialogRef = this.dialog.open(CreateNewOperationDialogComponent, { width: '500px', data: BudgetOperation.getCopy(operation) });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        console.log(result);
+        let x: modifyOperationEvent = {
+          old: this.op,
+          new: result
+        }
+        this.onModify.emit(x);
+      }
+    })
   }
 
 }
