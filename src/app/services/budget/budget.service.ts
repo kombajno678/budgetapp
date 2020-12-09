@@ -8,13 +8,12 @@ import { BudgetOperation } from 'src/app/models/BudgetOperation';
 import { FixedPointsService } from './fixed-points.service';
 import { ScheduledOperationsService } from './scheduled-operations.service';
 import { BudgetOperationService } from './budget-operation.service';
-import { OperationSchedulesService } from './operation-schedules.service';
 import { ScheduleType } from 'src/app/models/internal/ScheduleType';
 import { User } from 'src/app/models/User';
-import { OperationSchedule } from 'src/app/models/OperationSchedule';
 import { Globals } from 'src/app/Globals';
 import { PredicionPoint } from 'src/app/models/internal/PredictionPoint';
 import { AuthService } from '@auth0/auth0-angular';
+import { ScheduledBudgetOperation } from 'src/app/models/ScheduledBudgetOperation';
 
 @Injectable({
   providedIn: 'root'
@@ -34,7 +33,6 @@ export class BudgetService {
     private fixedPointsService: FixedPointsService,
     private operationsService: BudgetOperationService,
     private scheduledOperations: ScheduledOperationsService,
-    private schedulesService: OperationSchedulesService
   ) {
     this.user$.subscribe(u => this.user = u);
 
@@ -140,7 +138,6 @@ export class BudgetService {
       this.fixedPointsService.getAll(),
       this.operationsService.getAll(),
       this.scheduledOperations.getAll(),
-      this.schedulesService.getAll(),
 
     ]).subscribe(r => {
       if (r.every(x => x)) {
@@ -165,16 +162,16 @@ export class BudgetService {
         let today = new Date();
         if (end > today) {
           let scheduledOps = r[2];
-          let schedules = r[3];
+          //let schedules = r[3];
           //consider futur operations
           let futureOperations = [];
 
-          scheduledOps.forEach(so => so.schedule = schedules.find(s => s.id === so.schedule_id));
+          //scheduledOps.forEach(so => so.schedule = schedules.find(s => s.id === so.schedule_id));
 
 
           daysRange.filter(d => d > today).forEach(d => {
             scheduledOps.forEach(so => {
-              if (OperationSchedule.matchSceduleWithDate(so.schedule, d)) {
+              if (ScheduledBudgetOperation.matchSceduleWithDate(so, d)) {
                 futureOperations.push(new BudgetOperation(so.name, so.value, d, so.id));
               }
             })
@@ -278,33 +275,33 @@ export class BudgetService {
     this.scheduledOperations.getAllOnce().subscribe(sos => {
       if (!sos || sos.length == 0) return;
       sos = sos.filter(so => so.active && !so.hidden);
-      this.schedulesService.getAllOnce().subscribe(schedules => {
-        if (!schedules || schedules.length == 0) return;
-        //console.log('schedules : ', schedules);
-        sos.forEach(so => so.schedule = schedules.find(s => s.id === so.schedule_id));
-        sos = sos.filter(so => so.schedule);
-        // TODO : date filter in API
-        this.operationsService.getAllOnce().subscribe(operations => {
-          operations = operations.filter(operation => operation.scheduled_operation_id && operation.when > since);
-          //iterate throught days and match scheduled operations 
-          days.forEach(d => {
-            sos.forEach(so => {
-              if (OperationSchedule.matchSceduleWithDate(so.schedule, d)) {
-                //proceed to check if operation from this schedule alredy exists
-                if (!operations.find(op => this.compareDates(op.when, d) && op.scheduled_operation_id === so.id)) {
-                  operationsToAdd.push(new BudgetOperation(so.name, so.value, d, so.id));
-                }
+      //this.schedulesService.getAllOnce().subscribe(schedules => {
+      //if (!schedules || schedules.length == 0) return;
+      //console.log('schedules : ', schedules);
+      //sos.forEach(so => so.schedule = schedules.find(s => s.id === so.schedule_id));
+      //sos = sos.filter(so => so.schedule);
+      // TODO : date filter in API
+      this.operationsService.getAllOnce().subscribe(operations => {
+        operations = operations.filter(operation => operation.scheduled_operation_id && operation.when > since);
+        //iterate throught days and match scheduled operations 
+        days.forEach(d => {
+          sos.forEach(so => {
+            if (ScheduledBudgetOperation.matchSceduleWithDate(so, d)) {
+              //proceed to check if operation from this schedule alredy exists
+              if (!operations.find(op => this.compareDates(op.when, d) && op.scheduled_operation_id === so.id)) {
+                operationsToAdd.push(new BudgetOperation(so.name, so.value, d, so.id));
               }
-            })
+            }
           })
-
-
-          subject.next(operationsToAdd);
-          subject.complete();
-
-
         })
+
+
+        subject.next(operationsToAdd);
+        subject.complete();
+
+
       })
+      //})
     })
 
 
@@ -354,59 +351,59 @@ export class BudgetService {
       this.scheduledOperations.getAllOnce().subscribe(sos => {
         if (!sos || sos.length == 0) return;
         sos = sos.filter(so => so.active && !so.hidden);
-        this.schedulesService.getAllOnce().subscribe(schedules => {
-          if (!schedules || schedules.length == 0) return;
-          //console.log('schedules : ', schedules);
-          sos.forEach(so => so.schedule = schedules.find(s => s.id === so.schedule_id));
-          sos = sos.filter(so => so.schedule);
+        //this.schedulesService.getAllOnce().subscribe(schedules => {
+        //if (!schedules || schedules.length == 0) return;
+        //console.log('schedules : ', schedules);
+        //sos.forEach(so => so.schedule = schedules.find(s => s.id === so.schedule_id));
+        //sos = sos.filter(so => so.schedule);
 
-          this.operationsService.getAllOnce().subscribe(operations => {
-            //if (!operations || operations.length == 0) return;
-            operations = operations.filter(operation => operation.scheduled_operation_id && operation.when > latestFixedPoint.when);
+        this.operationsService.getAllOnce().subscribe(operations => {
+          //if (!operations || operations.length == 0) return;
+          operations = operations.filter(operation => operation.scheduled_operation_id && operation.when > latestFixedPoint.when);
 
-            //iterate throught days and match scheduled operations 
-            console.log('iterating through ' + days.length + ' days ...');
-            days.forEach(d => {
-              //let thisDaysOperations = operations.filter(operation => operation.when.getTime() === d.getTime());
+          //iterate throught days and match scheduled operations 
+          console.log('iterating through ' + days.length + ' days ...');
+          days.forEach(d => {
+            //let thisDaysOperations = operations.filter(operation => operation.when.getTime() === d.getTime());
 
-              sos.forEach(so => {
-                let scheduleMatches: boolean = OperationSchedule.matchSceduleWithDate(so.schedule, d);
-                if (scheduleMatches) {
-                  //proceed to check if operation from this schedule alredy exists
-                  if (operations.find(op => this.compareDates(op.when, d) && op.scheduled_operation_id === so.id)) {
-                    //no need, already exists
-                    //console.log(d, so, 'already exists');
-                  } else {
-                    //console.log('operationsToAdd = ' + operationsToAdd.length);
-                    operationsToAdd.push(new BudgetOperation(so.name, so.value, d, so.id));
-
-                  }
+            sos.forEach(so => {
+              let scheduleMatches: boolean = ScheduledBudgetOperation.matchSceduleWithDate(so, d);
+              if (scheduleMatches) {
+                //proceed to check if operation from this schedule alredy exists
+                if (operations.find(op => this.compareDates(op.when, d) && op.scheduled_operation_id === so.id)) {
+                  //no need, already exists
+                  //console.log(d, so, 'already exists');
                 } else {
-                  //console.log(d, so, ' schedule not match');
+                  //console.log('operationsToAdd = ' + operationsToAdd.length);
+                  operationsToAdd.push(new BudgetOperation(so.name, so.value, d, so.id));
+
                 }
-
-              })
-            })
-
-            //gone through all days, now add operations
-            console.log('execcuting operationsToAdd = ' + operationsToAdd.length);
-
-
-
-            this.operationsService.createMany(operationsToAdd).subscribe(r => {
-              if (r) {
-                console.log('generator: created ', operationsToAdd.length);
-                this.user.last_generated_operations_at = new Date();
-                this.updateUser().subscribe(r => {
-                  console.log('last_generated_operations_at updated');
-                });
-
               } else {
-                console.error('generator:  error ')
-              };
+                //console.log(d, so, ' schedule not match');
+              }
+
             })
           })
+
+          //gone through all days, now add operations
+          console.log('execcuting operationsToAdd = ' + operationsToAdd.length);
+
+
+
+          this.operationsService.createMany(operationsToAdd).subscribe(r => {
+            if (r) {
+              console.log('generator: created ', operationsToAdd.length);
+              this.user.last_generated_operations_at = new Date();
+              this.updateUser().subscribe(r => {
+                console.log('last_generated_operations_at updated');
+              });
+
+            } else {
+              console.error('generator:  error ')
+            };
+          })
         })
+        //})
       })
     })
   }

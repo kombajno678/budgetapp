@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { BudgetOperationService } from 'src/app/services/budget/budget-operation.service';
 import { CreateNewOperationDialogComponent } from 'src/app/components/dialogs/create-new-operation-dialog/create-new-operation-dialog.component'
@@ -22,7 +22,7 @@ import { modifyOperationEvent } from 'src/app/components/list-elements/operation
   templateUrl: './operations.component.html',
   styleUrls: ['./operations.component.scss']
 })
-export class OperationsComponent implements OnInit, AfterViewInit {
+export class OperationsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   allOperations: BudgetOperation[];
   displayedOperations$: BehaviorSubject<BudgetOperation[]>;
@@ -162,6 +162,14 @@ export class OperationsComponent implements OnInit, AfterViewInit {
 
   }
 
+  ngOnDestroy(): void {
+    //Called once, before the instance is destroyed.
+    //Add 'implements OnDestroy' to the class.
+    this.allOperations = null;
+    this.displayedOperations$.complete();
+
+  }
+
   refresh() {
     combineLatest([
       this.schedulesOperationsService.getAll(),
@@ -251,15 +259,15 @@ export class OperationsComponent implements OnInit, AfterViewInit {
   deleteAllOperations() {
 
 
+    this.displayedOperations$.next(null);
     this.operationService.getAll().subscribe(ops => {
       if (ops && ops.length > 0) {
-        this.displayedOperations$.next(null);
         console.log('deleting ' + ops.length + ' operations ...');
         this.operationService.deleteMany(ops).subscribe(r => {
           console.log('result of delete many = ', r);
-          this.refresh();
         })
       }
+      this.refresh();
     })
 
   }
@@ -294,7 +302,6 @@ export class OperationsComponent implements OnInit, AfterViewInit {
   }
   modifyOperation(event: modifyOperationEvent) {
     console.log('receiver modify event, ', event.new);
-
     this.operationService.update(event.new).subscribe(r => {
       console.log('result = ', r);
       //this.budget.refreshOperations();

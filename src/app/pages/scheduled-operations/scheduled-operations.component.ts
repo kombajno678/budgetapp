@@ -1,12 +1,11 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { CreateNewScheduledOperationDialogComponent } from 'src/app/components/dialogs/create-new-scheduled-operation-dialog/create-new-scheduled-operation-dialog.component';
-import { OperationSchedule } from 'src/app/models/OperationSchedule';
 import { ScheduledBudgetOperation } from 'src/app/models/ScheduledBudgetOperation';
 import { ScheduledOperationsService } from 'src/app/services/budget/scheduled-operations.service';
-import { OperationSchedulesService } from 'src/app/services/budget/operation-schedules.service';
-import { combineLatest, forkJoin, merge, zip } from 'rxjs';
+import { BehaviorSubject, combineLatest, forkJoin, merge, zip } from 'rxjs';
 import { getScheduleTypeName, ScheduleType } from 'src/app/models/internal/ScheduleType';
+import { modifyScheduledOperationEvent } from 'src/app/components/list-elements/scheduled-operation-list-element/scheduled-operation-list-element.component';
 
 @Component({
   selector: 'app-scheduled-operations',
@@ -23,38 +22,44 @@ export class ScheduledOperationsComponent implements OnInit, OnDestroy {
 
 
   scheduledOperations: ScheduledBudgetOperation[];
-  operationSchedules: OperationSchedule[];
+  scheduledOperations$: BehaviorSubject<ScheduledBudgetOperation[]> = new BehaviorSubject<ScheduledBudgetOperation[]>(null);
+  //operationSchedules: OperationSchedule[];
 
   public displayedScheduletypes: ScheduleType[] = [ScheduleType.daily, ScheduleType.weekly, ScheduleType.monthly, ScheduleType.annually];
 
 
   constructor(
     private scheduledOperationsService: ScheduledOperationsService,
-    private dialog: MatDialog,
-    private schedulesService: OperationSchedulesService) { }
+    private dialog: MatDialog
+  ) { }
 
   ngOnInit(): void {
-    let scheduledOperationsObservable = this.scheduledOperationsService.getAll();
-    let schedulesObservable = this.schedulesService.getAll();
+
+    this.refresh();
+
+  }
+
+  updateOperations(sops: ScheduledBudgetOperation[]) {
+    this.scheduledOperations = sops;
+    this.scheduledOperations.forEach(sop => {
+      ScheduledBudgetOperation.initScheduleType(sop);
+    });
+    this.scheduledOperations$.next(this.scheduledOperations);
+  }
+
+  refresh() {
+
+    this.scheduledOperations$.next(null);
     combineLatest([
-      scheduledOperationsObservable,
-      schedulesObservable
+      this.scheduledOperationsService.getAll()
     ]).subscribe(
       r => {
         console.log('combineLatest  = ', r);
         // if result is null that means that nothing has been emitted yet
-        if (r[0] && r[1]) {
-          this.scheduledOperations = r[0];
-          this.operationSchedules = r[1];
-          this.operationSchedules.forEach(s => {
-            OperationSchedule.initScheduleType(s);
-          })
-
-          this.scheduledOperations.forEach(op => {
-            op.schedule = this.operationSchedules.find(s => s.id === op.schedule_id);
-          })
+        if (r[0] /*&& r[1]*/) {
+          this.updateOperations(r[0]);
+          console.log('this.scheduledOperations = ', this.scheduledOperations);
         }
-
       },
       err => console.error('both: error : ', err),
       () => console.log('both completed')
@@ -64,7 +69,8 @@ export class ScheduledOperationsComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.scheduledOperations = null;
-    this.operationSchedules = null;
+    this.scheduledOperations$.complete();
+    //this.operationSchedules = null;
   }
 
   getScheduleTypeName(type: ScheduleType) {
@@ -77,8 +83,29 @@ export class ScheduledOperationsComponent implements OnInit, OnDestroy {
   }
 
   getScheduledOperationsByType(type: ScheduleType) {
-    return this.scheduledOperations?.filter(op => op.schedule.scheduleType === type);
+    return this.scheduledOperations?.filter(op => op.scheduleType === type);
   }
+
+
+
+  deleteAll() {
+
+    if (confirm(`Are you sure that you want to delete all ${this.scheduledOperations.length} operations?`)) {
+      this.scheduledOperationsService.getAll().subscribe(ops => {
+        if (ops && ops.length > 0) {
+          console.log('deleting ' + ops.length + ' operations ...');
+          this.scheduledOperationsService.deleteMany(ops).subscribe(r => {
+            console.log('result of delete many = ', r);
+            this.refresh();
+          })
+        }
+      })
+    }
+
+
+
+  }
+
 
   onNewClick() {
 
@@ -86,35 +113,10 @@ export class ScheduledOperationsComponent implements OnInit, OnDestroy {
     let dialogRef = this.dialog.open(CreateNewScheduledOperationDialogComponent, { width: '500px' });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-
         let new_operation: ScheduledBudgetOperation = result;
-
-
-        //check if selected schedule exists
-        let existing_schedule = this.operationSchedules.find(schedule => OperationSchedule.areEqual(schedule, new_operation.schedule));
-        if (existing_schedule) {
-          new_operation.schedule = existing_schedule;
-          new_operation.schedule_id = new_operation.schedule.id;
-          console.log(new_operation);
-          this.scheduledOperationsService.create(new_operation).subscribe(r => {
-            console.log('result od add operation = ', r);
-          })
-
-        } else {
-          //if not, then create and get its id
-          this.schedulesService.create(new_operation.schedule).subscribe(r => {
-            console.log('create schedule result = ', r);
-            //assign this id to scheduled operation
-            new_operation.schedule = r;
-            new_operation.schedule_id = r.id;
-            console.log(new_operation);
-            this.scheduledOperationsService.create(new_operation).subscribe(r => {
-              console.log('result od add operation = ', r);
-            })
-          })
-        }
-
-
+        this.scheduledOperationsService.create(new_operation).subscribe(r => {
+          console.log('result od add operation = ', r);
+        })
       }
     })
 
@@ -132,51 +134,11 @@ export class ScheduledOperationsComponent implements OnInit, OnDestroy {
     })
 
   }
-  modifyOperation(operation: ScheduledBudgetOperation) {
-    console.log('receiver modify event, ', operation);
-
-    //open dialog
-
-    let dialogRef = this.dialog.open(CreateNewScheduledOperationDialogComponent, { width: '500px', data: ScheduledBudgetOperation.getCopy(operation) });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        let modified_operation: ScheduledBudgetOperation = result;
-        //console.log(result);
-        //check if selected schedule exists
-        let existing_schedule = this.operationSchedules.find(schedule => {
-          let result = OperationSchedule.areEqual(schedule, modified_operation.schedule);
-          console.log('caomparing schedules ', schedule, modified_operation.schedule, 'result = ', result);
-          return result;
-        }
-        );
-        if (existing_schedule) {
-          modified_operation.schedule = existing_schedule;
-          modified_operation.schedule_id = modified_operation.schedule.id;
-          console.log(modified_operation);
-          this.scheduledOperationsService.update(modified_operation).subscribe(r => {
-            console.log('result od update operation = ', r);
-          })
-
-        } else {
-          //if not, then create and get its id
-          this.schedulesService.create(modified_operation.schedule).subscribe(r => {
-            console.log('create schedule result = ', r);
-            //assign this id to scheduled operation
-            modified_operation.schedule = r;
-            modified_operation.schedule_id = r.id;
-            console.log(modified_operation);
-            this.scheduledOperationsService.update(modified_operation).subscribe(r => {
-              console.log('result od update operation = ', r);
-            })
-          })
-        }
-
-
-
-      }
+  modifyOperation(modifyEvent: modifyScheduledOperationEvent) {
+    console.log('receiver modify event, ', modifyEvent);
+    this.scheduledOperationsService.update(modifyEvent.new).subscribe(r => {
+      console.log('result od modifyOperation = ', r);
     })
-
 
   }
 

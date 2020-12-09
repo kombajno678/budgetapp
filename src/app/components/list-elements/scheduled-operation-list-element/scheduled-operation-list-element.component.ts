@@ -1,7 +1,15 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { getScheduleTypeName, ScheduleType } from 'src/app/models/internal/ScheduleType';
 import { VerboseDateStuff } from 'src/app/models/internal/VerboseDateStuff';
 import { ScheduledBudgetOperation } from 'src/app/models/ScheduledBudgetOperation';
+import { CreateNewScheduledOperationDialogComponent } from '../../dialogs/create-new-scheduled-operation-dialog/create-new-scheduled-operation-dialog.component';
+
+
+export interface modifyScheduledOperationEvent {
+  old: ScheduledBudgetOperation;
+  new: ScheduledBudgetOperation;
+}
 
 @Component({
   selector: 'app-scheduled-operation-list-element',
@@ -25,7 +33,7 @@ export class ScheduledOperationListElementComponent implements OnInit, OnDestroy
   onDelete: EventEmitter<ScheduledBudgetOperation> = new EventEmitter<ScheduledBudgetOperation>();
 
   @Output()
-  onModify: EventEmitter<ScheduledBudgetOperation> = new EventEmitter<ScheduledBudgetOperation>();
+  onModify: EventEmitter<modifyScheduledOperationEvent> = new EventEmitter<modifyScheduledOperationEvent>();
 
   @Output()
   onChangeActiveState: EventEmitter<ScheduledBudgetOperation> = new EventEmitter<ScheduledBudgetOperation>();
@@ -37,7 +45,7 @@ export class ScheduledOperationListElementComponent implements OnInit, OnDestroy
 
 
 
-  constructor() {
+  constructor(private dialog: MatDialog) {
     if (this.compact) {
       this.displayTypeDetails = false;
     }
@@ -72,16 +80,16 @@ export class ScheduledOperationListElementComponent implements OnInit, OnDestroy
         case ScheduleType.daily:
           break;
         case ScheduleType.weekly:
-          let d = this.daysOfWeek.filter(d => this.so.schedule.day_of_week.includes(d.value)).map(d => d.display);
+          let d = this.daysOfWeek.filter(d => this.so.day_of_week.includes(d.value)).map(d => d.display);
           msg = msg + ' (' + d + ')';
           break;
         case ScheduleType.monthly:
-          let m = this.so.schedule.day_of_month;
+          let m = this.so.day_of_month;
           msg = msg + ' (' + m + ')';
           break;
         case ScheduleType.annually:
-          let am = this.so.schedule.day_of_month;
-          let amm = this.months.filter(m => this.so.schedule.month.includes(m.value)).map(m => m.display);
+          let am = this.so.day_of_month;
+          let amm = this.months.filter(m => this.so.month.includes(m.value)).map(m => m.display);
           msg = msg + ' (' + am + '; ' + amm + ')';
           break;
         default:
@@ -92,4 +100,19 @@ export class ScheduledOperationListElementComponent implements OnInit, OnDestroy
     return msg;
   }
 
+  modify() {
+    let dialogRef = this.dialog.open(CreateNewScheduledOperationDialogComponent, { width: '500px', data: ScheduledBudgetOperation.getCopy(this.so) });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        let x: modifyScheduledOperationEvent = {
+          old: this.so,
+          new: result
+        }
+        this.onModify.emit(x);
+      }
+    })
+
+  }
 }
+
+

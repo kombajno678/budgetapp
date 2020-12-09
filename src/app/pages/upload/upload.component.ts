@@ -6,11 +6,11 @@ import { forkJoin, of, ReplaySubject, Subject } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { modifyOperationEvent } from 'src/app/components/list-elements/operation-list-element/operation-list-element.component';
 import { BudgetOperation } from 'src/app/models/BudgetOperation';
-import { OperationSchedule } from 'src/app/models/OperationSchedule';
+import { FixedPoint } from 'src/app/models/FixedPoint';
 import { ScheduledBudgetOperation } from 'src/app/models/ScheduledBudgetOperation';
 import { BudgetOperationService } from 'src/app/services/budget/budget-operation.service';
 import { BudgetService } from 'src/app/services/budget/budget.service';
-import { OperationSchedulesService } from 'src/app/services/budget/operation-schedules.service';
+import { FixedPointsService } from 'src/app/services/budget/fixed-points.service';
 import { ScheduledOperationsService } from 'src/app/services/budget/scheduled-operations.service';
 
 
@@ -40,7 +40,6 @@ export class UploadComponent implements OnInit, AfterViewInit {
   report: ReportResult = null;
 
 
-  operationSchedules = [];
 
   uploadProgress: number = 0;
   uploadBarMode: string = 'determinate';
@@ -49,16 +48,12 @@ export class UploadComponent implements OnInit, AfterViewInit {
     private budgetService: BudgetService,
     private operationsService: BudgetOperationService,
     private scheduledOpsService: ScheduledOperationsService,
-    private schedulesService: OperationSchedulesService,
+    private fixedPointsService: FixedPointsService,
   ) {
 
   }
 
   ngOnInit(): void {
-    this.schedulesService.getAll().subscribe(r => {
-      this.operationSchedules = r;
-    });
-
 
 
   }
@@ -80,45 +75,18 @@ export class UploadComponent implements OnInit, AfterViewInit {
 
 
   saveScheduledOperations() {
+    // TODO : actually implement category
     this.report.ScheduledOperations.forEach(sop => {
       sop.category = null;
       sop.category_id = null;
     })
-
-    this.report.ScheduledOperations.forEach(sop => {
-      let new_operation: ScheduledBudgetOperation = sop;
-      //check if selected schedule exists
-      let existing_schedule = this.operationSchedules.find(schedule => OperationSchedule.areEqual(schedule, new_operation.schedule));
-      if (existing_schedule) {
-        new_operation.schedule = existing_schedule;
-        new_operation.schedule_id = new_operation.schedule.id;
-        console.log(new_operation);
-        this.scheduledOpsService.create(new_operation).subscribe(r => {
-          console.log('result od add soperation = ', r);
-        })
-
-      } else {
-        //if not, then create and get its id
-        this.schedulesService.create(new_operation.schedule).subscribe(r => {
-          console.log('create schedule result = ', r);
-          if (r) {
-            //assign this id to scheduled operation
-            new_operation.schedule = r;
-            new_operation.schedule_id = r.id;
-            console.log(new_operation);
-            this.scheduledOpsService.create(new_operation).subscribe(r => {
-              console.log('result od add soperation = ', r);
-            })
-          }
-
-        })
-      }
+    this.scheduledOpsService.createMany(this.report.ScheduledOperations).subscribe(r => {
+      console.log('result od add soperation = ', r);
     })
-
-
   }
 
   saveOperations() {
+    // TODO : actually implement category
     this.report.Operations.forEach(op => {
       op.category = null;
       op.category_id = null;
@@ -127,8 +95,8 @@ export class UploadComponent implements OnInit, AfterViewInit {
     forkJoin([
       this.operationsService.createMany(this.report.Operations),
     ]).subscribe(r => {
-      console.log('result of saviong report = ', r);
-      if (r && r[0]) {
+      console.log('result of operationsService.createMany = ', r);
+      if (r) {
         //success
 
       }
@@ -139,19 +107,113 @@ export class UploadComponent implements OnInit, AfterViewInit {
 
   onSave() {
     console.log('save');
-    //brr send requests
+    // TODO: actually implement categories
+    this.report.Operations.forEach(op => {
+      op.category = null;
+      op.category_id = null;
+
+      delete op.category;
+      delete op.category_id;
+    })
+    this.report.ScheduledOperations.forEach(sop => {
+      sop.category = null;
+      sop.category_id = null;
+
+      delete sop.category;
+      delete sop.category_id;
+    })
+
+    // try to generate fixed point (on first day )
+
+    //find first day
+    let firstDay: Date = new Date();
+    this.report.Operations.forEach(op => {
+      let when = new Date(op.when);
+      if (when < firstDay) {
+        firstDay = when;
+      }
+    })
+    console.log('firstDay = ', firstDay.toISOString());
+
+
+    //get fixed points
+    this.fixedPointsService.getAllOnce().subscribe(fps => {
+      if (fps) {
+        console.log('fetched fps = ', fps);
+        // find fixed point closest to first day (from operations to upload)
+        let fpfiltered = fps.filter(fp => fp.when > firstDay);
+        console.log('fpfiltered = ', fpfiltered);
+
+        let fp = fpfiltered.sort((a, b) => a.when.getTime() - b.when.getTime())[0];
+        if (!fp) {
+          //display some error msg and abort
+          //temp alert
+          alert('Please crete a new fixed point first');
+          return;
+        }
+        // calculate diff to that first day
+        let diff = 0;
+        this.report.Operations.filter(op => new Date(op.when) <= fp.when).forEach(op => diff += op.value);// error when no fp exists before
+        let newFp = new FixedPoint();
+        console.log('diff = ', diff);
+        newFp.exact_value = fp.exact_value -= diff;
+        newFp.when = firstDay;
+        this.fixedPointsService.create(newFp).subscribe(createdNewFp => {
+          console.log('createdNewFp = ', createdNewFp);
+          if (createdNewFp) {
+
+            //can actually continue
+            // subscribe hell incoming
+
+            this.scheduledOpsService.createMany(this.report.ScheduledOperations).subscribe(createdSops => {
+              // if success
+              console.log('scheduledOpsService.createMany = ', createdSops);
+              if (createdSops) {
+
+                //assign scheduled op id
+                this.report.ScheduledOperations.forEach(sop => {
+                  sop.id = createdSops.find(createdSop => createdSop.name === sop.name).id;
+                })
+
+
+                this.report.Operations.filter(op => op.scheduled_operation).forEach(op => {
+                  op.scheduled_operation_id = op.scheduled_operation.id;
+                  delete op.scheduled_operation;
+                })
+
+                this.operationsService.createMany(this.report.Operations).subscribe(createdOps => {
+                  console.log('operationsService.createMany = ', createdOps);
+
+                  if (createdOps) {
+                    console.log('worked(?)');
+                    console.log('createdNewFp = ', createdNewFp);
+                    console.log('createdOps = ', createdOps);
+                    console.log('createdSops = ', createdSops);
+
+                    localStorage.removeItem('lastReport');
+                    this.report = null;
+                    this.report$.next(this.report);
 
 
 
+                  } else {
+                    //delete scheduled
+                    this.scheduledOpsService.deleteMany(createdSops).subscribe(deletedSops => {
+                      console.log('reverting changes');
+                    })
+                  }
+                })
+              }
+            })
+
+
+          }
+        })
+      }
 
 
 
-
-
-    localStorage.removeItem('lastReport');
-    this.report = null;
-    this.report$.next(this.report);
-
+    })
 
 
 
@@ -159,7 +221,6 @@ export class UploadComponent implements OnInit, AfterViewInit {
 
 
   }
-
 
 
   get f() {

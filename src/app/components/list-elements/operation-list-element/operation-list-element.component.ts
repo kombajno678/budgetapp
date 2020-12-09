@@ -51,8 +51,8 @@ export class OperationListElementComponent implements OnInit, OnDestroy {
   }
 
 
-  modifyOperation(operation: BudgetOperation) {
-    let dialogRef = this.dialog.open(CreateNewOperationDialogComponent, { width: '500px', data: BudgetOperation.getCopy(operation) });
+  modify() {
+    let dialogRef = this.dialog.open(CreateNewOperationDialogComponent, { width: '500px', data: BudgetOperation.getCopy(this.op) });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         console.log(result);

@@ -13,7 +13,7 @@
             <div mat-line
                  class="">
                 <span class="mat-subheading-2">{{so.name}}</span>
-                <span class="schedule-desc">{{ this.getScheduleTypeDescription(so.schedule.scheduleType) }}</span>
+                <span class="schedule-desc">{{ this.getScheduleTypeDescription(so.scheduleType) }}</span>
             </div>
 
         </ng-container>
@@ -25,7 +25,7 @@
 
             <span class="mat-title">{{so.value < 0 ? -so.value : so.value}}</span>{{ so.active ? '' : '(Disabled)' }}
             <span class="mat-subheading-2">{{so.name}}</span>
-            <span class="schedule-desc">{{ this.getScheduleTypeDescription(so.schedule?.scheduleType) }}</span>
+            <span class="schedule-desc">{{ this.getScheduleTypeDescription(so?.scheduleType) }}</span>
 
         </ng-template>
     </div>
@@ -47,7 +47,7 @@
             <button mat-menu-item
                     type="button"
                     color="accent"
-                    (click)="onModify.emit(so)">
+                    (click)="modify()">
                 <mat-icon>edit</mat-icon>
                 <span>Modify</span>
             </button>

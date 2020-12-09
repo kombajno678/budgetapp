@@ -1,7 +1,7 @@
 import { InvokeFunctionExpr } from '@angular/compiler';
 import { AbstractResource } from './AbstractResource';
 import { ScheduleType } from './internal/ScheduleType';
-
+/*
 export class OperationSchedule extends AbstractResource {
 
     //id?: number;
@@ -40,7 +40,7 @@ export class OperationSchedule extends AbstractResource {
     static matchSceduleWithDate(schedule: OperationSchedule, date: Date): boolean {
         switch (schedule.scheduleType) {
             case ScheduleType.daily:
-                //scheduled operation is on daily schedule, 
+                //scheduled operation is on daily schedule,
                 return true;
             case ScheduleType.weekly:
                 //check day of week
@@ -139,3 +139,5 @@ export class OperationSchedule extends AbstractResource {
 
 
 }
+
+*/

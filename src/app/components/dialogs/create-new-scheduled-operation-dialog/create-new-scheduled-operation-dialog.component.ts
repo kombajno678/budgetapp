@@ -3,7 +3,6 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatButtonToggleGroup } from '@angular/material/button-toggle';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSelectionList } from '@angular/material/list';
-import { OperationSchedule } from 'src/app/models/OperationSchedule';
 import { ScheduledBudgetOperation } from 'src/app/models/ScheduledBudgetOperation';
 import { ScheduleType } from 'src/app/models/internal/ScheduleType';
 
@@ -77,19 +76,19 @@ export class CreateNewScheduledOperationDialogComponent implements OnInit, After
 
       //console.log(this.operation);
       //check what chedule it is
-      if (!this.operation.schedule.scheduleType) {
-        OperationSchedule.initScheduleType(this.operation.schedule);
+      if (!this.operation.scheduleType) {
+        ScheduledBudgetOperation.initScheduleType(this.operation);
       }
-      this.scheduleType = this.operation.schedule.scheduleType;
+      this.scheduleType = this.operation.scheduleType;
 
 
     } else {
       this.operation = new ScheduledBudgetOperation();
       this.operation.value = null;
       this.operation.name = null;
-      this.operation.schedule = new OperationSchedule();
-      this.operation.schedule.scheduleType = ScheduleType.monthly;
-      this.scheduleType = this.operation.schedule.scheduleType;      //this.operation.when = new Date();
+      //this.operation.schedule = new OperationSchedule();
+      this.operation.scheduleType = ScheduleType.monthly;
+      this.scheduleType = this.operation.scheduleType;      //this.operation.when = new Date();
 
       this.acceptButtonTest = this.createButtonText;
       this.title = this.createTitle;
@@ -104,9 +103,9 @@ export class CreateNewScheduledOperationDialogComponent implements OnInit, After
       //scheduled: new FormControl(false, [Validators.required]),
       //schedule_id: new FormControl(null, []),
       formScheduleType: new FormControl(this.scheduleType, [Validators.min(0), Validators.max(3)]),
-      formDaysOfWeek: new FormControl(this.operation.schedule.day_of_week, []),
-      formDaysOfMonths: new FormControl(this.operation.schedule.day_of_month, []),
-      formMonths: new FormControl(this.operation.schedule.month, []),
+      formDaysOfWeek: new FormControl(this.operation.day_of_week, []),
+      formDaysOfMonths: new FormControl(this.operation.day_of_month, []),
+      formMonths: new FormControl(this.operation.month, []),
     })
 
     this.form.controls.formScheduleType.valueChanges.subscribe(newValue => {
@@ -130,7 +129,7 @@ export class CreateNewScheduledOperationDialogComponent implements OnInit, After
 
 
   onSave() {
-    console.log('dialog on save');
+    console.log('dialog on save ', this.form);
 
     if (this.isFormInvalid()) {
       console.warn('isFormInvalid returned true');
@@ -148,39 +147,38 @@ export class CreateNewScheduledOperationDialogComponent implements OnInit, After
 
 
 
-    let schedule = new OperationSchedule();
+    //let schedule = new OperationSchedule();
     switch (this.scheduleType) {
       case ScheduleType.daily:
         break;
       case ScheduleType.weekly:
-        schedule.day_of_week = this.form.controls.formDaysOfWeek.value.sort();
+        this.operation.day_of_week = this.form.controls.formDaysOfWeek.value.sort();
         break;
       case ScheduleType.monthly:
-        schedule.day_of_month = this.form.controls.formDaysOfMonths.value.sort();
-        schedule.day_of_month = this.form.controls.formDaysOfMonths.value.sort();
+        this.operation.day_of_month = this.form.controls.formDaysOfMonths.value.sort();
+        this.operation.day_of_month = this.form.controls.formDaysOfMonths.value.sort();
         break;
       case ScheduleType.annually:
-        schedule.month = this.form.controls.formMonths.value;
-        schedule.day_of_month = this.form.controls.formDaysOfMonths.value.sort();
+        this.operation.month = this.form.controls.formMonths.value;
+        this.operation.day_of_month = this.form.controls.formDaysOfMonths.value.sort();
         break;
       default:
         console.error('this.scheduleType is null');
         //error
         return null;
     }
-    this.operation.schedule = schedule;
+    //this.operation.schedule = schedule;
 
 
 
     this.operation.name = this.form.controls.name.value;
 
-    console.log(this.operation);
+    console.log('this.operation', this.operation);
 
     this.dialogRef.close(this.operation);
 
 
   }
-
 
 
 
