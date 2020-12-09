@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, forkJoin, merge, Observable, of } from 'rxjs';
+import { BehaviorSubject, forkJoin, merge, Observable, of, ReplaySubject } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { AbstractResource } from 'src/app/models/AbstractResource';
 import { environment } from 'src/environments/environment';
@@ -19,7 +19,7 @@ export abstract class AbstractResourceService<T extends AbstractResource> implem
   //to override
   pathSuffix: string;
 
-  public resource: BehaviorSubject<T[]>;
+  public resource: ReplaySubject<T[]>;
   public mapWhenRefreshing = (resource) => resource;
 
   constructor(pathSuffix: string, customMap, public http: HttpClient) {
@@ -29,7 +29,7 @@ export abstract class AbstractResourceService<T extends AbstractResource> implem
     }
     this.path = this.url + this.pathSuffix;
 
-    this.resource = new BehaviorSubject<T[]>(null);
+    this.resource = new ReplaySubject<T[]>(1);
     if (customMap) {
       this.mapWhenRefreshing = customMap;
 

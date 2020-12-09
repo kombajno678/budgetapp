@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { BudgetOperation } from 'src/app/models/BudgetOperation';
 import { FixedPointsService } from 'src/app/services/budget/fixed-points.service';
 import { BudgetOperationService } from 'src/app/services/budget/budget-operation.service';
@@ -15,7 +15,7 @@ import { tap } from 'rxjs/operators';
   templateUrl: './predictions.component.html',
   styleUrls: ['./predictions.component.scss']
 })
-export class PredictionsComponent implements OnInit {
+export class PredictionsComponent implements OnInit, AfterViewInit {
 
 
   predictions: PredicionPoint[] = [];
@@ -43,20 +43,18 @@ export class PredictionsComponent implements OnInit {
   ngOnInit(): void {
     this.predictions$ = new BehaviorSubject<PredicionPoint[]>(null);
     this.todaysPrediction$ = new BehaviorSubject<PredicionPoint>(null);
-
-
     this.form = this.fb.group({
       startDate: [moment(), { validators: [Validators.required], updateOn: 'blur' }],
       endDate: [moment(), { validators: [Validators.required], updateOn: 'blur' }]
     });
+  }
 
-
-
-
+  ngAfterViewInit() {
 
     this.setDateRageMonths();
 
     this.generate();
+
   }
 
   onFormSubmit() {
@@ -92,7 +90,7 @@ export class PredictionsComponent implements OnInit {
 
     this.startDate = new Date(this.endDate);
 
-    this.startDate.setMonth(this.startDate.getMonth() - 3);
+    this.startDate.setMonth(this.startDate.getMonth() - 4);
     this.endDate.setMonth(this.endDate.getMonth() + 3);
 
     this.form.controls.endDate.setValue(this.endDate);
@@ -117,18 +115,20 @@ export class PredictionsComponent implements OnInit {
 
 
   generate() {
-
-
     console.log('generating ... , ', this.startDate, this.endDate);
-    this.generatorSubscribtion = this.budgetService.generatePredictionsBetweenDates(this.startDate, this.endDate).pipe(
-      tap(_ => console.log('beep bop, tapped and received'))
+    this.budgetService.generatePredictionsBetweenDates(this.startDate, this.endDate).subscribe(
+      (r) => {
+        console.log('RECEIVED  generatePredictionsBetweenDates prediction for ', r.length, ' days');
+        this.predictions = r;
+        this.predictions$.next(this.predictions);
+      },
+      (error) => {
+        console.error('RECEIVED generatePredictionsBetweenDates error: ', error);
+      },
+      () => {
+        console.log('RECEIVED generatePredictionsBetweenDates completed');
+      }
     );
-
-    this.generatorSubscribtion.subscribe(r => {
-      console.log('RECEIVED  prediction for ', r.length, ' days');
-      this.predictions = r;
-      this.predictions$.next(this.predictions);
-    });
 
   }
 

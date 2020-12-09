@@ -5,7 +5,7 @@ export class Globals {
     static getDaysInRange = function (startDate: Date, endDate: Date) {
         let daysRange = [];
         for (var d = new Date(startDate); d <= endDate; d.setDate(d.getUTCDate() + 1)) {
-            d.setUTCHours(0, 0, 0, 0);
+            d.setUTCHours(12, 0, 0, 0);
             daysRange.push(new Date(d));
         }
         return daysRange;

@@ -128,11 +128,16 @@ export class BudgetService {
 
 
 
+  predictions$: Subject<PredicionPoint[]>;
   generatePredictionsBetweenDates(start: Date, end: Date): Observable<PredicionPoint[]> {
-    console.log('GENERATOR ionvoked ');
+    console.log('GENERATOR ionvoked ', start, end);
 
-    let predictions$: Subject<PredicionPoint[]> = new Subject<PredicionPoint[]>();
+    if (!this.predictions$) {
+      this.predictions$ = new Subject<PredicionPoint[]>();
+    }
+    console.log('GENERATOR generating days range ');
     let daysRange = Globals.getDaysInRange(start, end);
+    console.log('GENERATOR got days range ', daysRange.length);
 
     combineLatest([
       this.fixedPointsService.getAll(),
@@ -154,9 +159,10 @@ export class BudgetService {
           predictions.find(p => Globals.compareDates(p.date, fp.when)).fixedPoint = fp;
         });
 
-        operations.forEach(op => {
-          predictions.find(p => Globals.compareDates(p.date, op.when)).operations.push(op);
-        });
+        predictions.forEach(p => {
+          p.operations = operations.filter(op => Globals.compareDates(p.date, op.when));
+        })
+
 
 
         let today = new Date();
@@ -192,12 +198,13 @@ export class BudgetService {
           }
         }
         console.log('GENERATOR NEXT ', predictions.length);
-        predictions$.next(predictions);
+        this.predictions$.next(predictions);
+        //this.predictions$.complete();
       }
     })
 
-    console.log('GENERATOR RETURN ', predictions$);
-    return predictions$;
+    console.log('GENERATOR RETURN ', this.predictions$);
+    return this.predictions$.asObservable();
 
   }
 

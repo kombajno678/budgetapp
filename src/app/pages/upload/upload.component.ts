@@ -171,14 +171,27 @@ export class UploadComponent implements OnInit, AfterViewInit {
               if (createdSops) {
 
                 //assign scheduled op id
+                /*
                 this.report.ScheduledOperations.forEach(sop => {
                   sop.id = createdSops.find(createdSop => createdSop.name === sop.name).id;
                 })
+                */
 
 
                 this.report.Operations.filter(op => op.scheduled_operation).forEach(op => {
-                  op.scheduled_operation_id = op.scheduled_operation.id;
-                  delete op.scheduled_operation;
+                  try {
+                    console.log('searching for schedule of ', op.name);
+                    let sop = createdSops.find(csop => csop.name === op.scheduled_operation.name);
+                    console.log('found sop : ', sop)
+                    op.scheduled_operation_id = sop.id;
+                  } catch (error) {
+                    console.error(error);
+                    delete op.scheduled_operation_id;
+
+                  } finally {
+                    delete op.scheduled_operation;
+
+                  }
                 })
 
                 this.operationsService.createMany(this.report.Operations).subscribe(createdOps => {
