@@ -6,6 +6,7 @@ import { ScheduledOperationsService } from 'src/app/services/budget/scheduled-op
 import { BehaviorSubject, combineLatest, forkJoin, merge, zip } from 'rxjs';
 import { getScheduleTypeName, ScheduleType } from 'src/app/models/internal/ScheduleType';
 import { modifyEvent } from 'src/app/models/internal/modifyEvent';
+import { CategoryService } from 'src/app/services/budget/category.service';
 
 @Component({
   selector: 'app-scheduled-operations',
@@ -30,6 +31,8 @@ export class ScheduledOperationsComponent implements OnInit, OnDestroy {
 
   constructor(
     private scheduledOperationsService: ScheduledOperationsService,
+    private categoriesService: CategoryService,
+
     private dialog: MatDialog
   ) { }
 
@@ -51,12 +54,18 @@ export class ScheduledOperationsComponent implements OnInit, OnDestroy {
 
     this.scheduledOperations$.next(null);
     combineLatest([
-      this.scheduledOperationsService.getAll()
+      this.scheduledOperationsService.getAll(),
+      this.categoriesService.getAll()
     ]).subscribe(
       r => {
         console.log('combineLatest  = ', r);
         // if result is null that means that nothing has been emitted yet
-        if (r[0] /*&& r[1]*/) {
+        if (r[0] && r[1]) {
+          r[0].forEach(sop => {
+            if (sop.category_id) {
+              sop.category = r[1].find(c => c.id === sop.category_id);
+            }
+          })
           this.updateOperations(r[0]);
           console.log('this.scheduledOperations = ', this.scheduledOperations);
         }
@@ -129,9 +138,13 @@ export class ScheduledOperationsComponent implements OnInit, OnDestroy {
 
   }
   modifyOperation(modifyEvent: modifyEvent<ScheduledBudgetOperation>) {
+    modifyEvent.new.id = modifyEvent.old.id;
     console.log('receiver modify event, ', modifyEvent);
     this.scheduledOperationsService.update(modifyEvent.new).subscribe(r => {
-      console.log('result od modifyOperation = ', r);
+      console.log('result od scheduledOperationsService.update = ', r);
+      if (r) {
+        this.refresh();
+      }
     })
 
   }

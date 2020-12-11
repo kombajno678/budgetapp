@@ -32,14 +32,17 @@ export class ScheduledBudgetOperation extends AbstractResource {
     static getCopy(original: ScheduledBudgetOperation) {
         let copy = new ScheduledBudgetOperation();
         copy.id = original.id;
-        copy.user_id = original.user_id;
+        //copy.user_id = original.user_id;
         copy.name = original.name;
         copy.value = original.value;
         copy.year = original.year;
         copy.month = original.month;
         copy.day_of_month = original.day_of_month;
         copy.day_of_week = original.day_of_week;
-        copy.timestamp = original.timestamp;
+        //copy.timestamp = original.timestamp;
+        copy.category_id = original.category_id;
+        copy.active = original.active;
+        copy.hidden = original.hidden;
         return copy;
     }
 

@@ -10,6 +10,14 @@
               -so.value
               :
               so.value}}</span>
+
+                <span *ngIf="so.category">
+                    <mat-icon [matTooltip]="so.category.name"
+                              [style.color]="so.category.color">
+                        {{so.category.icon ? so.category.icon : 'category'}}
+                    </mat-icon>
+                </span>
+
                 {{ so.active ? '' : '(Disabled)' }}
     </div>
     <div mat-line
@@ -17,6 +25,8 @@
          class="">
         <span class="mat-subheading-2">{{so.name}}</span>
         <span class="schedule-desc">{{ this.getScheduleTypeDescription(so.scheduleType) }}</span>
+
+
     </div>
 
     <div mat-line
@@ -31,12 +41,23 @@
                 <span class="mat-subheading-2">{{so.name}}</span>
                 <span class="schedule-desc">{{ this.getScheduleTypeDescription(so?.scheduleType) }}</span>
 
+                {{so.category_id}}
+                <span *ngIf="so.category">
+                    <mat-icon [matTooltip]="so.category.name"
+                              [style.color]="so.category.color">
+                        {{so.category.icon ? so.category.icon : 'category'}}
+                    </mat-icon>
+                </span>
+
     </div>
 
 
 
 
+
     <ng-container *ngIf="displayButton">
+
+
         <button mat-icon-button
                 type="button"
                 [matMenuTriggerFor]="menu"

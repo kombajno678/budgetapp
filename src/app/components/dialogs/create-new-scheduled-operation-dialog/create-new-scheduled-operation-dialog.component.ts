@@ -7,6 +7,8 @@ import { ScheduledBudgetOperation } from 'src/app/models/ScheduledBudgetOperatio
 import { ScheduleType } from 'src/app/models/internal/ScheduleType';
 
 import { VerboseDateStuff } from 'src/app/models/internal/VerboseDateStuff';
+import { CategoryService } from 'src/app/services/budget/category.service';
+import { Category } from 'src/app/models/Category';
 
 
 
@@ -59,12 +61,21 @@ export class CreateNewScheduledOperationDialogComponent implements OnInit, After
   acceptButtonTest: string = null;
   title: string = null;
 
+  possibleCategories: Category[];
+
+
 
   constructor(
     public dialogRef: MatDialogRef<CreateNewScheduledOperationDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: ScheduledBudgetOperation,
+    private categoryService: CategoryService
   ) {
+
+
+
     if (data) {
+
+
 
 
       this.operation = data;
@@ -73,6 +84,8 @@ export class CreateNewScheduledOperationDialogComponent implements OnInit, After
       this.operationValueSign = this.operation.value;
 
       this.operation.value = this.operation.value < 0 ? -this.operation.value : this.operation.value;
+
+
 
       //console.log(this.operation);
       //check what chedule it is
@@ -95,6 +108,16 @@ export class CreateNewScheduledOperationDialogComponent implements OnInit, After
 
 
     }
+    this.categoryService.getAll().subscribe(r => {
+      if (r) {
+        this.possibleCategories = r;
+        if (this.operation.category_id && !this.operation.category) {
+          this.operation.category = this.possibleCategories.find(c => c.id === this.operation.category_id);
+        }
+      } else {
+        console.error('error while fetching categories');
+      }
+    })
 
     this.form = new FormGroup({
       value: new FormControl(this.operation.value, [Validators.required, Validators.min(0.01)]),
@@ -106,6 +129,7 @@ export class CreateNewScheduledOperationDialogComponent implements OnInit, After
       formDaysOfWeek: new FormControl(this.operation.day_of_week, []),
       formDaysOfMonths: new FormControl(this.operation.day_of_month, []),
       formMonths: new FormControl(this.operation.month, []),
+      category_id: new FormControl(this.operation.category_id, []),
     })
 
     this.form.controls.formScheduleType.valueChanges.subscribe(newValue => {
@@ -147,6 +171,11 @@ export class CreateNewScheduledOperationDialogComponent implements OnInit, After
 
 
 
+
+    this.operation.category_id = this.form.controls.category_id.value;
+    delete this.operation.category;
+
+
     //let schedule = new OperationSchedule();
     switch (this.scheduleType) {
       case ScheduleType.daily:
@@ -173,7 +202,7 @@ export class CreateNewScheduledOperationDialogComponent implements OnInit, After
 
     this.operation.name = this.form.controls.name.value;
 
-    console.log('this.operation', this.operation);
+    //console.log('this.operation', this.operation);
 
     this.dialogRef.close(this.operation);
 
