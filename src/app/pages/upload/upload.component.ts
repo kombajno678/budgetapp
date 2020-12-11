@@ -179,6 +179,22 @@ export class UploadComponent implements OnInit, AfterViewInit {
 
             this.categoriesService.createMany(this.report.Categories).subscribe(createdCategories => {
               if (createdCategories && createdCategories.length == this.report.Categories.length) {
+
+
+                //assing category id to sops and ops
+                this.report.ScheduledOperations.forEach(o => {
+                  if (o.category) {
+                    o.category_id = createdCategories.find(c => c.name === o.category.name).id;
+                    delete o.category;
+                  }
+                })
+                this.report.Operations.forEach(o => {
+                  if (o.category) {
+                    o.category_id = createdCategories.find(c => c.name === o.category.name).id;
+                    delete o.category;
+                  }
+                })
+
                 this.scheduledOpsService.createMany(this.report.ScheduledOperations).subscribe(createdSops => {
                   // if success
                   console.log('scheduledOpsService.createMany = ', createdSops);
@@ -225,6 +241,9 @@ export class UploadComponent implements OnInit, AfterViewInit {
 
                       } else {
                         console.error('error while creating Operations')
+                        this.fixedPointsService.delete(createdNewFp).subscribe(r => {
+                          console.log('reverting changes fixedPointsService.delete(createdNewFp)');
+                        })
 
                         this.categoriesService.deleteMany(createdCategories).subscribe(deleted => {
                           console.log('reverting changes categoriesService.deleteMany(createdCategories)');
@@ -237,12 +256,18 @@ export class UploadComponent implements OnInit, AfterViewInit {
                     })
                   } else {
                     console.error('error while creating ScheduledOperations')
+                    this.fixedPointsService.delete(createdNewFp).subscribe(r => {
+                      console.log('reverting changes fixedPointsService.delete(createdNewFp)');
+                    })
                     this.categoriesService.deleteMany(createdCategories).subscribe(deleted => {
                       console.log('reverting changes categoriesService.deleteMany(createdCategories)');
                     })
                   }
                 })
               } else {
+                this.fixedPointsService.delete(createdNewFp).subscribe(r => {
+                  console.log('reverting changes fixedPointsService.delete(createdNewFp)');
+                })
                 console.error('error while creating categories');
               }
 

@@ -1,209 +1,220 @@
-<div class="row">
-    <mat-progress-bar [value]="uploadProgress"
-                      [mode]="uploadBarMode">
+<div class="row m-1">
+  <mat-progress-bar [value]="uploadProgress"
+                    [mode]="uploadBarMode">
 
-    </mat-progress-bar>
+  </mat-progress-bar>
 </div>
-<div class="row">
-    <div class="col">
-        <form [formGroup]="myForm"
-              (ngSubmit)="submit()">
+<div class="row m-1">
+  <div class="col-12">
+    Currently, only supported bank is mBank. <a href="#">How do I export data?</a>
+  </div>
+  <div class="col">
+    <form [formGroup]="myForm"
+          (ngSubmit)="submit()">
+
+      <label for="file">.csv file:</label>
+      <input formControlName="file"
+             id="file"
+             type="file"
+             class="form-control"
+             (change)="onFileChange($event)">
+      <div *ngIf="f.file.touched && f.file.invalid">
+        <div *ngIf="f.file.errors.required">
+          File is required.
+        </div>
+      </div>
 
 
-            <div class="form-group">
-                <label for="file">mBank .csv file:</label>
-                <input formControlName="file"
-                       id="file"
-                       type="file"
-                       class="form-control"
-                       (change)="onFileChange($event)">
-                <div *ngIf="f.file.touched && f.file.invalid">
-                    <div *ngIf="f.file.errors.required">
-                        File is required.
-                    </div>
-                </div>
-            </div>
-
-            <button class="btn btn-primary"
-                    type="submit">Submit</button>
-        </form>
-    </div>
+      <button mat-flat-button
+              color="primary"
+              type="submit">Submit</button>
+    </form>
+  </div>
 
 </div>
 
 
 
 <ng-container *ngIf="(report$ | async) as r; else loading">
-    <div class="row">
-        <div class="col-12">
-            <h1>
-                Please review generated operations.
-            </h1>
-            <p>
-                You can make changes to them now. If you click cancel button, no changes will be made.
-            </p>
+  <div class="row m-1">
+    <div class="col-12">
+      <h1>
+        Please review generated operations.
+      </h1>
+      <p>
+        You can make changes to them now. If you click cancel button, no changes will be made.
+      </p>
 
-        </div>
+    </div>
 
-        <div class="col-sm-12 col-md-12 col-lg-12">
-            <mat-expansion-panel>
-                <mat-expansion-panel-header>
-                    <mat-panel-title>
-                        new scheduled operaions ({{r.ScheduledOperations.length}})
-                    </mat-panel-title>
-                    <mat-panel-description>
-                        Click to expand
-                    </mat-panel-description>
-                </mat-expansion-panel-header>
+    <div class="col-sm-12 col-md-12 col-lg-12 p-3">
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            new scheduled operaions ({{r.ScheduledOperations.length}})
+          </mat-panel-title>
+          <mat-panel-description>
+            Click to expand
+          </mat-panel-description>
+        </mat-expansion-panel-header>
 
-                <ng-template matExpansionPanelContent>
+        <ng-template matExpansionPanelContent>
 
+          <cdk-virtual-scroll-viewport itemSize="48"
+                                       minBufferPx="200"
+                                       maxBufferPx="400"
+                                       class="operations-viewport">
+            <mat-list dense
+                      class="w-100">
+              <ng-container *cdkVirtualFor="let so of r.ScheduledOperations">
+                <app-scheduled-operation-list-element [so]="so"
+                                                      [compact]="true">
 
-                    <mat-list dense
-                              class="generated-list">
-                        <ng-container *ngFor="let so of r.ScheduledOperations">
-                            <app-scheduled-operation-list-element [so]="so"
-                                                                  [compact]="true">
-
-                            </app-scheduled-operation-list-element>
-
-
-                        </ng-container>
-                    </mat-list>
-                </ng-template>
-
-                <mat-action-row>
-                    <button mat-flat-button
-                            (click)="saveScheduledOperations()">
-                        Save
-                    </button>
-                </mat-action-row>
-            </mat-expansion-panel>
-        </div>
-
-        <div class="col-sm-12 col-md-12 col-lg-12">
-
-            <mat-expansion-panel>
-                <mat-expansion-panel-header>
-                    <mat-panel-title>
-                        new categories ({{r.Categories.length}})
-                    </mat-panel-title>
-                    <mat-panel-description>
-                        Click to expand
-                    </mat-panel-description>
-                </mat-expansion-panel-header>
-                <ng-template matExpansionPanelContent>
+                </app-scheduled-operation-list-element>
 
 
-                    <mat-list dense
-                              class="generated-list">
-                        <ng-container *ngFor="let cat of r.Categories">
-                            <app-category-list-element [cat]="cat"
-                                                       [compact]="false"
-                                                       (onDelete)="deleteCategory($event)"
-                                                       (onModify)="modifyCategory($event)">
-                                ...
-                            </app-category-list-element>
-                        </ng-container>
-                    </mat-list>
-                </ng-template>
-            </mat-expansion-panel>
+              </ng-container>
+            </mat-list>
+          </cdk-virtual-scroll-viewport>
 
-        </div>
+        </ng-template>
 
-        <div class="col-sm-12 col-md-12 col-lg-12">
-            <mat-expansion-panel>
-                <mat-expansion-panel-header>
-                    <mat-panel-title>
-                        new operations ({{r.Operations.length}})
-                    </mat-panel-title>
-                    <mat-panel-description>
-                        Click to expand
-                    </mat-panel-description>
-                </mat-expansion-panel-header>
+        <mat-action-row>
+          <button mat-flat-button
+                  (click)="saveScheduledOperations()">
+            Save
+          </button>
+        </mat-action-row>
+      </mat-expansion-panel>
+    </div>
+
+    <div class="col-sm-12 col-md-12 col-lg-12 p-3">
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            new categories ({{r.Categories.length}})
+          </mat-panel-title>
+          <mat-panel-description>
+            Click to expand
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+        <ng-template matExpansionPanelContent>
+
+          <cdk-virtual-scroll-viewport itemSize="48"
+                                       minBufferPx="200"
+                                       maxBufferPx="400"
+                                       class="operations-viewport">
+            <mat-list dense
+                      class="w-100">
+              <ng-container *cdkVirtualFor="let cat of r.Categories">
+                <app-category-list-element [cat]="cat"
+                                           [compact]="false"
+                                           (onDelete)="deleteCategory($event)"
+                                           (onModify)="modifyCategory($event)">
+                  ...
+                </app-category-list-element>
+              </ng-container>
+            </mat-list>
+          </cdk-virtual-scroll-viewport>
 
 
 
 
-                <cdk-virtual-scroll-viewport itemSize="48"
-                                             minBufferPx="200"
-                                             maxBufferPx="400"
-                                             class="operations-viewport">
+        </ng-template>
+      </mat-expansion-panel>
 
-                    <mat-list dense
-                              class="w-100">
+    </div>
 
-                        <ng-container *cdkVirtualFor="let op of r.Operations;templateCacheSize: 20">
+    <div class="col-sm-12 col-md-12 col-lg-12 p-3">
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            new operations ({{r.Operations.length}})
+          </mat-panel-title>
+          <mat-panel-description>
+            Click to expand
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+        <ng-template matExpansionPanelContent>
+          <cdk-virtual-scroll-viewport itemSize="48"
+                                       minBufferPx="200"
+                                       maxBufferPx="400"
+                                       class="operations-viewport">
 
-                            <app-operation-list-element [op]="op"
-                                                        [compact]="true"
-                                                        (onDelete)="deleteOperation($event)"
-                                                        (onModify)="modifyOperation($event)"
-                                                        class="w-100">
+            <mat-list dense
+                      class="w-100">
 
-                            </app-operation-list-element>
+              <ng-container *cdkVirtualFor="let op of r.Operations;templateCacheSize: 20">
 
+                <app-operation-list-element [op]="op"
+                                            [compact]="true"
+                                            (onDelete)="deleteOperation($event)"
+                                            (onModify)="modifyOperation($event)"
+                                            class="w-100">
 
-                        </ng-container>
-
-                    </mat-list>
-
-                </cdk-virtual-scroll-viewport>
-
-
-                <mat-action-row>
-                    <button mat-flat-button
-                            (click)="saveOperations()">
-                        Save
-                    </button>
-                </mat-action-row>
-
-            </mat-expansion-panel>
-
-
-        </div>
+                </app-operation-list-element>
 
 
+              </ng-container>
+
+            </mat-list>
+
+          </cdk-virtual-scroll-viewport>
+        </ng-template>
+        <mat-action-row>
+          <button mat-flat-button
+                  (click)="saveOperations()">
+            Save
+          </button>
+        </mat-action-row>
+
+      </mat-expansion-panel>
 
 
     </div>
 
-    <div class="row">
 
-        <div class="col">
 
-        </div>
-        <div class="col-auto">
-            <button mat-flat-button
-                    (click)="onCancel()">
-                Cancel
-            </button>
-        </div>
-        <div class="col-auto">
-            <button mat-flat-button
-                    (click)="onSave()"
-                    color="primary">
-                Save
-            </button>
-        </div>
+
+  </div>
+
+  <div class="row m-1">
+
+    <div class="col">
 
     </div>
+    <div class="col-auto">
+      <button mat-flat-button
+              (click)="onCancel()">
+        Cancel
+      </button>
+    </div>
+    <div class="col-auto">
+      <button mat-flat-button
+              (click)="onSave()"
+              color="primary">
+        Save
+      </button>
+    </div>
+
+  </div>
 
 
 </ng-container>
 
 <ng-template #loading>
-    <div class="row">
-        <div class="col"></div>
-        <div class="col-auto">
-            <mat-progress-spinner [value]="uploadProgress"
-                                  [mode]="uploadBarMode">
+  <div class="row m-1">
+    <div class="col"></div>
+    <div class="col-auto">
+      <mat-progress-spinner [value]="uploadProgress"
+                            [mode]="uploadBarMode">
 
-            </mat-progress-spinner>
+      </mat-progress-spinner>
 
-        </div>
-        <div class="col"></div>
     </div>
+    <div class="col"></div>
+  </div>
 
 
 </ng-template>
