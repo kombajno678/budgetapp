@@ -52,6 +52,14 @@ export class SidenavComponent implements OnInit {
 
     },
     {
+      title: 'Categories',
+      url: '/categories',
+      icon: 'category',
+      loginRequired: true,
+
+
+    },
+    {
       title: 'Scheduled operations',
       url: '/scheduledoperations',
       icon: 'event',

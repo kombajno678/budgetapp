@@ -15,7 +15,7 @@ import moment from 'moment';
 import { MatButtonToggleChange } from '@angular/material/button-toggle';
 import { BehaviorSubject, combineLatest } from 'rxjs';
 import { ScheduledOperationsService } from 'src/app/services/budget/scheduled-operations.service';
-import { modifyOperationEvent } from 'src/app/components/list-elements/operation-list-element/operation-list-element.component';
+import { modifyEvent } from 'src/app/models/internal/modifyEvent';
 
 @Component({
   selector: 'app-operations',
@@ -300,7 +300,7 @@ export class OperationsComponent implements OnInit, AfterViewInit, OnDestroy {
       console.log('deleteOperation result = ', r);
     })
   }
-  modifyOperation(event: modifyOperationEvent) {
+  modifyOperation(event: modifyEvent<BudgetOperation>) {
     console.log('receiver modify event, ', event.new);
     this.operationService.update(event.new).subscribe(r => {
       console.log('result = ', r);

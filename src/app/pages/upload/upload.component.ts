@@ -4,7 +4,7 @@ import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angula
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { forkJoin, of, ReplaySubject, Subject } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { modifyOperationEvent } from 'src/app/components/list-elements/operation-list-element/operation-list-element.component';
+import { modifyEvent } from 'src/app/models/internal/modifyEvent';
 import { BudgetOperation } from 'src/app/models/BudgetOperation';
 import { FixedPoint } from 'src/app/models/FixedPoint';
 import { ScheduledBudgetOperation } from 'src/app/models/ScheduledBudgetOperation';
@@ -12,6 +12,7 @@ import { BudgetOperationService } from 'src/app/services/budget/budget-operation
 import { BudgetService } from 'src/app/services/budget/budget.service';
 import { FixedPointsService } from 'src/app/services/budget/fixed-points.service';
 import { ScheduledOperationsService } from 'src/app/services/budget/scheduled-operations.service';
+import { CategoryService } from 'src/app/services/budget/category.service';
 
 
 
@@ -49,6 +50,7 @@ export class UploadComponent implements OnInit, AfterViewInit {
     private operationsService: BudgetOperationService,
     private scheduledOpsService: ScheduledOperationsService,
     private fixedPointsService: FixedPointsService,
+    private categoriesService: CategoryService,
   ) {
 
   }
@@ -108,6 +110,7 @@ export class UploadComponent implements OnInit, AfterViewInit {
   onSave() {
     console.log('save');
     // TODO: actually implement categories
+    /*
     this.report.Operations.forEach(op => {
       op.category = null;
       op.category_id = null;
@@ -122,6 +125,7 @@ export class UploadComponent implements OnInit, AfterViewInit {
       delete sop.category;
       delete sop.category_id;
     })
+    */
 
     // try to generate fixed point (on first day )
 
@@ -164,60 +168,83 @@ export class UploadComponent implements OnInit, AfterViewInit {
 
             //can actually continue
             // subscribe hell incoming
-
-            this.scheduledOpsService.createMany(this.report.ScheduledOperations).subscribe(createdSops => {
-              // if success
-              console.log('scheduledOpsService.createMany = ', createdSops);
-              if (createdSops) {
-
-                //assign scheduled op id
-                /*
-                this.report.ScheduledOperations.forEach(sop => {
-                  sop.id = createdSops.find(createdSop => createdSop.name === sop.name).id;
-                })
-                */
+            //create categories
 
 
-                this.report.Operations.filter(op => op.scheduled_operation).forEach(op => {
-                  try {
-                    console.log('searching for schedule of ', op.name);
-                    let sop = createdSops.find(csop => csop.name === op.scheduled_operation.name);
-                    console.log('found sop : ', sop)
-                    op.scheduled_operation_id = sop.id;
-                  } catch (error) {
-                    console.error(error);
-                    delete op.scheduled_operation_id;
+            this.categoriesService.createMany(this.report.Categories).subscribe(createdCategories => {
+              if (createdCategories && createdCategories.length == this.report.Categories.length) {
+                this.scheduledOpsService.createMany(this.report.ScheduledOperations).subscribe(createdSops => {
+                  // if success
+                  console.log('scheduledOpsService.createMany = ', createdSops);
+                  if (createdSops) {
 
-                  } finally {
-                    delete op.scheduled_operation;
-
-                  }
-                })
-
-                this.operationsService.createMany(this.report.Operations).subscribe(createdOps => {
-                  console.log('operationsService.createMany = ', createdOps);
-
-                  if (createdOps) {
-                    console.log('worked(?)');
-                    console.log('createdNewFp = ', createdNewFp);
-                    console.log('createdOps = ', createdOps);
-                    console.log('createdSops = ', createdSops);
-
-                    localStorage.removeItem('lastReport');
-                    this.report = null;
-                    this.report$.next(this.report);
+                    //assign scheduled op id
+                    /*
+                    this.report.ScheduledOperations.forEach(sop => {
+                      sop.id = createdSops.find(createdSop => createdSop.name === sop.name).id;
+                    })
+                    */
 
 
+                    this.report.Operations.filter(op => op.scheduled_operation).forEach(op => {
+                      try {
+                        console.log('searching for schedule of ', op.name);
+                        let sop = createdSops.find(csop => csop.name === op.scheduled_operation.name);
+                        console.log('found sop : ', sop)
+                        op.scheduled_operation_id = sop.id;
+                      } catch (error) {
+                        console.error(error);
+                        delete op.scheduled_operation_id;
 
+                      } finally {
+                        delete op.scheduled_operation;
+
+                      }
+                    })
+
+                    this.operationsService.createMany(this.report.Operations).subscribe(createdOps => {
+                      console.log('operationsService.createMany = ', createdOps);
+
+                      if (createdOps) {
+                        console.log('worked(?)');
+                        console.log('createdNewFp = ', createdNewFp);
+                        console.log('createdOps = ', createdOps);
+                        console.log('createdSops = ', createdSops);
+
+                        localStorage.removeItem('lastReport');
+                        this.report = null;
+                        this.report$.next(this.report);
+
+
+
+                      } else {
+                        console.error('error while creating Operations')
+
+                        this.categoriesService.deleteMany(createdCategories).subscribe(deleted => {
+                          console.log('reverting changes categoriesService.deleteMany(createdCategories)');
+                        })
+                        //delete scheduled
+                        this.scheduledOpsService.deleteMany(createdSops).subscribe(deleted => {
+                          console.log('reverting changes scheduledOpsService.deleteMany(createdSops)');
+                        })
+                      }
+                    })
                   } else {
-                    //delete scheduled
-                    this.scheduledOpsService.deleteMany(createdSops).subscribe(deletedSops => {
-                      console.log('reverting changes');
+                    console.error('error while creating ScheduledOperations')
+                    this.categoriesService.deleteMany(createdCategories).subscribe(deleted => {
+                      console.log('reverting changes categoriesService.deleteMany(createdCategories)');
                     })
                   }
                 })
+              } else {
+                console.error('error while creating categories');
               }
+
             })
+
+
+
+
 
 
           }
@@ -299,7 +326,19 @@ export class UploadComponent implements OnInit, AfterViewInit {
 
 
 
+  deleteCategory(category: Category) {
+    console.log('receiver delete event, ', category);
+    this.categoriesService.delete(category).subscribe(r => {
+      console.log('delete result = ', r);
+    })
+  }
 
+  modifyCategory(event) {
+    console.log('receiver modify event, ', event);
+    this.categoriesService.update(event.new).subscribe(r => {
+      console.log('result = ', r);
+    })
+  }
 
   //
 
@@ -320,7 +359,7 @@ export class UploadComponent implements OnInit, AfterViewInit {
     this.report.Operations.splice(this.report.Operations.indexOf(operation), 1);
 
   }
-  modifyOperation(event: modifyOperationEvent) {
+  modifyOperation(event: modifyEvent<BudgetOperation>) {
     console.log('receiver modify event, ', event);
     //
 

@@ -54,6 +54,9 @@ import { CurrentPredictionCardComponent } from './components/dashboard-cards/cur
 import { QuickStartComponent } from './pages/quick-start/quick-start.component';
 import { UploadComponent } from './pages/upload/upload.component';
 import { LoadingSpinnerComponent } from './components/misc/loading-spinner/loading-spinner.component';
+import { CategoriesComponent } from './pages/categories/categories.component';
+import { CategoryListElementComponent } from './components/list-elements/category-list-element/category-list-element.component';
+import { CategoryDialogComponent } from './components/dialogs/category-dialog/category-dialog.component';
 
 
 function tokenGetter(): string {
@@ -86,7 +89,10 @@ function tokenGetter(): string {
     CurrentPredictionCardComponent,
     QuickStartComponent,
     UploadComponent,
-    LoadingSpinnerComponent
+    LoadingSpinnerComponent,
+    CategoriesComponent,
+    CategoryListElementComponent,
+    CategoryDialogComponent
 
   ],
   entryComponents: [CustomSnackbarComponent],

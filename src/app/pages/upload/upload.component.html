@@ -97,9 +97,14 @@
 
                     <mat-list dense
                               class="generated-list">
-                        <mat-list-item *ngFor="let cat of r.Categories">
-                            {{ cat.name }}
-                        </mat-list-item>
+                        <ng-container *ngFor="let cat of r.Categories">
+                            <app-category-list-element [cat]="cat"
+                                                       [compact]="false"
+                                                       (onDelete)="deleteCategory($event)"
+                                                       (onModify)="modifyCategory($event)">
+                                ...
+                            </app-category-list-element>
+                        </ng-container>
                     </mat-list>
                 </ng-template>
             </mat-expansion-panel>

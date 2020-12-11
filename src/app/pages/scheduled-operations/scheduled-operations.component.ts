@@ -5,7 +5,7 @@ import { ScheduledBudgetOperation } from 'src/app/models/ScheduledBudgetOperatio
 import { ScheduledOperationsService } from 'src/app/services/budget/scheduled-operations.service';
 import { BehaviorSubject, combineLatest, forkJoin, merge, zip } from 'rxjs';
 import { getScheduleTypeName, ScheduleType } from 'src/app/models/internal/ScheduleType';
-import { modifyScheduledOperationEvent } from 'src/app/components/list-elements/scheduled-operation-list-element/scheduled-operation-list-element.component';
+import { modifyEvent } from 'src/app/models/internal/modifyEvent';
 
 @Component({
   selector: 'app-scheduled-operations',
@@ -134,7 +134,7 @@ export class ScheduledOperationsComponent implements OnInit, OnDestroy {
     })
 
   }
-  modifyOperation(modifyEvent: modifyScheduledOperationEvent) {
+  modifyOperation(modifyEvent: modifyEvent<ScheduledBudgetOperation>) {
     console.log('receiver modify event, ', modifyEvent);
     this.scheduledOperationsService.update(modifyEvent.new).subscribe(r => {
       console.log('result od modifyOperation = ', r);

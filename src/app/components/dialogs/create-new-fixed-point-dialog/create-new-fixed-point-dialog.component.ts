@@ -25,7 +25,10 @@ export class CreateNewFixedPointDialogComponent implements OnInit {
   acceptButtonTest: string = null;
   title: string = null;
 
-  constructor(public dialogRef: MatDialogRef<CreateNewFixedPointDialogComponent>, @Inject(MAT_DIALOG_DATA) public data: FixedPoint) {
+  constructor(
+    public dialogRef: MatDialogRef<CreateNewFixedPointDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: FixedPoint
+  ) {
     if (data) {
       this.fixedPoint = data;
       this.acceptButtonTest = this.updateButtonText;

@@ -9,6 +9,7 @@ import { FixedPointsComponent } from './pages/fixed-points/fixed-points.componen
 import { PredictionsComponent } from './pages/predictions/predictions.component';
 import { QuickStartComponent } from './pages/quick-start/quick-start.component';
 import { UploadComponent } from './pages/upload/upload.component';
+import { CategoriesComponent } from './pages/categories/categories.component';
 
 const routes: Routes = [
   {
@@ -34,6 +35,11 @@ const routes: Routes = [
   {
     path: 'predictions',
     component: PredictionsComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'categories',
+    component: CategoriesComponent,
     canActivate: [AuthGuard],
   },
   {

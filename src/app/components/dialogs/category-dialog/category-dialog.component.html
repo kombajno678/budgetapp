@@ -1,0 +1,85 @@
+<h1 mat-dialog-title>{{title}}</h1>
+<mat-dialog-content>
+    <form [formGroup]="form">
+
+        <div class="row">
+            <div class="col">
+
+                <mat-form-field appearance="fill"
+                                class="w-100">
+                    <mat-label>
+                        Name
+                    </mat-label>
+                    <input matInput
+                           type="text"
+                           placeholder="category name"
+                           formControlName="name">
+
+                </mat-form-field>
+
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+
+                <mat-form-field appearance="fill"
+                                class="w-100">
+                    <mat-label>
+                        Color
+                    </mat-label>
+
+
+                    <input matInput
+                           type="color"
+                           id="favcolor"
+                           name="favcolor"
+                           value="#FFFFFF"
+                           formControlName="color">
+
+                    <mat-icon matSuffix>palette</mat-icon>
+
+                </mat-form-field>
+
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+
+                <mat-form-field appearance="fill"
+                                class="w-100">
+                    <mat-label>
+                        Icon
+                    </mat-label>
+                    <input matInput
+                           type="text"
+                           placeholder="icon"
+                           formControlName="icon">
+                    <mat-icon matSuffix>category</mat-icon>
+
+                </mat-form-field>
+                <p>
+                    <a href="https://material.io/resources/icons"
+                       target="_blank"
+                       rel="noopener noreferrer">List</a> of all available icons
+                </p>
+
+
+            </div>
+        </div>
+
+
+    </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-button
+            (click)="test()">test</button>
+    <button mat-button
+            mat-dialog-close>Cancel</button>
+    <button mat-button
+            (click)="onSave()"
+            cdkFocusInitial
+            [disabled]="this.form.invalid">{{acceptButtonTest}}</button>
+</mat-dialog-actions>

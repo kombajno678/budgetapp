@@ -27,5 +27,7 @@ export class BudgetOperationService extends AbstractResourceService<BudgetOperat
 
   constructor(public http: HttpClient) {
     super(pathSuffix, BudgetOperationService.customMap(), http);
+
+
   }
 }

@@ -1,15 +1,10 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { modifyEvent } from 'src/app/models/internal/modifyEvent';
 import { getScheduleTypeName, ScheduleType } from 'src/app/models/internal/ScheduleType';
 import { VerboseDateStuff } from 'src/app/models/internal/VerboseDateStuff';
 import { ScheduledBudgetOperation } from 'src/app/models/ScheduledBudgetOperation';
 import { CreateNewScheduledOperationDialogComponent } from '../../dialogs/create-new-scheduled-operation-dialog/create-new-scheduled-operation-dialog.component';
-
-
-export interface modifyScheduledOperationEvent {
-  old: ScheduledBudgetOperation;
-  new: ScheduledBudgetOperation;
-}
 
 @Component({
   selector: 'app-scheduled-operation-list-element',
@@ -33,7 +28,7 @@ export class ScheduledOperationListElementComponent implements OnInit, OnDestroy
   onDelete: EventEmitter<ScheduledBudgetOperation> = new EventEmitter<ScheduledBudgetOperation>();
 
   @Output()
-  onModify: EventEmitter<modifyScheduledOperationEvent> = new EventEmitter<modifyScheduledOperationEvent>();
+  onModify: EventEmitter<modifyEvent<ScheduledBudgetOperation>> = new EventEmitter<modifyEvent<ScheduledBudgetOperation>>();
 
   @Output()
   onChangeActiveState: EventEmitter<ScheduledBudgetOperation> = new EventEmitter<ScheduledBudgetOperation>();
@@ -104,7 +99,7 @@ export class ScheduledOperationListElementComponent implements OnInit, OnDestroy
     let dialogRef = this.dialog.open(CreateNewScheduledOperationDialogComponent, { width: '500px', data: ScheduledBudgetOperation.getCopy(this.so) });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        let x: modifyScheduledOperationEvent = {
+        let x: modifyEvent<ScheduledBudgetOperation> = {
           old: this.so,
           new: result
         }

@@ -1,0 +1,56 @@
+<div class="row p-2">
+    <div class="col">
+        <span class="mat-display-1">
+            Categories
+        </span>
+    </div>
+</div>
+
+<div class="row p-2">
+    <div class="col">
+
+        <button mat-button
+                type="button"
+                (click)="onNewClick()">
+            Add new
+        </button>
+
+
+
+    </div>
+</div>
+
+
+
+<div class="row no-gutters">
+    <div class="col">
+
+        <ng-container *ngIf="(this.categories$ | async) as list; else loading">
+            <div class="mat-caption">
+                Displaying {{ list.length }} {{ list.length == 1 ? 'category' : 'categories'}}
+            </div>
+            <mat-list dense>
+
+                <ng-container *ngFor="let cat of list; index as i; first as isFirst">
+
+                    <app-category-list-element [cat]="cat"
+                                               [compact]="false"
+                                               (onDelete)="deleteCategory($event)"
+                                               (onModify)="modifyCategory($event)">
+                        ...
+                    </app-category-list-element>
+                </ng-container>
+
+            </mat-list>
+        </ng-container>
+        <ng-template #loading>
+            <app-loading-spinner></app-loading-spinner>
+        </ng-template>
+
+
+
+
+
+
+    </div>
+</div>
