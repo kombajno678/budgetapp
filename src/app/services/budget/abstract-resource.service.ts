@@ -100,6 +100,16 @@ export abstract class AbstractResourceService<T extends AbstractResource> implem
 
   }
 
+  deleteAll(refresh: boolean = true, log: boolean = true): Observable<number> {
+    return this.http.delete<any>(this.path + '/' + '0').pipe(
+      tap(_ => {
+        if (log) this.log(this.path);
+        if (refresh) this.refreshResource();
+      }),
+      catchError(this.handleError<any>(this.path, null)),
+    );
+  }
+
 
 
 

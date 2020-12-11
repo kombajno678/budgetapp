@@ -8,15 +8,19 @@ body {
 
 body {
   margin: 0;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
 }
 
+.cdk-virtual-scroll-orientation-vertical,
+.cdk-virtual-scroll-content-wrapper {
+  max-width: 100% !important;
+}
 
 .spacer {
   flex: 1 1 auto;
 }
 
-.clickable{
+.clickable {
   cursor: pointer;
 }
 
@@ -25,8 +29,6 @@ body {
   justify-content: center;
   align-items: center;
 }
-
-
 
 .animated-loading-bg {
   background: linear-gradient(228deg, #1a1a1a, #780085);
@@ -39,24 +41,48 @@ body {
 }
 
 @-webkit-keyframes AnimationName1 {
-  0%{background-position:0% 92%}
-  50%{background-position:100% 9%}
-  100%{background-position:0% 92%}
+  0% {
+    background-position: 0% 92%;
+  }
+  50% {
+    background-position: 100% 9%;
+  }
+  100% {
+    background-position: 0% 92%;
+  }
 }
 @-moz-keyframes AnimationName1 {
-  0%{background-position:0% 92%}
-  50%{background-position:100% 9%}
-  100%{background-position:0% 92%}
+  0% {
+    background-position: 0% 92%;
+  }
+  50% {
+    background-position: 100% 9%;
+  }
+  100% {
+    background-position: 0% 92%;
+  }
 }
 @-o-keyframes AnimationName1 {
-  0%{background-position:0% 92%}
-  50%{background-position:100% 9%}
-  100%{background-position:0% 92%}
+  0% {
+    background-position: 0% 92%;
+  }
+  50% {
+    background-position: 100% 9%;
+  }
+  100% {
+    background-position: 0% 92%;
+  }
 }
 @keyframes AnimationName1 {
-  0%{background-position:0% 92%}
-  50%{background-position:100% 9%}
-  100%{background-position:0% 92%}
+  0% {
+    background-position: 0% 92%;
+  }
+  50% {
+    background-position: 100% 9%;
+  }
+  100% {
+    background-position: 0% 92%;
+  }
 }
 
 .animated-logo-bg {
@@ -70,27 +96,46 @@ body {
 }
 
 @-webkit-keyframes AnimationName {
-  0%{background-position:0% 92%}
-  50%{background-position:100% 9%}
-  100%{background-position:0% 92%}
+  0% {
+    background-position: 0% 92%;
+  }
+  50% {
+    background-position: 100% 9%;
+  }
+  100% {
+    background-position: 0% 92%;
+  }
 }
 @-moz-keyframes AnimationName {
-  0%{background-position:0% 92%}
-  50%{background-position:100% 9%}
-  100%{background-position:0% 92%}
+  0% {
+    background-position: 0% 92%;
+  }
+  50% {
+    background-position: 100% 9%;
+  }
+  100% {
+    background-position: 0% 92%;
+  }
 }
 @-o-keyframes AnimationName {
-  0%{background-position:0% 92%}
-  50%{background-position:100% 9%}
-  100%{background-position:0% 92%}
+  0% {
+    background-position: 0% 92%;
+  }
+  50% {
+    background-position: 100% 9%;
+  }
+  100% {
+    background-position: 0% 92%;
+  }
 }
 @keyframes AnimationName {
-  0%{background-position:0% 92%}
-  50%{background-position:100% 9%}
-  100%{background-position:0% 92%}
+  0% {
+    background-position: 0% 92%;
+  }
+  50% {
+    background-position: 100% 9%;
+  }
+  100% {
+    background-position: 0% 92%;
+  }
 }
-
-
-
-
-

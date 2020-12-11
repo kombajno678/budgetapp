@@ -32,7 +32,11 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { MatSortModule } from '@angular/material/sort';
 import { MatPaginatorModule } from '@angular/material/paginator';
-import {MatBadgeModule} from '@angular/material/badge';
+import { MatBadgeModule } from '@angular/material/badge';
+
+import { ScrollingModule } from '@angular/cdk/scrolling';
+import { CdkVirtualScrollViewport } from "@angular/cdk/scrolling";
+
 
 const material = [
   MatBadgeModule,
@@ -66,7 +70,8 @@ const material = [
   MatSnackBarModule,
   MatTableModule,
   MatSortModule,
-  MatPaginatorModule
+  MatPaginatorModule,
+  ScrollingModule
 ];
 
 @NgModule({

@@ -258,17 +258,13 @@ export class OperationsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   deleteAllOperations() {
 
+    if (confirm(`Are you sure that you want to delete all ${this.allOperations.length} operations?`)) {
+      //this.displayedOperations$.next(null);
+      this.operationService.deleteAll().subscribe(deleted => {
+        console.log('deleted : ', deleted);
+      })
 
-    this.displayedOperations$.next(null);
-    this.operationService.getAll().subscribe(ops => {
-      if (ops && ops.length > 0) {
-        console.log('deleting ' + ops.length + ' operations ...');
-        this.operationService.deleteMany(ops).subscribe(r => {
-          console.log('result of delete many = ', r);
-        })
-      }
-      this.refresh();
-    })
+    }
 
   }
 

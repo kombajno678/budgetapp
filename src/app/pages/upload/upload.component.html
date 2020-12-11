@@ -45,7 +45,7 @@
 
         </div>
 
-        <div class="col-sm-12 col-md-6 col-lg-4">
+        <div class="col-sm-12 col-md-12 col-lg-12">
             <mat-expansion-panel>
                 <mat-expansion-panel-header>
                     <mat-panel-title>
@@ -81,7 +81,7 @@
             </mat-expansion-panel>
         </div>
 
-        <div class="col-sm-12 col-md-6 col-lg-4">
+        <div class="col-sm-12 col-md-12 col-lg-12">
 
             <mat-expansion-panel>
                 <mat-expansion-panel-header>
@@ -111,7 +111,7 @@
 
         </div>
 
-        <div class="col-sm-12 col-md col-lg-4">
+        <div class="col-sm-12 col-md-12 col-lg-12">
             <mat-expansion-panel>
                 <mat-expansion-panel-header>
                     <mat-panel-title>
@@ -121,23 +121,36 @@
                         Click to expand
                     </mat-panel-description>
                 </mat-expansion-panel-header>
-                <ng-template matExpansionPanelContent>
 
+
+
+
+                <cdk-virtual-scroll-viewport itemSize="48"
+                                             minBufferPx="200"
+                                             maxBufferPx="400"
+                                             class="operations-viewport">
 
                     <mat-list dense
-                              class="generated-list">
-                        <ng-container *ngFor="let op of r.Operations">
+                              class="w-100">
+
+                        <ng-container *cdkVirtualFor="let op of r.Operations;templateCacheSize: 20">
+
                             <app-operation-list-element [op]="op"
                                                         [compact]="true"
                                                         (onDelete)="deleteOperation($event)"
-                                                        (onModify)="modifyOperation($event)">
+                                                        (onModify)="modifyOperation($event)"
+                                                        class="w-100">
 
                             </app-operation-list-element>
 
 
                         </ng-container>
+
                     </mat-list>
-                </ng-template>
+
+                </cdk-virtual-scroll-viewport>
+
+
                 <mat-action-row>
                     <button mat-flat-button
                             (click)="saveOperations()">
@@ -175,6 +188,8 @@
         </div>
 
     </div>
+
+
 </ng-container>
 
 <ng-template #loading>

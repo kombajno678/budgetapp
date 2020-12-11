@@ -90,15 +90,9 @@ export class ScheduledOperationsComponent implements OnInit, OnDestroy {
 
   deleteAll() {
 
-    if (confirm(`Are you sure that you want to delete all ${this.scheduledOperations.length} operations?`)) {
-      this.scheduledOperationsService.getAll().subscribe(ops => {
-        if (ops && ops.length > 0) {
-          console.log('deleting ' + ops.length + ' operations ...');
-          this.scheduledOperationsService.deleteMany(ops).subscribe(r => {
-            console.log('result of delete many = ', r);
-            this.refresh();
-          })
-        }
+    if (confirm(`Are you sure that you want to delete all ${this.scheduledOperations.length} scheduled operations?`)) {
+      this.scheduledOperationsService.deleteAll().subscribe(deleted => {
+        console.log('deleted = ', deleted);
       })
     }
 

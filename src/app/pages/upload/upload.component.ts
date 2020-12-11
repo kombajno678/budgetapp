@@ -13,8 +13,10 @@ import { BudgetService } from 'src/app/services/budget/budget.service';
 import { FixedPointsService } from 'src/app/services/budget/fixed-points.service';
 import { ScheduledOperationsService } from 'src/app/services/budget/scheduled-operations.service';
 import { CategoryService } from 'src/app/services/budget/category.service';
+import { Category } from 'src/app/models/Category';
 
 
+import { ChangeDetectionStrategy } from '@angular/core';
 
 export interface ReportResult {
 
@@ -27,7 +29,9 @@ export interface ReportResult {
 @Component({
   selector: 'app-upload',
   templateUrl: './upload.component.html',
-  styleUrls: ['./upload.component.scss']
+  styleUrls: ['./upload.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+
 })
 export class UploadComponent implements OnInit, AfterViewInit {
 
@@ -44,6 +48,8 @@ export class UploadComponent implements OnInit, AfterViewInit {
 
   uploadProgress: number = 0;
   uploadBarMode: string = 'determinate';
+
+
 
   constructor(
     private budgetService: BudgetService,
