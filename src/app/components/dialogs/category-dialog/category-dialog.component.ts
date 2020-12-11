@@ -29,7 +29,7 @@ export class CategoryDialogComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: Category
   ) {
     this.colorRegExp = '^[#]{1}[0-9a-fA-F]{3,8}$';
-    this.iconRegExp = '^[-a-zA-Z]+$';
+    this.iconRegExp = '^[-a-zA-Z_]+$';
     if (data) {
       this.category = data;
       this.acceptButtonTest = this.updateButtonText;

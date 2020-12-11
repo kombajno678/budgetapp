@@ -7,15 +7,22 @@
 
     <div mat-line
          *ngIf="!compact">
-        <span class="mat-title">{{op.value < 0
+        <span class="mat-title">
+            {{op.value < 0
               ?
               -op.value
               :
               op.value}}
               </span>
-                <span *ngIf="op.scheduled_operation_id">
+                <span *ngIf="op.scheduled_operation">
                     <mat-icon [matTooltip]="op.scheduled_operation.name">
                         schedule
+                    </mat-icon>
+                </span>
+                <span *ngIf="op.category">
+                    <mat-icon [matTooltip]="op.category.name"
+                              [style.color]="op.category.color">
+                        {{op.category.icon ? op.category.icon : 'category'}}
                     </mat-icon>
                 </span>
     </div>

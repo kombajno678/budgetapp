@@ -5,6 +5,8 @@ import { JAN } from '@angular/material/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import moment, { Moment } from 'moment';
 import { BudgetOperation } from 'src/app/models/BudgetOperation';
+import { Category } from 'src/app/models/Category';
+import { CategoryService } from 'src/app/services/budget/category.service';
 
 
 @Component({
@@ -21,6 +23,8 @@ export class CreateNewOperationDialogComponent implements OnInit {
   @ViewChild('operationTypeOption')
   operationTypeOption: MatButtonToggleGroup;
   operationValueSign = -1; // 1 or -1
+
+  possibleCategories: Category[];
 
 
 
@@ -64,7 +68,19 @@ export class CreateNewOperationDialogComponent implements OnInit {
   title: string = null;
 
 
-  constructor(public dialogRef: MatDialogRef<CreateNewOperationDialogComponent>, @Inject(MAT_DIALOG_DATA) public data: BudgetOperation) {
+  constructor(
+    public dialogRef: MatDialogRef<CreateNewOperationDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: BudgetOperation,
+    private categoryService: CategoryService) {
+
+
+    this.categoryService.getAll().subscribe(r => {
+      if (r) {
+        this.possibleCategories = r;
+      } else {
+        console.error('error while fetching categories');
+      }
+    })
     if (data) {
 
 
@@ -75,6 +91,10 @@ export class CreateNewOperationDialogComponent implements OnInit {
       this.operationValueSign = this.operation.value;
 
       this.operation.value = this.operation.value < 0 ? -this.operation.value : this.operation.value;
+
+      if (this.operation.category_id && !this.operation.category) {
+        this.operation.category = this.possibleCategories.find(c => c.id === this.operation.category_id);
+      }
 
 
 
@@ -97,6 +117,7 @@ export class CreateNewOperationDialogComponent implements OnInit {
       when: new FormControl(this.operation.when, [Validators.required]),
       scheduled: new FormControl(false, [Validators.required]),
       schedule_id: new FormControl(null, []),
+      category_id: new FormControl(this.operation.category_id, []),
     })
   }
 
@@ -122,6 +143,7 @@ export class CreateNewOperationDialogComponent implements OnInit {
     }
 
     this.operation.name = this.form.controls.name.value;
+    this.operation.category_id = this.form.controls.category_id.value;
 
 
     if (this.operationDateOption.value == 'today') {

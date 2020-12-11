@@ -16,6 +16,7 @@ import { MatButtonToggleChange } from '@angular/material/button-toggle';
 import { BehaviorSubject, combineLatest } from 'rxjs';
 import { ScheduledOperationsService } from 'src/app/services/budget/scheduled-operations.service';
 import { modifyEvent } from 'src/app/models/internal/modifyEvent';
+import { CategoryService } from 'src/app/services/budget/category.service';
 
 @Component({
   selector: 'app-operations',
@@ -48,6 +49,7 @@ export class OperationsComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(
     private operationService: BudgetOperationService,
     private schedulesOperationsService: ScheduledOperationsService,
+    private categoriesService: CategoryService,
     private budgetService: BudgetService,
     private dialog: MatDialog,
     private fb: FormBuilder
@@ -173,14 +175,18 @@ export class OperationsComponent implements OnInit, AfterViewInit, OnDestroy {
   refresh() {
     combineLatest([
       this.schedulesOperationsService.getAll(),
-      this.operationService.getAll()
+      this.operationService.getAll(),
+      this.categoriesService.getAll(),
     ]).subscribe(r => {
-      if (r[0] && r[1]) {
+      if (r[0] && r[1] && r[2]) {
         //console.log(r);
         this.allOperations = r[1].sort((a, b) => b.when.getTime() - a.when.getTime());
         this.allOperations.forEach(op => {
           if (op.scheduled_operation_id) {
             op.scheduled_operation = r[0].find(so => so.id === op.scheduled_operation_id);
+          }
+          if (op.category_id) {
+            op.category = r[2].find(so => so.id === op.category_id);
           }
         })
         this.updateDisplayedOperations();

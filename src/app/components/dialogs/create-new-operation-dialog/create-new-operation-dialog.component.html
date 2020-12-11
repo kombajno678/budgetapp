@@ -60,11 +60,15 @@
         </div>
 
 
+
+
+
+
         <div class="row">
             <div class="col">
 
                 <mat-button-toggle-group name="operation-date"
-                                         class="w-100"
+                                         class="w-100 mb-3"
                                          #operationDateOption="matButtonToggleGroup"
                                          aria-label="Operation date">
                     <mat-button-toggle value="yesterday"
@@ -97,6 +101,33 @@
 
             </div>
         </div>
+
+        <div class="row">
+            <div class="col">
+                <mat-form-field appearance="fill"
+                                class="w-100">
+                    <mat-label>
+                        Operation category
+                    </mat-label>
+
+                    <mat-select formControlName="category_id">
+                        <mat-option [value]="null">
+                            - none -
+                        </mat-option>
+                        <mat-option *ngFor="let cat of this.possibleCategories"
+                                    [value]="cat.id">
+                            <mat-icon [style.color]="cat.color">
+                                {{cat.icon ? cat.icon : 'category'}}
+                            </mat-icon>{{cat.name}}
+                        </mat-option>
+                    </mat-select>
+
+                </mat-form-field>
+
+            </div>
+        </div>
+
+
 
     </form>
 </mat-dialog-content>
