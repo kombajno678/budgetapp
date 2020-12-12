@@ -80,6 +80,11 @@ export class PredictionsComponent implements OnInit, AfterViewInit {
     }
   }
 
+  getPredictionsWhereDeltaNotZero(list: PredicionPoint[]) {
+    return list.filter(p => p.delta !== 0)
+
+  }
+
 
 
   setDateRageMonths() {
@@ -114,6 +119,11 @@ export class PredictionsComponent implements OnInit, AfterViewInit {
 
 
 
+  displayValue(number: number) {
+    return number.toFixed(2);
+
+
+  }
   generate() {
     console.log('generating ... , ', this.startDate, this.endDate);
     this.budgetService.generatePredictionsBetweenDates(this.startDate, this.endDate).subscribe(

@@ -1,11 +1,21 @@
-<div style="display: block;">
-  <canvas baseChart width="400" height="400"
-    [datasets]="lineChartData"
-    [labels]="lineChartLabels"
-    [options]="lineChartOptions"
-    [colors]="lineChartColors"
-    [legend]="lineChartLegend"
-    [chartType]="lineChartType"
-    [plugins]="lineChartPlugins">
-  </canvas>
-</div>
+<ng-container *ngIf="(this.data$ | async ) as x; else loading">
+  <div style="display: block;">
+    <canvas baseChart
+            id="chart"
+            width="400"
+            height="400"
+            [datasets]="lineChartData"
+            [labels]="lineChartLabels"
+            [options]="lineChartOptions"
+            [colors]="lineChartColors"
+            [legend]="lineChartLegend"
+            [chartType]="lineChartType"
+            [plugins]="lineChartPlugins">
+    </canvas>
+  </div>
+</ng-container>
+
+
+<ng-template #loading>
+  <app-loading-spinner></app-loading-spinner>
+</ng-template>

@@ -1,7 +1,7 @@
 <div class="container h-50">
     <div class="row">
         <div class="col">
-            <app-prediction-chart [data$]="getPredictions()"> ... </app-prediction-chart>
+            <app-prediction-chart [data$]="predictions$.asObservable()"> ... </app-prediction-chart>
         </div>
     </div>
     <div class="row">
@@ -53,44 +53,66 @@
         <div class="col">
 
 
-            <mat-accordion class="example-headers-align"
-                           multi
-                           *ngIf="(predictions$ | async) as list">
-                {{ list.length }}
+            <ng-container *ngIf="(predictions$ | async) as list">
+
+                Days : {{ list.length }}
+                <cdk-virtual-scroll-viewport itemSize="48"
+                                             class="days-viewport">
+                    <mat-accordion class="example-headers-align"
+                                   multi>
 
 
-                <mat-expansion-panel *ngFor="let pp of list">
-                    <mat-expansion-panel-header>
-                        <mat-panel-title>
-                            {{pp.date.toISOString().substr(0, 10)}} - {{pp.value}}
-                        </mat-panel-title>
-                        <mat-panel-description>
-                            {{ pp.delta }}
-                        </mat-panel-description>
-                    </mat-expansion-panel-header>
+                        <mat-list dense
+                                  class="w-100">
+                            <ng-container *cdkVirtualFor="let pp of getPredictionsWhereDeltaNotZero(list)">
+
+                                <mat-expansion-panel>
+                                    <mat-expansion-panel-header>
+                                        <mat-panel-title>
+                                            {{pp.date.toISOString().substr(0, 10)}} : {{displayValue(pp.value)}}
+                                        </mat-panel-title>
+                                        <mat-panel-description>
+                                            change : {{ displayValue(pp.delta) }}
+                                        </mat-panel-description>
+                                    </mat-expansion-panel-header>
 
 
-                    <div *ngIf="pp.fixedPoint">
-                        fixed point : {{ pp.fixedPoint.exact_value }}
-                    </div>
+                                    <div *ngIf="pp.fixedPoint">
+                                        fixed point : {{ pp.fixedPoint.exact_value }}
+                                    </div>
 
 
-                    <mat-list>
-                        <div mat-subheader>operations</div>
-                        <mat-list-item *ngFor="let op of pp.operations">
-                            <app-operation-list-element [op]="op"
-                                                        [compact]="true"
-                                                        [displayButton]="true">...</app-operation-list-element>
-                        </mat-list-item>
-                    </mat-list>
+                                    <mat-list>
+                                        <div mat-subheader>operations</div>
+                                        <mat-list-item *ngFor="let op of pp.operations">
+                                            <app-operation-list-element [op]="op"
+                                                                        [compact]="true"
+                                                                        [displayButton]="true">...
+                                            </app-operation-list-element>
+                                        </mat-list-item>
+                                    </mat-list>
 
-                </mat-expansion-panel>
-
-
-
+                                </mat-expansion-panel>
 
 
-            </mat-accordion>
+                            </ng-container>
+                        </mat-list>
+                    </mat-accordion>
+
+                </cdk-virtual-scroll-viewport>
+
+            </ng-container>
+
+
+
+
+
+
+
+
+
+
+
 
         </div>
     </div>

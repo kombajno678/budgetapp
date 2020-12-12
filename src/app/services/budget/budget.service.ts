@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, combineLatest, Observable, of, ReplaySubject, Subject } from 'rxjs';
-import { catchError, finalize, map, share, tap } from 'rxjs/operators';
+import { catchError, finalize, first, map, share, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 
 import { BudgetOperation } from 'src/app/models/BudgetOperation';
@@ -152,16 +152,18 @@ export class BudgetService {
         let fixedPoints = r[0];
         let operations = r[1];
 
-        fixedPoints = fixedPoints.filter(fp => fp.when >= start && fp.when <= end);
+        fixedPoints = fixedPoints.filter(fp => fp.when <= end);
         operations = operations.filter(op => op.when >= start && op.when <= end);
 
         fixedPoints.forEach(fp => {
-          predictions.find(p => Globals.compareDates(p.date, fp.when)).fixedPoint = fp;
+          let f = predictions.find(p => Globals.compareDates(p.date, fp.when));
+          if (f) f.fixedPoint = fp;
         });
 
         predictions.forEach(p => {
           p.operations = operations.filter(op => Globals.compareDates(p.date, op.when));
         })
+
 
 
 
@@ -190,7 +192,25 @@ export class BudgetService {
 
         }
 
-        for (let i = 0; i < predictions.length; i++) {
+
+        let firstDayValue = null
+        if (!predictions[0].fixedPoint) {
+          //find fixed point before start
+          let sorted = fixedPoints.sort((a, b) => b.when.getTime() - a.when.getTime()); // desc
+          let lastFp = sorted.find(f => f.when < start);
+          if (lastFp) {
+            console.log('lastFp = ', lastFp);
+            let toSum = r[1].filter(op => op.when >= lastFp.when && op.when <= start);
+            let diff = toSum.length > 0 ? toSum.map(op => op.value).reduce((p, c, ci, a) => p = p + c) : 0;
+            firstDayValue = lastFp.exact_value + diff;
+          } else {
+            firstDayValue = 0;
+          }
+          predictions[0].value = firstDayValue;
+          predictions[0].delta = 0;
+        }
+
+        for (let i = (firstDayValue ? 1 : 0); i < predictions.length; i++) {
           predictions[i].delta = predictions[i].operations.length > 0 ? predictions[i].operations.map(op => op.value).reduce((p, c, i, a) => p = p + c) : 0;
           predictions[i].value = (i > 0 ? predictions[i - 1].value : 0) + predictions[i].delta;
           if (predictions[i].fixedPoint) {
