@@ -7,6 +7,7 @@ import { PredicionPoint } from 'src/app/models/internal/PredictionPoint';
 
 import * as pluginAnnotations from 'chartjs-plugin-annotation';
 import * as pluginZoom from 'chartjs-plugin-zoom';
+import { R3TargetBinder } from '@angular/compiler';
 
 
 @Component({
@@ -24,34 +25,71 @@ export class PredictionChartComponent implements OnInit {
   @ViewChild('chart')
   chart: Chart;
 
+  displayYear: boolean = true;
+  DisplayMonth: boolean = true
+
 
   public lineChartData: ChartDataSets[] = [
     {
       data: [],
       label: 'History',
+      borderWidth: 6,
+      pointRadius: 0,
+      pointHitRadius: 6,
+      pointHoverBorderWidth: 10,
+      pointHoverBorderColor: 'rgb(255, 255, 255, 0.5)',
+      lineTension: 0,
+      spanGaps: false,
     },
     {
       data: [],
       label: 'Future',
-      borderColor: 'rgba(32, 128, 255)'
+      borderWidth: 6,
+      pointRadius: 0,
+      pointHitRadius: 6,
+      pointHoverBorderWidth: 10,
+      pointHoverBorderColor: 'rgb(255, 255, 255, 0.5)',
+      lineTension: 0,
+      spanGaps: false,
     },
   ];
   public lineChartLabels: Label[] = [];
   public lineChartOptions: (ChartOptions & { annotation: any } & { pan: any } & { zoom: any }) = {
     responsive: true,
+    tooltips: {
+      bodyFontSize: 16,
+    },
     maintainAspectRatio: false,
     elements: {
       line: {
-        tension: 0
+        tension: 0,
+
       }
     },
     scales: {
+      yAxes: [
+        {
+          id: 'y-axis-0',
+          position: 'left',
+          /*
+          gridLines: {
+            color: 'rgba(255,0,0,0.3)',
+          },
+          ticks: {
+            fontColor: 'red',
+          },
+          */
+
+        },
+      ],
       xAxes: [
         {
           id: 'days',
           ticks: {
-            //sampleSize: 1
-            autoSkipPadding: 14
+            //sampleSize: 10,
+            autoSkipPadding: 14,
+            minRotation: 0,
+            maxRotation: 90,
           }
         }
       ]
@@ -173,8 +211,14 @@ export class PredictionChartComponent implements OnInit {
   };
   public lineChartColors: Color[] = [
     {
-      borderColor: 'black',
-      backgroundColor: 'rgba(255,0,0,0.3)',
+      backgroundColor: 'rgba(255, 128, 32,0.3)',
+      borderColor: 'rgba(255, 128, 32)'
+
+    },
+    {
+      backgroundColor: 'rgba(32, 128, 255,0.3)',
+      borderColor: 'rgba(32, 128, 255)'
+
     },
   ];
   public lineChartLegend = true;
@@ -183,14 +227,10 @@ export class PredictionChartComponent implements OnInit {
 
   constructor() { }
 
-  dateToStr(d: Date) {
-    try {
-      return d.toISOString().substr(0, 10);
-    } catch (err) {
+  dateToStr(date: Date, y: boolean = this.displayYear, m: boolean = this.DisplayMonth, d: boolean = true) {
+    let s = date.toISOString();
+    return `${y ? s.substr(0, 4) : ''}${m ? (y ? '-' : '') + s.substr(5, 2) : ''}${d ? (m ? '-' : '') + s.substr(8, 2) : ''}`;
 
-      return new Date(d).toISOString().substr(0, 10)
-
-    }
   }
 
   resetZoom() {
@@ -201,6 +241,10 @@ export class PredictionChartComponent implements OnInit {
     if (this.data$) {
       this.data$.subscribe(r => {
         if (r) {
+          //check if one year
+          if (r[0].date.getFullYear() === r[r.length - 1].date.getFullYear()) {
+            this.displayYear = false;
+          }
           this.lineChartData[0].data = [];
           this.lineChartData[1].data = [];
 
@@ -210,15 +254,17 @@ export class PredictionChartComponent implements OnInit {
           r.forEach(p => {
             let d = this.dateToStr(p.date);
 
+            let value: number = Number(p.value.toFixed(2));
+
             if (d < n) {
-              this.lineChartData[0].data.push(p.value);
+              this.lineChartData[0].data.push(value);
               this.lineChartData[1].data.push(null);
             } else if (d > n) {
               this.lineChartData[0].data.push(null);
-              this.lineChartData[1].data.push(p.value);
+              this.lineChartData[1].data.push(value);
             } else {
-              this.lineChartData[0].data.push(p.value);
-              this.lineChartData[1].data.push(p.value);
+              this.lineChartData[0].data.push(value);
+              this.lineChartData[1].data.push(value);
             }
 
             this.lineChartLabels.push(d);

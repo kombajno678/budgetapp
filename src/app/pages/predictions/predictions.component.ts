@@ -95,7 +95,7 @@ export class PredictionsComponent implements OnInit, AfterViewInit {
 
     this.startDate = new Date(this.endDate);
 
-    this.startDate.setMonth(this.startDate.getMonth() - 4);
+    this.startDate.setMonth(this.startDate.getMonth() - 3);
     this.endDate.setMonth(this.endDate.getMonth() + 3);
 
     this.form.controls.endDate.setValue(this.endDate);

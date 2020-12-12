@@ -125,16 +125,26 @@ export class BudgetService {
   }
 
 
+  generatePredictionForDate(date: Date): Observable<PredicionPoint> {
+    //let today = new Date();
+    let ob: ReplaySubject<PredicionPoint> = new ReplaySubject<PredicionPoint>(1);
+    this.generatePredictionsBetweenDates(date, date).subscribe(r => {
+      ob.next(r[r.length - 1]);
+    })
+    return ob.asObservable();
+
+  }
 
 
-
-  predictions$: Subject<PredicionPoint[]>;
+  //predictions$: Subject<PredicionPoint[]>;
   generatePredictionsBetweenDates(start: Date, end: Date): Observable<PredicionPoint[]> {
-    console.log('GENERATOR ionvoked ', start, end);
-
-    if (!this.predictions$) {
-      this.predictions$ = new Subject<PredicionPoint[]>();
-    }
+    console.log('GENERATOR ionvoked ', start.toISOString(), end.toISOString());
+    let predictions$ = new ReplaySubject<PredicionPoint[]>(2);
+    /*
+        if (!this.predictions$) {
+          this.predictions$ = new Subject<PredicionPoint[]>();
+        }
+        */
     console.log('GENERATOR generating days range ');
     let daysRange = Globals.getDaysInRange(start, end);
     console.log('GENERATOR got days range ', daysRange.length);
@@ -153,7 +163,7 @@ export class BudgetService {
         let operations = r[1];
 
         fixedPoints = fixedPoints.filter(fp => fp.when <= end);
-        operations = operations.filter(op => op.when >= start && op.when <= end);
+        operations = operations.filter(op => /*op.when >= start && */op.when <= end);
 
         fixedPoints.forEach(fp => {
           let f = predictions.find(p => Globals.compareDates(p.date, fp.when));
@@ -206,8 +216,10 @@ export class BudgetService {
           } else {
             firstDayValue = 0;
           }
+          console.log('firstDayValue = ', firstDayValue, predictions[0].date.toISOString());
           predictions[0].value = firstDayValue;
           predictions[0].delta = 0;
+          ;
         }
 
         for (let i = (firstDayValue ? 1 : 0); i < predictions.length; i++) {
@@ -218,13 +230,14 @@ export class BudgetService {
           }
         }
         console.log('GENERATOR NEXT ', predictions.length);
-        this.predictions$.next(predictions);
+        predictions$.next(predictions);
         //this.predictions$.complete();
       }
     })
 
-    console.log('GENERATOR RETURN ', this.predictions$);
-    return this.predictions$.asObservable();
+    console.log('GENERATOR RETURN ', predictions$);
+    //predictions$.complete();
+    return predictions$.asObservable();
 
   }
 

@@ -22,7 +22,14 @@ export class CurrentPredictionCardComponent implements OnInit, AfterViewInit {
   predictions$: BehaviorSubject<PredicionPoint[]>;
 
 
+  today: Date;
+  nextMonth: Date;
+  threeMonths: Date;
   todaysPrediction$: BehaviorSubject<PredicionPoint>;
+  nextMonthPrediction$: BehaviorSubject<PredicionPoint>;
+  threeMonthsPrediction$: BehaviorSubject<PredicionPoint>;
+
+
   latestFixedPoint$: BehaviorSubject<FixedPoint>;
 
 
@@ -37,9 +44,23 @@ export class CurrentPredictionCardComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    this.predictions$ = new BehaviorSubject<PredicionPoint[]>(null);
+    //this.predictions$ = new BehaviorSubject<PredicionPoint[]>(null);
+
     this.todaysPrediction$ = new BehaviorSubject<PredicionPoint>(null);
+    this.nextMonthPrediction$ = new BehaviorSubject<PredicionPoint>(null);
+    this.threeMonthsPrediction$ = new BehaviorSubject<PredicionPoint>(null);
+
     this.latestFixedPoint$ = new BehaviorSubject<FixedPoint>(null);
+
+
+    this.today = new Date();
+
+    this.nextMonth = new Date();
+    this.nextMonth.setMonth(this.nextMonth.getMonth() + 1);
+
+    this.threeMonths = new Date();
+    this.threeMonths.setMonth(this.threeMonths.getMonth() + 3);
+
 
   }
 
@@ -63,26 +84,34 @@ export class CurrentPredictionCardComponent implements OnInit, AfterViewInit {
 
 
 
+  displayValue(p: PredicionPoint) {
 
+    return Math.round(p.value);
+
+  }
 
   generate() {
 
-    let endDate = new Date();
-    //from last fixed point
     this.fixedPointService.getLatest().subscribe(r => {
-      let latestFixedPoint = r;
       this.latestFixedPoint$.next(r);
-      let startDate = new Date(latestFixedPoint.when);
-
-      this.budgetService.generatePredictionsBetweenDates(startDate, endDate).subscribe(r => {
-
-        this.predictions = r;
-        this.predictions$.next(this.predictions);
-        let tp = this.predictions.find(p => Globals.compareDates(p.date, endDate));
-        //console.log({ tp });
-        this.todaysPrediction$.next(tp);
-      });
     })
+
+
+
+
+    this.budgetService.generatePredictionForDate(this.today).subscribe(r => {
+      this.todaysPrediction$.next(r);
+    })
+
+    this.budgetService.generatePredictionForDate(this.nextMonth).subscribe(r => {
+      this.nextMonthPrediction$.next(r);
+    })
+
+    this.budgetService.generatePredictionForDate(this.threeMonths).subscribe(r => {
+      this.threeMonthsPrediction$.next(r);
+    })
+
+
   }
 
 

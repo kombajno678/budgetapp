@@ -1,15 +1,23 @@
 <mat-card>
     <mat-card-header>
-
-
         Prediction for today
-
-
     </mat-card-header>
 
     <ng-container *ngIf="todaysPrediction$ | async as p">
-        <div class="mat-title">
-            {{ p.value }}
+        <div class="mat-title text-center">
+            {{ displayValue(p) }}
+        </div>
+    </ng-container>
+
+    <ng-container *ngIf="nextMonthPrediction$ | async as p1">
+        <div class="text-center">
+            nextMonth : {{ displayValue(p1) }}
+        </div>
+    </ng-container>
+
+    <ng-container *ngIf="threeMonthsPrediction$ | async as p3">
+        <div class="text-center">
+            threeMonths : {{ displayValue(p3) }}
         </div>
     </ng-container>
 
