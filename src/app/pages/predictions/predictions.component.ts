@@ -2,7 +2,7 @@ import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { BudgetOperation } from 'src/app/models/BudgetOperation';
 import { FixedPointsService } from 'src/app/services/budget/fixed-points.service';
 import { BudgetOperationService } from 'src/app/services/budget/budget-operation.service';
-import { PredicionPoint } from 'src/app/models/internal/PredictionPoint';
+import { PredictionPoint } from 'src/app/models/internal/PredictionPoint';
 import { BehaviorSubject, combineLatest, forkJoin, merge, Observable, of } from 'rxjs';
 import { Globals } from 'src/app/Globals';
 import { BudgetService } from 'src/app/services/budget/budget.service';
@@ -18,9 +18,9 @@ import { tap } from 'rxjs/operators';
 export class PredictionsComponent implements OnInit, AfterViewInit {
 
 
-  predictions: PredicionPoint[] = [];
-  predictions$: BehaviorSubject<PredicionPoint[]>;
-  todaysPrediction$: BehaviorSubject<PredicionPoint>;
+  predictions: PredictionPoint[] = [];
+  predictions$: BehaviorSubject<PredictionPoint[]>;
+  todaysPrediction$: BehaviorSubject<PredictionPoint>;
 
   generatorSubscribtion: Observable<any>;
 
@@ -41,8 +41,8 @@ export class PredictionsComponent implements OnInit, AfterViewInit {
   ) { }
 
   ngOnInit(): void {
-    this.predictions$ = new BehaviorSubject<PredicionPoint[]>(null);
-    this.todaysPrediction$ = new BehaviorSubject<PredicionPoint>(null);
+    this.predictions$ = new BehaviorSubject<PredictionPoint[]>(null);
+    this.todaysPrediction$ = new BehaviorSubject<PredictionPoint>(null);
     this.form = this.fb.group({
       startDate: [moment(), { validators: [Validators.required], updateOn: 'blur' }],
       endDate: [moment(), { validators: [Validators.required], updateOn: 'blur' }]
@@ -80,7 +80,7 @@ export class PredictionsComponent implements OnInit, AfterViewInit {
     }
   }
 
-  getPredictionsWhereDeltaNotZero(list: PredicionPoint[]) {
+  getPredictionsWhereDeltaNotZero(list: PredictionPoint[]) {
     return list.filter(p => p.delta !== 0)
 
   }
@@ -142,7 +142,7 @@ export class PredictionsComponent implements OnInit, AfterViewInit {
 
   }
 
-  getPredictions(): Observable<PredicionPoint[]> {
+  getPredictions(): Observable<PredictionPoint[]> {
 
     return this.predictions$.asObservable();
 

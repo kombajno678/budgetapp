@@ -10,9 +10,9 @@
         <span class="mat-title">
             {{op.value < 0
               ?
-              -op.value
+              displayValue(-op.value)
               :
-              op.value}}
+              displayValue(op.value)}}
               </span>
                 <span *ngIf="op.scheduled_operation">
                     <mat-icon [matTooltip]="op.scheduled_operation.name">
@@ -39,19 +39,13 @@
          *ngIf="compact">
         <span class="mat-title">{{op.value < 0
               ?
-              -op.value
+              displayValue(-op.value)
               :
-              op.value}}</span>
-                <span *ngIf="op.scheduled_operation_id">
-                    <mat-icon [matTooltip]="op.scheduled_operation?.name">
-                        schedule
-                    </mat-icon>
-                </span>
-                {{' '}}
-                <span class="mat-subheading-2">{{op.name}}</span>
-                {{' '}}
-                <span class="mat-caption"
-                      *ngIf="op.scheduled_operation">({{ op.scheduled_operation.name }})</span>
+              displayValue(op.value)}}</span>
+
+
+                <span class="mat-subheading-2">{{op.name}}</span>'
+
 
     </div>
 

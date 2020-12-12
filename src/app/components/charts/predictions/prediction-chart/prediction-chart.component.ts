@@ -3,7 +3,7 @@ import { ChartDataSets, ChartOptions, ChartType } from 'chart.js';
 import { Color, Label, BaseChartDirective } from 'ng2-charts';
 import { Observable } from 'rxjs';
 
-import { PredicionPoint } from 'src/app/models/internal/PredictionPoint';
+import { PredictionPoint } from 'src/app/models/internal/PredictionPoint';
 
 import * as pluginAnnotations from 'chartjs-plugin-annotation';
 import * as pluginZoom from 'chartjs-plugin-zoom';
@@ -21,7 +21,7 @@ export class PredictionChartComponent implements OnInit {
   @Input()
   compact: boolean;// = false;
   @Input()
-  data$: Observable<PredicionPoint[]>;
+  data$: Observable<PredictionPoint[]>;
 
   @Input()
   width: number
@@ -222,8 +222,8 @@ export class PredictionChartComponent implements OnInit {
   };
   public lineChartColors: Color[] = [
     {
-      backgroundColor: 'rgba(255, 128, 32,0.3)',
-      borderColor: 'rgba(255, 128, 32)'
+      backgroundColor: 'rgba(255, 64, 192,0.3)',
+      borderColor: 'rgba(255, 64, 192)'
 
     },
     {

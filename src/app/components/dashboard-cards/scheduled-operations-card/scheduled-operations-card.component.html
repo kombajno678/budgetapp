@@ -1,24 +1,45 @@
-<mat-card>
+<mat-card class="small-card">
     <mat-card-header>
 
-
-
-        <a mat-list-item
+        <a mat-button
            [routerLink]="link.url">
-
             {{link.title}}
         </a>
-
 
     </mat-card-header>
 
     <mat-card-content>
+
+
+
+
+
+
+
+
+
+
         <mat-list dense>
-            <ng-container *ngFor="let so of this.operations">
-                <app-scheduled-operation-list-element [so]="so"
-                                                      [displayButton]="false"
-                                                      [compact]="true">
-                </app-scheduled-operation-list-element>
+            <ng-container *ngFor="let pp of (futurePredictionPoints$ | async); index as i; first as isFirst">
+
+
+                <ng-container *ngIf="isFirst || !compareDates(pp.date, (futurePredictionPoints$ | async)[i-1].date)">
+                    <mat-divider *ngIf="!isFirst"></mat-divider>
+                    <div mat-subheader>{{ pp.date.toISOString().substr(0, 10)}}</div>
+                </ng-container>
+
+
+                <ng-container *ngFor="let op of pp.operations">
+
+
+
+                    <app-scheduled-operation-list-element [so]="op.scheduled_operation"
+                                                          [displayButton]="false"
+                                                          [compact]="true">
+                    </app-scheduled-operation-list-element>
+
+                </ng-container>
+
             </ng-container>
         </mat-list>
     </mat-card-content>

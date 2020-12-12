@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { BehaviorSubject, combineLatest } from 'rxjs';
-import { PredicionPoint } from 'src/app/models/internal/PredictionPoint';
+import { PredictionPoint } from 'src/app/models/internal/PredictionPoint';
 import { BudgetOperationService } from 'src/app/services/budget/budget-operation.service';
 import { FixedPointsService } from 'src/app/services/budget/fixed-points.service';
 import { Globals } from 'src/app/Globals';
@@ -18,21 +18,24 @@ import { BudgetService } from 'src/app/services/budget/budget.service';
 export class CurrentPredictionCardComponent implements OnInit, AfterViewInit {
 
 
-  predictions: PredicionPoint[] = [];
-  predictions$: BehaviorSubject<PredicionPoint[]>;
+  predictions: PredictionPoint[] = [];
+  predictions$: BehaviorSubject<PredictionPoint[]>;
 
 
   today: Date;
   nextMonth: Date;
   threeMonths: Date;
 
-  predictionsLoaded$: BehaviorSubject<PredicionPoint[]>;
-  todaysPrediction$: BehaviorSubject<PredicionPoint>;
-  nextMonthPrediction$: BehaviorSubject<PredicionPoint>;
-  threeMonthsPrediction$: BehaviorSubject<PredicionPoint>;
+  predictionsLoaded$: BehaviorSubject<PredictionPoint[]>;
+  todaysPrediction$: BehaviorSubject<PredictionPoint>;
+  nextMonthPrediction$: BehaviorSubject<PredictionPoint>;
+  threeMonthsPrediction$: BehaviorSubject<PredictionPoint>;
 
 
   latestFixedPoint$: BehaviorSubject<FixedPoint>;
+
+  displayValue = Globals.displayValue;
+
 
 
 
@@ -46,13 +49,13 @@ export class CurrentPredictionCardComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    //this.predictions$ = new BehaviorSubject<PredicionPoint[]>(null);
+    //this.predictions$ = new BehaviorSubject<PredictionPoint[]>(null);
 
-    this.predictionsLoaded$ = new BehaviorSubject<PredicionPoint[]>(null);
+    this.predictionsLoaded$ = new BehaviorSubject<PredictionPoint[]>(null);
 
-    this.todaysPrediction$ = new BehaviorSubject<PredicionPoint>(null);
-    this.nextMonthPrediction$ = new BehaviorSubject<PredicionPoint>(null);
-    this.threeMonthsPrediction$ = new BehaviorSubject<PredicionPoint>(null);
+    this.todaysPrediction$ = new BehaviorSubject<PredictionPoint>(null);
+    this.nextMonthPrediction$ = new BehaviorSubject<PredictionPoint>(null);
+    this.threeMonthsPrediction$ = new BehaviorSubject<PredictionPoint>(null);
 
     this.latestFixedPoint$ = new BehaviorSubject<FixedPoint>(null);
 
@@ -88,26 +91,7 @@ export class CurrentPredictionCardComponent implements OnInit, AfterViewInit {
 
 
 
-  displayValue(p: PredicionPoint | number) {
 
-    if (p instanceof PredicionPoint) {
-      return Math.round(p.value).toLocaleString(
-        undefined, // leave undefined to use the browser's locale,
-        // or use a string like 'en-US' to override it.
-        { maximumFractionDigits: 0 }
-      );
-
-
-    } else {
-      return Math.round(p).toLocaleString(
-        undefined, // leave undefined to use the browser's locale,
-        // or use a string like 'en-US' to override it.
-        { maximumFractionDigits: 0 }
-      );;
-
-    }
-
-  }
 
   generate() {
 

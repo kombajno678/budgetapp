@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { Globals } from 'src/app/Globals';
 import { BudgetOperation } from 'src/app/models/BudgetOperation';
 import { modifyEvent } from 'src/app/models/internal/modifyEvent';
 import { CreateNewOperationDialogComponent } from '../../dialogs/create-new-operation-dialog/create-new-operation-dialog.component';
@@ -27,6 +28,7 @@ export class OperationListElementComponent implements OnInit, OnDestroy {
   onModify: EventEmitter<modifyEvent<BudgetOperation>> = new EventEmitter<modifyEvent<BudgetOperation>>();
 
 
+  displayValue = Globals.displayValue;
 
 
   constructor(private dialog: MatDialog) { }

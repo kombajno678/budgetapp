@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { PredicionPoint } from 'src/app/models/internal/PredictionPoint';
+import { PredictionPoint } from 'src/app/models/internal/PredictionPoint';
 import { BudgetService } from 'src/app/services/budget/budget.service';
 
 
@@ -26,7 +26,7 @@ export class PredictionChartCardComponent implements OnInit {
     //icon: 'money',
     //loginRequired: true,
   }
-  predictions$: BehaviorSubject<PredicionPoint[]>;
+  predictions$: BehaviorSubject<PredictionPoint[]>;
 
   @Input()
   config: PredictionChartCardConfig;
@@ -34,7 +34,7 @@ export class PredictionChartCardComponent implements OnInit {
 
   constructor(private budgetService: BudgetService) {
 
-    this.predictions$ = new BehaviorSubject<PredicionPoint[]>(null)
+    this.predictions$ = new BehaviorSubject<PredictionPoint[]>(null)
 
   }
 

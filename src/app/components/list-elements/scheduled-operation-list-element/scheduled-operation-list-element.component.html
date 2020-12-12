@@ -1,4 +1,4 @@
-<mat-list-item>
+<mat-list-item class="{{so.active ? '' : 'disabled'}}">
     <mat-icon mat-list-icon>
         {{ so.value >= 0 ? 'add' : 'remove'}}
     </mat-icon>
@@ -7,9 +7,9 @@
          *ngIf="!compact">
         <span class="mat-title">{{so.value < 0
               ?
-              -so.value
+              displayValue(-so.value)
               :
-              so.value}}</span>
+              displayValue(so.value)}}</span>
 
                 <span *ngIf="so.category">
                     <mat-icon [matTooltip]="so.category.name"
@@ -33,21 +33,15 @@
          *ngIf="compact">
 
 
-        <span class="mat-title">{{so.value < 0
+        <span class="mat-title">
+            {{so.value < 0
               ?
-              -so.value
+              displayValue(-so.value)
               :
-              so.value}}</span>{{ so.active ? '' : '(Disabled)' }}
+              displayValue(so.value)}}
+              </span>
                 <span class="mat-subheading-2">{{so.name}}</span>
-                <span class="schedule-desc">{{ this.getScheduleTypeDescription(so?.scheduleType) }}</span>
 
-                {{so.category_id}}
-                <span *ngIf="so.category">
-                    <mat-icon [matTooltip]="so.category.name"
-                              [style.color]="so.category.color">
-                        {{so.category.icon ? so.category.icon : 'category'}}
-                    </mat-icon>
-                </span>
 
     </div>
 

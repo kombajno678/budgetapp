@@ -11,7 +11,7 @@ import { BudgetOperationService } from './budget-operation.service';
 import { ScheduleType } from 'src/app/models/internal/ScheduleType';
 import { User } from 'src/app/models/User';
 import { Globals } from 'src/app/Globals';
-import { PredicionPoint } from 'src/app/models/internal/PredictionPoint';
+import { PredictionPoint } from 'src/app/models/internal/PredictionPoint';
 import { AuthService } from '@auth0/auth0-angular';
 import { ScheduledBudgetOperation } from 'src/app/models/ScheduledBudgetOperation';
 
@@ -125,10 +125,10 @@ export class BudgetService {
   }
 
 
-  generatePredictionForDate(date: Date): Observable<PredicionPoint> {
+  generatePredictionForDate(date: Date): Observable<PredictionPoint> {
     console.log('GENERATOR: asked for prediction at : ', date.toISOString());
 
-    let ob: ReplaySubject<PredicionPoint> = new ReplaySubject<PredicionPoint>(1);
+    let ob: ReplaySubject<PredictionPoint> = new ReplaySubject<PredictionPoint>(1);
     this.generatePredictionsBetweenDates(date, date).subscribe(r => {
       ob.next(r[r.length - 1]);
     })
@@ -137,13 +137,13 @@ export class BudgetService {
   }
 
 
-  //predictions$: Subject<PredicionPoint[]>;
-  generatePredictionsBetweenDates(start: Date, end: Date): Observable<PredicionPoint[]> {
+  //predictions$: Subject<PredictionPoint[]>;
+  generatePredictionsBetweenDates(start: Date, end: Date): Observable<PredictionPoint[]> {
     console.log('GENERATOR ionvoked ', start.toISOString(), end.toISOString());
-    let predictions$ = new ReplaySubject<PredicionPoint[]>(2);
+    let predictions$ = new ReplaySubject<PredictionPoint[]>(2);
     /*
         if (!this.predictions$) {
-          this.predictions$ = new Subject<PredicionPoint[]>();
+          this.predictions$ = new Subject<PredictionPoint[]>();
         }
         */
     console.log('GENERATOR generating days range ');
@@ -159,7 +159,7 @@ export class BudgetService {
       if (r.every(x => x)) {
         console.log('GENERATOR START ');
 
-        let predictions = daysRange.map(p => new PredicionPoint(p, 0));
+        let predictions = daysRange.map(p => new PredictionPoint(p, 0));
         let fixedPoints = r[0];
         let operations = r[1];
 
@@ -191,7 +191,10 @@ export class BudgetService {
           daysRange.filter(d => d > today).forEach(d => {
             scheduledOps.forEach(so => {
               if (ScheduledBudgetOperation.matchSceduleWithDate(so, d)) {
-                futureOperations.push(new BudgetOperation(so.name, so.value, d, so.id));
+                let newOp = new BudgetOperation(so.name, so.value, d, so.id);
+                newOp.scheduled_operation = so;
+                newOp.scheduled_operation_id = so.id;
+                futureOperations.push(newOp);
               }
             })
           });

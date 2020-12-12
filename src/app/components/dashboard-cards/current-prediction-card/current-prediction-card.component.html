@@ -1,4 +1,5 @@
-<mat-card class="h-100">
+<mat-card class="h-100"
+          class="small-card">
     <mat-card-header>
         <h2>Prediction for today</h2>
     </mat-card-header>
@@ -6,19 +7,33 @@
     <ng-container *ngIf="(predictionsLoaded$ | async) as r">
 
         <div class="text-center">
-            <h1>{{ displayValue(r[0]) }}</h1>
+            <h1>{{ displayValue(r[0], 0) }}</h1>
         </div>
 
         <div class="text-center">
-            +1 month : <span class="predition-future">{{ displayValue(r[1]) }}</span> <span
+            +1 month : <span class="predition-future">{{ displayValue(r[1], 0) }}</span> <span
                   class="prediction-delta {{r[1].value - r[0].value > 0 ? 'prediction-plus' : 'prediction-minus'}}">{{
-                r[1].value - r[0].value > 0 ? '+' : '' }}{{ displayValue(r[1].value - r[0].value) }}</span>
+                r[1].value - r[0].value > 0 ? '+' : '' }}{{ displayValue(r[1].value - r[0].value, 0) }}</span>
         </div>
 
         <div class="text-center">
             +3 months : <span class="predition-future">{{ displayValue(r[2]) }}</span> <span
                   class="prediction-delta {{r[2].value - r[0].value > 0 ? 'prediction-plus' : 'prediction-minus'}}">{{
-                r[2].value - r[0].value > 0 ? '+' : '' }}{{ displayValue(r[2].value - r[0].value) }}</span>
+                r[2].value - r[0].value > 0 ? '+' : '' }}{{ displayValue(r[2].value - r[0].value, 0) }}</span>
+        </div>
+
+        <div class="text-center m-3">
+
+            Incorrect? Try inserting new <a href="/fixedpoints">fixed point</a><br>
+
+            <!--
+            <span *ngIf="latestFixedPoint$ | async as fp"
+                  class="mat-caption">
+                (last: {{ fp.when.toISOString().substr(0, 10) }})
+            </span>
+            -->
+
+
         </div>
 
 
@@ -27,15 +42,7 @@
 
 
     <mat-card-footer>
-        Incorrect? Try inserting new fixed point
-        <button mat-stroked-button
-                color="secondary"
-                (click)="addFixedPoint()">
-            New
-        </button>
-        <ng-container *ngIf="latestFixedPoint$ | async as fp">
-            (last: {{ fp.when.toISOString().substr(0, 10) }})
-        </ng-container>
+
     </mat-card-footer>
 
 

@@ -30,6 +30,11 @@ body {
   align-items: center;
 }
 
+mat-card.small-card {
+  overflow-y: scroll;
+  max-height: 400px;
+}
+
 .animated-loading-bg {
   background: linear-gradient(228deg, #1a1a1a, #780085);
   background-size: 400% 400%;
