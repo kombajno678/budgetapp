@@ -126,7 +126,8 @@ export class BudgetService {
 
 
   generatePredictionForDate(date: Date): Observable<PredicionPoint> {
-    //let today = new Date();
+    console.log('GENERATOR: asked for prediction at : ', date.toISOString());
+
     let ob: ReplaySubject<PredicionPoint> = new ReplaySubject<PredicionPoint>(1);
     this.generatePredictionsBetweenDates(date, date).subscribe(r => {
       ob.next(r[r.length - 1]);
@@ -205,6 +206,7 @@ export class BudgetService {
 
         let firstDayValue = null
         if (!predictions[0].fixedPoint) {
+
           //find fixed point before start
           let sorted = fixedPoints.sort((a, b) => b.when.getTime() - a.when.getTime()); // desc
           let lastFp = sorted.find(f => f.when < start);
@@ -212,7 +214,26 @@ export class BudgetService {
             console.log('lastFp = ', lastFp);
             let toSum = r[1].filter(op => op.when >= lastFp.when && op.when <= start);
             let diff = toSum.length > 0 ? toSum.map(op => op.value).reduce((p, c, ci, a) => p = p + c) : 0;
-            firstDayValue = lastFp.exact_value + diff;
+            firstDayValue = 0;
+            //if future, also check scheduled operations
+            let today = new Date();
+            today.setUTCHours(12, 0, 0, 0);
+            if (start > today) {
+
+              //in range (today, start)
+              let range = Globals.getDaysInRange(today, start);
+              range.forEach(d => {
+                r[2].forEach(so => {
+                  if (ScheduledBudgetOperation.matchSceduleWithDate(so, d)) {
+                    //futureOperations.push(new BudgetOperation(so.name, so.value, d, so.id));
+                    firstDayValue += (so.value);
+                  }
+                })
+              });
+
+
+            }
+            firstDayValue += (lastFp.exact_value + diff);
           } else {
             firstDayValue = 0;
           }

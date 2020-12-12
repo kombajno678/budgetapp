@@ -26,7 +26,12 @@ export class ScheduledOperationsComponent implements OnInit, OnDestroy {
   scheduledOperations$: BehaviorSubject<ScheduledBudgetOperation[]> = new BehaviorSubject<ScheduledBudgetOperation[]>(null);
   //operationSchedules: OperationSchedule[];
 
-  public displayedScheduletypes: ScheduleType[] = [ScheduleType.daily, ScheduleType.weekly, ScheduleType.monthly, ScheduleType.annually];
+  public displayedScheduletypes: ScheduleType[] = [
+    ScheduleType.daily,
+    ScheduleType.weekly,
+    ScheduleType.monthly,
+    ScheduleType.annually,
+    null];
 
 
   constructor(
