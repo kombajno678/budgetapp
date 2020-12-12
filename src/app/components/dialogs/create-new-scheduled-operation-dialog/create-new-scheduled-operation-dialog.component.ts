@@ -177,6 +177,10 @@ export class CreateNewScheduledOperationDialogComponent implements OnInit, After
 
 
     //let schedule = new OperationSchedule();
+    this.operation.day_of_week = [];
+    this.operation.day_of_month = [];
+    this.operation.month = [];
+
     switch (this.scheduleType) {
       case ScheduleType.daily:
         break;

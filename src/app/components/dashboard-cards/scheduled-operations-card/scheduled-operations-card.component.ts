@@ -1,4 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
+import { Globals } from 'src/app/Globals';
+import { PredictionPoint } from 'src/app/models/internal/PredictionPoint';
+import { BudgetService } from 'src/app/services/budget/budget.service';
 import { ScheduledOperationsService } from 'src/app/services/budget/scheduled-operations.service';
 
 @Component({
@@ -9,20 +13,42 @@ import { ScheduledOperationsService } from 'src/app/services/budget/scheduled-op
 export class ScheduledOperationsCardComponent implements OnInit {
   operations = [];
 
+  futurePredictionPoints$: BehaviorSubject<PredictionPoint[]>;
+
+  compareDates = Globals.compareDates;
+
+
   link = {
-    title: 'Scheduled operations',
+    title: 'Next scheduled operations',
     url: '/scheduledoperations',
     icon: 'event',
     loginRequired: true,
   }
-  constructor(private scheduledOperationsService: ScheduledOperationsService) {
-    this.scheduledOperationsService.getAll()
-      .subscribe(r => {
-        if (r) {
+  constructor(
+    private scheduledOperationsService: ScheduledOperationsService,
+    private budget: BudgetService
+  ) {
+    this.futurePredictionPoints$ = new BehaviorSubject<PredictionPoint[]>(null);
 
-          this.operations = r.slice(0, 5);
-        }
-      })
+    let today = new Date();
+    let nextMonth = new Date();
+    nextMonth.setMonth(nextMonth.getMonth() + 1);
+
+
+
+
+    this.budget.generatePredictionsBetweenDates(today, nextMonth).subscribe(fps => {
+      if (fps) {
+        fps = fps.filter(fp => fp.operations && fp.operations.length > 0);
+        fps.sort((a, b) => {
+          return a.date.getTime() - b.date.getTime();
+        });
+        this.futurePredictionPoints$.next(fps);
+      }
+    })
+
+
+
   }
 
   ngOnInit(): void {

@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { BehaviorSubject, combineLatest } from 'rxjs';
-import { PredicionPoint } from 'src/app/models/internal/PredictionPoint';
+import { PredictionPoint } from 'src/app/models/internal/PredictionPoint';
 import { BudgetOperationService } from 'src/app/services/budget/budget-operation.service';
 import { FixedPointsService } from 'src/app/services/budget/fixed-points.service';
 import { Globals } from 'src/app/Globals';
@@ -18,12 +18,24 @@ import { BudgetService } from 'src/app/services/budget/budget.service';
 export class CurrentPredictionCardComponent implements OnInit, AfterViewInit {
 
 
-  predictions: PredicionPoint[] = [];
-  predictions$: BehaviorSubject<PredicionPoint[]>;
+  predictions: PredictionPoint[] = [];
+  predictions$: BehaviorSubject<PredictionPoint[]>;
 
 
-  todaysPrediction$: BehaviorSubject<PredicionPoint>;
+  today: Date;
+  nextMonth: Date;
+  threeMonths: Date;
+
+  predictionsLoaded$: BehaviorSubject<PredictionPoint[]>;
+  todaysPrediction$: BehaviorSubject<PredictionPoint>;
+  nextMonthPrediction$: BehaviorSubject<PredictionPoint>;
+  threeMonthsPrediction$: BehaviorSubject<PredictionPoint>;
+
+
   latestFixedPoint$: BehaviorSubject<FixedPoint>;
+
+  displayValue = Globals.displayValue;
+
 
 
 
@@ -37,9 +49,25 @@ export class CurrentPredictionCardComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    this.predictions$ = new BehaviorSubject<PredicionPoint[]>(null);
-    this.todaysPrediction$ = new BehaviorSubject<PredicionPoint>(null);
+    //this.predictions$ = new BehaviorSubject<PredictionPoint[]>(null);
+
+    this.predictionsLoaded$ = new BehaviorSubject<PredictionPoint[]>(null);
+
+    this.todaysPrediction$ = new BehaviorSubject<PredictionPoint>(null);
+    this.nextMonthPrediction$ = new BehaviorSubject<PredictionPoint>(null);
+    this.threeMonthsPrediction$ = new BehaviorSubject<PredictionPoint>(null);
+
     this.latestFixedPoint$ = new BehaviorSubject<FixedPoint>(null);
+
+
+    this.today = new Date();
+
+    this.nextMonth = new Date();
+    this.nextMonth.setMonth(this.nextMonth.getMonth() + 1);
+
+    this.threeMonths = new Date();
+    this.threeMonths.setMonth(this.threeMonths.getMonth() + 3);
+
 
   }
 
@@ -67,22 +95,25 @@ export class CurrentPredictionCardComponent implements OnInit, AfterViewInit {
 
   generate() {
 
-    let endDate = new Date();
-    //from last fixed point
     this.fixedPointService.getLatest().subscribe(r => {
-      let latestFixedPoint = r;
       this.latestFixedPoint$.next(r);
-      let startDate = new Date(latestFixedPoint.when);
-
-      this.budgetService.generatePredictionsBetweenDates(startDate, endDate).subscribe(r => {
-
-        this.predictions = r;
-        this.predictions$.next(this.predictions);
-        let tp = this.predictions.find(p => Globals.compareDates(p.date, endDate));
-        //console.log({ tp });
-        this.todaysPrediction$.next(tp);
-      });
     })
+
+    this.predictionsLoaded$.next(null);
+    combineLatest([
+      this.budgetService.generatePredictionForDate(this.today),
+      this.budgetService.generatePredictionForDate(this.nextMonth),
+      this.budgetService.generatePredictionForDate(this.threeMonths)
+    ]).subscribe(r => {
+      this.todaysPrediction$.next(r[0]);
+      this.nextMonthPrediction$.next(r[1]);
+      this.threeMonthsPrediction$.next(r[2]);
+      this.predictionsLoaded$.next(r);
+    })
+
+
+
+
   }
 
 

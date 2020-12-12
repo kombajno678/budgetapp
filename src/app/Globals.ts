@@ -1,3 +1,5 @@
+import { PredictionPoint } from "./models/internal/PredictionPoint";
+
 export class Globals {
 
 
@@ -16,6 +18,33 @@ export class Globals {
 
     static daysDifference(d1: Date, d2: Date) {
         return (d1.getTime() - d2.getTime()) / (3600000 * 24);
+    }
+
+    static displayValue(p: PredictionPoint | number, digits: number = 2) {
+
+        if (p instanceof PredictionPoint) {
+            return p.value.toLocaleString(
+                undefined, // leave undefined to use the browser's locale,
+                // or use a string like 'en-US' to override it.
+                {
+                    maximumFractionDigits: digits,
+                    minimumFractionDigits: digits
+                }
+            );
+
+
+        } else {
+            return p.toLocaleString(
+                undefined, // leave undefined to use the browser's locale,
+                // or use a string like 'en-US' to override it.
+                {
+                    maximumFractionDigits: digits,
+                    minimumFractionDigits: digits
+                }
+            );;
+
+        }
+
     }
 
 

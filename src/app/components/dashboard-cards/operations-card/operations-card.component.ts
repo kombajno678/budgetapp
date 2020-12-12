@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Globals } from 'src/app/Globals';
 import { BudgetOperationService } from 'src/app/services/budget/budget-operation.service';
 import { BudgetService } from 'src/app/services/budget/budget.service';
 
@@ -12,7 +13,7 @@ export class OperationsCardComponent implements OnInit {
   operations = [];
 
   link = {
-    title: 'Operations',
+    title: 'Recent operations',
     url: '/operations',
     icon: 'money',
     loginRequired: true,
@@ -20,6 +21,7 @@ export class OperationsCardComponent implements OnInit {
 
   }
 
+  public compareDates = Globals.compareDates;
 
 
 

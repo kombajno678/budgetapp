@@ -3,7 +3,7 @@ import { ChartDataSets, ChartOptions, ChartType } from 'chart.js';
 import { Color, Label, BaseChartDirective } from 'ng2-charts';
 import { Observable } from 'rxjs';
 
-import { PredicionPoint } from 'src/app/models/internal/PredictionPoint';
+import { PredictionPoint } from 'src/app/models/internal/PredictionPoint';
 
 import * as pluginAnnotations from 'chartjs-plugin-annotation';
 import * as pluginZoom from 'chartjs-plugin-zoom';
@@ -19,39 +19,88 @@ export class PredictionChartComponent implements OnInit {
 
 
   @Input()
-  data$: Observable<PredicionPoint[]>;
+  compact: boolean;// = false;
+  @Input()
+  data$: Observable<PredictionPoint[]>;
+
+  @Input()
+  width: number
+  @Input()
+  height: number
 
   @ViewChild('chart')
   chart: Chart;
+
+  displayYear: boolean = true;
+  DisplayMonth: boolean = true
 
 
   public lineChartData: ChartDataSets[] = [
     {
       data: [],
       label: 'History',
+      borderWidth: 6,
+      pointRadius: 0,
+      pointHitRadius: 6,
+      pointHoverBorderWidth: 10,
+      pointHoverBorderColor: 'rgb(255, 255, 255, 0.5)',
+      lineTension: 0,
+      spanGaps: false,
     },
     {
       data: [],
       label: 'Future',
-      borderColor: 'rgba(32, 128, 255)'
+      borderWidth: 6,
+      pointRadius: 0,
+      pointHitRadius: 6,
+      pointHoverBorderWidth: 10,
+      pointHoverBorderColor: 'rgb(255, 255, 255, 0.5)',
+      lineTension: 0,
+      spanGaps: false,
     },
   ];
   public lineChartLabels: Label[] = [];
   public lineChartOptions: (ChartOptions & { annotation: any } & { pan: any } & { zoom: any }) = {
     responsive: true,
+    tooltips: {
+      bodyFontSize: 16,
+      enabled: true,
+    },
     maintainAspectRatio: false,
     elements: {
       line: {
-        tension: 0
+        tension: 0,
+
       }
     },
     scales: {
+      yAxes: [
+        {
+          id: 'y-axis-0',
+          position: 'left',
+          ticks: {
+            display: true,
+          }
+          /*
+          gridLines: {
+            color: 'rgba(255,0,0,0.3)',
+          },
+          ticks: {
+            fontColor: 'red',
+          },
+          */
+
+        },
+      ],
       xAxes: [
         {
           id: 'days',
           ticks: {
-            //sampleSize: 1
-            autoSkipPadding: 14
+            //sampleSize: 10,
+            autoSkipPadding: 14,
+            minRotation: 0,
+            maxRotation: 90,
+            //display: !this.compact,
           }
         }
       ]
@@ -80,7 +129,7 @@ export class PredictionChartComponent implements OnInit {
     // Container for pan options
     pan: {
       // Boolean to enable panning
-      enabled: false,
+      enabled: true,
 
       // Panning directions. Remove the appropriate direction to disable
       // Eg. 'y' would only allow panning in the y direction
@@ -89,7 +138,7 @@ export class PredictionChartComponent implements OnInit {
       //   mode: function({ chart }) {
       //     return 'xy';
       //   },
-      mode: 'xy',
+      mode: 'x',
 
       rangeMin: {
         // Format of min pan range depends on scale type
@@ -103,7 +152,7 @@ export class PredictionChartComponent implements OnInit {
       },
 
       // On category scale, factor of pan velocity
-      speed: 20,
+      speed: 10,
 
       // Minimal pan distance required before actually applying pan
       threshold: 10,
@@ -152,13 +201,13 @@ export class PredictionChartComponent implements OnInit {
 
       // Speed of zoom via mouse wheel
       // (percentage of zoom on a wheel event)
-      speed: 0.1,
+      speed: 10.0,
 
       // Minimal zoom distance required before actually applying zoom
-      threshold: 2,
+      threshold: 0,
 
       // On category scale, minimal zoom level before actually applying zoom
-      sensitivity: 3,
+      sensitivity: 0,
 
       // Function called while the user is zooming
       //onZoom: function ({ chart }) { console.log(`I'm zooming!!!`); },
@@ -173,24 +222,28 @@ export class PredictionChartComponent implements OnInit {
   };
   public lineChartColors: Color[] = [
     {
-      borderColor: 'black',
-      backgroundColor: 'rgba(255,0,0,0.3)',
+      backgroundColor: 'rgba(255, 64, 192,0.3)',
+      borderColor: 'rgba(255, 64, 192)'
+
+    },
+    {
+      backgroundColor: 'rgba(32, 128, 255,0.3)',
+      borderColor: 'rgba(32, 128, 255)'
+
     },
   ];
   public lineChartLegend = true;
   public lineChartType: ChartType = 'line';
   public lineChartPlugins = [pluginAnnotations, pluginZoom];
 
-  constructor() { }
+  constructor() {
 
-  dateToStr(d: Date) {
-    try {
-      return d.toISOString().substr(0, 10);
-    } catch (err) {
+  }
 
-      return new Date(d).toISOString().substr(0, 10)
+  dateToStr(date: Date, y: boolean = this.displayYear, m: boolean = this.DisplayMonth, d: boolean = true) {
+    let s = date.toISOString();
+    return `${y ? s.substr(0, 4) : ''}${m ? (y ? '-' : '') + s.substr(5, 2) : ''}${d ? (m ? '-' : '') + s.substr(8, 2) : ''}`;
 
-    }
   }
 
   resetZoom() {
@@ -198,9 +251,20 @@ export class PredictionChartComponent implements OnInit {
   }
 
   ngOnInit() {
+    console.log('this.compact = ', this.compact);
+
+    this.lineChartOptions.tooltips.enabled = !this.compact;
+    //this.lineChartOptions.scales.yAxes.forEach(y => y.ticks.display = !this.compact)
+    this.lineChartOptions.scales.xAxes.forEach(x => x.ticks.display = !this.compact)
+    this.lineChartLegend = !this.compact
+
     if (this.data$) {
       this.data$.subscribe(r => {
         if (r) {
+          //check if one year
+          if (r[0].date.getFullYear() === r[r.length - 1].date.getFullYear()) {
+            this.displayYear = false;
+          }
           this.lineChartData[0].data = [];
           this.lineChartData[1].data = [];
 
@@ -210,15 +274,17 @@ export class PredictionChartComponent implements OnInit {
           r.forEach(p => {
             let d = this.dateToStr(p.date);
 
+            let value: number = Number(p.value.toFixed(2));
+
             if (d < n) {
-              this.lineChartData[0].data.push(p.value);
+              this.lineChartData[0].data.push(value);
               this.lineChartData[1].data.push(null);
             } else if (d > n) {
               this.lineChartData[0].data.push(null);
-              this.lineChartData[1].data.push(p.value);
+              this.lineChartData[1].data.push(value);
             } else {
-              this.lineChartData[0].data.push(p.value);
-              this.lineChartData[1].data.push(p.value);
+              this.lineChartData[0].data.push(value);
+              this.lineChartData[1].data.push(value);
             }
 
             this.lineChartLabels.push(d);

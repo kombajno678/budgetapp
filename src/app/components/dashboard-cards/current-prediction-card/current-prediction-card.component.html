@@ -1,37 +1,49 @@
-<mat-card>
+<mat-card class="h-100"
+          class="small-card">
     <mat-card-header>
-
-
-        Prediction for today
-
-
+        <h2>Prediction for today</h2>
     </mat-card-header>
 
-    <ng-container *ngIf="todaysPrediction$ | async as p">
-        <div class="mat-title">
-            {{ p.value }}
-        </div>
-    </ng-container>
+    <ng-container *ngIf="(predictionsLoaded$ | async) as r">
 
-    <div class="mat-small">
-        Incorrect? Help app by inserting new fixed point
-        <button mat-button
-                (click)="addFixedPoint()">
-            New fixed point
-        </button>
-    </div>
-
-
-
-
-    <ng-container *ngIf="latestFixedPoint$ | async as fp">
-        <div class="mat-caption">
-            (last: {{ fp.when.toISOString().substr(0, 10) }})
+        <div class="text-center">
+            <h1>{{ displayValue(r[0], 0) }}</h1>
         </div>
 
+        <div class="text-center">
+            +1 month : <span class="predition-future">{{ displayValue(r[1], 0) }}</span> <span
+                  class="prediction-delta {{r[1].value - r[0].value > 0 ? 'prediction-plus' : 'prediction-minus'}}">{{
+                r[1].value - r[0].value > 0 ? '+' : '' }}{{ displayValue(r[1].value - r[0].value, 0) }}</span>
+        </div>
+
+        <div class="text-center">
+            +3 months : <span class="predition-future">{{ displayValue(r[2]) }}</span> <span
+                  class="prediction-delta {{r[2].value - r[0].value > 0 ? 'prediction-plus' : 'prediction-minus'}}">{{
+                r[2].value - r[0].value > 0 ? '+' : '' }}{{ displayValue(r[2].value - r[0].value, 0) }}</span>
+        </div>
+
+        <div class="text-center m-3">
+
+            Incorrect? Try inserting new <a href="/fixedpoints">fixed point</a><br>
+
+            <!--
+            <span *ngIf="latestFixedPoint$ | async as fp"
+                  class="mat-caption">
+                (last: {{ fp.when.toISOString().substr(0, 10) }})
+            </span>
+            -->
+
+
+        </div>
+
+
+
     </ng-container>
 
 
+    <mat-card-footer>
+
+    </mat-card-footer>
 
 
 

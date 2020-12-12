@@ -11,7 +11,7 @@ import { BudgetOperationService } from './budget-operation.service';
 import { ScheduleType } from 'src/app/models/internal/ScheduleType';
 import { User } from 'src/app/models/User';
 import { Globals } from 'src/app/Globals';
-import { PredicionPoint } from 'src/app/models/internal/PredictionPoint';
+import { PredictionPoint } from 'src/app/models/internal/PredictionPoint';
 import { AuthService } from '@auth0/auth0-angular';
 import { ScheduledBudgetOperation } from 'src/app/models/ScheduledBudgetOperation';
 
@@ -125,16 +125,27 @@ export class BudgetService {
   }
 
 
+  generatePredictionForDate(date: Date): Observable<PredictionPoint> {
+    console.log('GENERATOR: asked for prediction at : ', date.toISOString());
+
+    let ob: ReplaySubject<PredictionPoint> = new ReplaySubject<PredictionPoint>(1);
+    this.generatePredictionsBetweenDates(date, date).subscribe(r => {
+      ob.next(r[r.length - 1]);
+    })
+    return ob.asObservable();
+
+  }
 
 
-
-  predictions$: Subject<PredicionPoint[]>;
-  generatePredictionsBetweenDates(start: Date, end: Date): Observable<PredicionPoint[]> {
-    console.log('GENERATOR ionvoked ', start, end);
-
-    if (!this.predictions$) {
-      this.predictions$ = new Subject<PredicionPoint[]>();
-    }
+  //predictions$: Subject<PredictionPoint[]>;
+  generatePredictionsBetweenDates(start: Date, end: Date): Observable<PredictionPoint[]> {
+    console.log('GENERATOR ionvoked ', start.toISOString(), end.toISOString());
+    let predictions$ = new ReplaySubject<PredictionPoint[]>(2);
+    /*
+        if (!this.predictions$) {
+          this.predictions$ = new Subject<PredictionPoint[]>();
+        }
+        */
     console.log('GENERATOR generating days range ');
     let daysRange = Globals.getDaysInRange(start, end);
     console.log('GENERATOR got days range ', daysRange.length);
@@ -148,12 +159,12 @@ export class BudgetService {
       if (r.every(x => x)) {
         console.log('GENERATOR START ');
 
-        let predictions = daysRange.map(p => new PredicionPoint(p, 0));
+        let predictions = daysRange.map(p => new PredictionPoint(p, 0));
         let fixedPoints = r[0];
         let operations = r[1];
 
         fixedPoints = fixedPoints.filter(fp => fp.when <= end);
-        operations = operations.filter(op => op.when >= start && op.when <= end);
+        operations = operations.filter(op => /*op.when >= start && */op.when <= end);
 
         fixedPoints.forEach(fp => {
           let f = predictions.find(p => Globals.compareDates(p.date, fp.when));
@@ -180,7 +191,10 @@ export class BudgetService {
           daysRange.filter(d => d > today).forEach(d => {
             scheduledOps.forEach(so => {
               if (ScheduledBudgetOperation.matchSceduleWithDate(so, d)) {
-                futureOperations.push(new BudgetOperation(so.name, so.value, d, so.id));
+                let newOp = new BudgetOperation(so.name, so.value, d, so.id);
+                newOp.scheduled_operation = so;
+                newOp.scheduled_operation_id = so.id;
+                futureOperations.push(newOp);
               }
             })
           });
@@ -195,6 +209,7 @@ export class BudgetService {
 
         let firstDayValue = null
         if (!predictions[0].fixedPoint) {
+
           //find fixed point before start
           let sorted = fixedPoints.sort((a, b) => b.when.getTime() - a.when.getTime()); // desc
           let lastFp = sorted.find(f => f.when < start);
@@ -202,12 +217,33 @@ export class BudgetService {
             console.log('lastFp = ', lastFp);
             let toSum = r[1].filter(op => op.when >= lastFp.when && op.when <= start);
             let diff = toSum.length > 0 ? toSum.map(op => op.value).reduce((p, c, ci, a) => p = p + c) : 0;
-            firstDayValue = lastFp.exact_value + diff;
+            firstDayValue = 0;
+            //if future, also check scheduled operations
+            let today = new Date();
+            today.setUTCHours(12, 0, 0, 0);
+            if (start > today) {
+
+              //in range (today, start)
+              let range = Globals.getDaysInRange(today, start);
+              range.forEach(d => {
+                r[2].forEach(so => {
+                  if (ScheduledBudgetOperation.matchSceduleWithDate(so, d)) {
+                    //futureOperations.push(new BudgetOperation(so.name, so.value, d, so.id));
+                    firstDayValue += (so.value);
+                  }
+                })
+              });
+
+
+            }
+            firstDayValue += (lastFp.exact_value + diff);
           } else {
             firstDayValue = 0;
           }
+          console.log('firstDayValue = ', firstDayValue, predictions[0].date.toISOString());
           predictions[0].value = firstDayValue;
           predictions[0].delta = 0;
+          ;
         }
 
         for (let i = (firstDayValue ? 1 : 0); i < predictions.length; i++) {
@@ -218,13 +254,14 @@ export class BudgetService {
           }
         }
         console.log('GENERATOR NEXT ', predictions.length);
-        this.predictions$.next(predictions);
+        predictions$.next(predictions);
         //this.predictions$.complete();
       }
     })
 
-    console.log('GENERATOR RETURN ', this.predictions$);
-    return this.predictions$.asObservable();
+    console.log('GENERATOR RETURN ', predictions$);
+    //predictions$.complete();
+    return predictions$.asObservable();
 
   }
 

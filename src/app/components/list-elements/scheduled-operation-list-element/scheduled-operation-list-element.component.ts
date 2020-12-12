@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { Globals } from 'src/app/Globals';
 import { modifyEvent } from 'src/app/models/internal/modifyEvent';
 import { getScheduleTypeName, ScheduleType } from 'src/app/models/internal/ScheduleType';
 import { VerboseDateStuff } from 'src/app/models/internal/VerboseDateStuff';
@@ -37,6 +38,9 @@ export class ScheduledOperationListElementComponent implements OnInit, OnDestroy
   months = VerboseDateStuff.months;
   daysOfWeek = VerboseDateStuff.daysOfWeek;
   daysOfMonth = VerboseDateStuff.daysOfMonth;
+
+  displayValue = Globals.displayValue;
+
 
 
 

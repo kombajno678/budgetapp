@@ -6,7 +6,13 @@
 
 
 
-        <div class="row">
+        <div class="row row-eq-height">
+
+            <div class="col m-1">
+
+                <app-current-prediction-card>
+                </app-current-prediction-card>
+            </div>
 
 
             <div class="col m-1">
@@ -21,11 +27,19 @@
                 </app-operations-card>
 
             </div>
+        </div>
+        <div class="row row-eq-height">
+
 
             <div class="col m-1">
 
-                <app-current-prediction-card>
-                </app-current-prediction-card>
+                <app-prediction-chart-card [config]="config1">
+                </app-prediction-chart-card>
+            </div>
+            <div class="col m-1">
+
+                <app-prediction-chart-card [config]="config2">
+                </app-prediction-chart-card>
             </div>
 
 

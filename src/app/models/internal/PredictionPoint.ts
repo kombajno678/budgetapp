@@ -1,7 +1,7 @@
 import { BudgetOperation } from '../BudgetOperation';
 import { FixedPoint } from '../FixedPoint';
 
-export class PredicionPoint {
+export class PredictionPoint {
 
 
     date: Date;

@@ -1,25 +1,39 @@
-<mat-card>
+<mat-card class="small-card">
     <mat-card-header>
 
 
 
-        <a mat-list-item
+        <a mat-button
            [routerLink]="link.url">
 
             {{link.title}}
         </a>
 
 
+
+
+
     </mat-card-header>
 
     <mat-card-content>
         <mat-list dense>
-            <ng-container *ngFor="let op of this.operations">
+
+
+            <ng-container *ngFor="let op of this.operations; index as i; first as isFirst">
+
+                <ng-container *ngIf="isFirst || !compareDates(op.when, this.operations[i-1].when)">
+                    <mat-divider *ngIf="!isFirst"></mat-divider>
+                    <div mat-subheader>{{ op.when.toISOString().substr(0, 10)}}</div>
+
+                </ng-container>
                 <app-operation-list-element [op]="op"
                                             [displayButton]="false"
                                             [compact]="true">
                 </app-operation-list-element>
             </ng-container>
+
+
+
         </mat-list>
     </mat-card-content>
 
