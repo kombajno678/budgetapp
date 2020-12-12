@@ -12,7 +12,7 @@ export class OperationsCardComponent implements OnInit {
   operations = [];
 
   link = {
-    title: 'Operations',
+    title: 'Recent operations',
     url: '/operations',
     icon: 'money',
     loginRequired: true,

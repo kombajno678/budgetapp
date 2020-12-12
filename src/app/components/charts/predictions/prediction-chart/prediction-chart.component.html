@@ -2,8 +2,8 @@
   <div style="display: block;">
     <canvas baseChart
             id="chart"
-            width="400"
-            height="400"
+            [width]="width ? width : 400"
+            [height]="height ? height : 400"
             [datasets]="lineChartData"
             [labels]="lineChartLabels"
             [options]="lineChartOptions"

@@ -25,6 +25,8 @@ export class CurrentPredictionCardComponent implements OnInit, AfterViewInit {
   today: Date;
   nextMonth: Date;
   threeMonths: Date;
+
+  predictionsLoaded$: BehaviorSubject<PredicionPoint[]>;
   todaysPrediction$: BehaviorSubject<PredicionPoint>;
   nextMonthPrediction$: BehaviorSubject<PredicionPoint>;
   threeMonthsPrediction$: BehaviorSubject<PredicionPoint>;
@@ -45,6 +47,8 @@ export class CurrentPredictionCardComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     //this.predictions$ = new BehaviorSubject<PredicionPoint[]>(null);
+
+    this.predictionsLoaded$ = new BehaviorSubject<PredicionPoint[]>(null);
 
     this.todaysPrediction$ = new BehaviorSubject<PredicionPoint>(null);
     this.nextMonthPrediction$ = new BehaviorSubject<PredicionPoint>(null);
@@ -84,9 +88,24 @@ export class CurrentPredictionCardComponent implements OnInit, AfterViewInit {
 
 
 
-  displayValue(p: PredicionPoint) {
+  displayValue(p: PredicionPoint | number) {
 
-    return Math.round(p.value);
+    if (p instanceof PredicionPoint) {
+      return Math.round(p.value).toLocaleString(
+        undefined, // leave undefined to use the browser's locale,
+        // or use a string like 'en-US' to override it.
+        { maximumFractionDigits: 0 }
+      );
+
+
+    } else {
+      return Math.round(p).toLocaleString(
+        undefined, // leave undefined to use the browser's locale,
+        // or use a string like 'en-US' to override it.
+        { maximumFractionDigits: 0 }
+      );;
+
+    }
 
   }
 
@@ -96,20 +115,19 @@ export class CurrentPredictionCardComponent implements OnInit, AfterViewInit {
       this.latestFixedPoint$.next(r);
     })
 
-
-
-
-    this.budgetService.generatePredictionForDate(this.today).subscribe(r => {
-      this.todaysPrediction$.next(r);
+    this.predictionsLoaded$.next(null);
+    combineLatest([
+      this.budgetService.generatePredictionForDate(this.today),
+      this.budgetService.generatePredictionForDate(this.nextMonth),
+      this.budgetService.generatePredictionForDate(this.threeMonths)
+    ]).subscribe(r => {
+      this.todaysPrediction$.next(r[0]);
+      this.nextMonthPrediction$.next(r[1]);
+      this.threeMonthsPrediction$.next(r[2]);
+      this.predictionsLoaded$.next(r);
     })
 
-    this.budgetService.generatePredictionForDate(this.nextMonth).subscribe(r => {
-      this.nextMonthPrediction$.next(r);
-    })
 
-    this.budgetService.generatePredictionForDate(this.threeMonths).subscribe(r => {
-      this.threeMonthsPrediction$.next(r);
-    })
 
 
   }

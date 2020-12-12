@@ -7,7 +7,6 @@ import { PredicionPoint } from 'src/app/models/internal/PredictionPoint';
 
 import * as pluginAnnotations from 'chartjs-plugin-annotation';
 import * as pluginZoom from 'chartjs-plugin-zoom';
-import { R3TargetBinder } from '@angular/compiler';
 
 
 @Component({
@@ -20,7 +19,14 @@ export class PredictionChartComponent implements OnInit {
 
 
   @Input()
+  compact: boolean;// = false;
+  @Input()
   data$: Observable<PredicionPoint[]>;
+
+  @Input()
+  width: number
+  @Input()
+  height: number
 
   @ViewChild('chart')
   chart: Chart;
@@ -58,6 +64,7 @@ export class PredictionChartComponent implements OnInit {
     responsive: true,
     tooltips: {
       bodyFontSize: 16,
+      enabled: true,
     },
     maintainAspectRatio: false,
     elements: {
@@ -71,6 +78,9 @@ export class PredictionChartComponent implements OnInit {
         {
           id: 'y-axis-0',
           position: 'left',
+          ticks: {
+            display: true,
+          }
           /*
           gridLines: {
             color: 'rgba(255,0,0,0.3)',
@@ -90,6 +100,7 @@ export class PredictionChartComponent implements OnInit {
             autoSkipPadding: 14,
             minRotation: 0,
             maxRotation: 90,
+            //display: !this.compact,
           }
         }
       ]
@@ -118,7 +129,7 @@ export class PredictionChartComponent implements OnInit {
     // Container for pan options
     pan: {
       // Boolean to enable panning
-      enabled: false,
+      enabled: true,
 
       // Panning directions. Remove the appropriate direction to disable
       // Eg. 'y' would only allow panning in the y direction
@@ -127,7 +138,7 @@ export class PredictionChartComponent implements OnInit {
       //   mode: function({ chart }) {
       //     return 'xy';
       //   },
-      mode: 'xy',
+      mode: 'x',
 
       rangeMin: {
         // Format of min pan range depends on scale type
@@ -141,7 +152,7 @@ export class PredictionChartComponent implements OnInit {
       },
 
       // On category scale, factor of pan velocity
-      speed: 20,
+      speed: 10,
 
       // Minimal pan distance required before actually applying pan
       threshold: 10,
@@ -190,13 +201,13 @@ export class PredictionChartComponent implements OnInit {
 
       // Speed of zoom via mouse wheel
       // (percentage of zoom on a wheel event)
-      speed: 0.1,
+      speed: 10.0,
 
       // Minimal zoom distance required before actually applying zoom
-      threshold: 2,
+      threshold: 0,
 
       // On category scale, minimal zoom level before actually applying zoom
-      sensitivity: 3,
+      sensitivity: 0,
 
       // Function called while the user is zooming
       //onZoom: function ({ chart }) { console.log(`I'm zooming!!!`); },
@@ -225,7 +236,9 @@ export class PredictionChartComponent implements OnInit {
   public lineChartType: ChartType = 'line';
   public lineChartPlugins = [pluginAnnotations, pluginZoom];
 
-  constructor() { }
+  constructor() {
+
+  }
 
   dateToStr(date: Date, y: boolean = this.displayYear, m: boolean = this.DisplayMonth, d: boolean = true) {
     let s = date.toISOString();
@@ -238,6 +251,13 @@ export class PredictionChartComponent implements OnInit {
   }
 
   ngOnInit() {
+    console.log('this.compact = ', this.compact);
+
+    this.lineChartOptions.tooltips.enabled = !this.compact;
+    //this.lineChartOptions.scales.yAxes.forEach(y => y.ticks.display = !this.compact)
+    this.lineChartOptions.scales.xAxes.forEach(x => x.ticks.display = !this.compact)
+    this.lineChartLegend = !this.compact
+
     if (this.data$) {
       this.data$.subscribe(r => {
         if (r) {

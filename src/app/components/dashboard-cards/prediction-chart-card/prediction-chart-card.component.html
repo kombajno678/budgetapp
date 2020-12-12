@@ -11,7 +11,10 @@
     </mat-card-header>
 
     <mat-card-content>
-        <app-prediction-chart [data$]="predictions$"></app-prediction-chart>
+        <app-prediction-chart [data$]="predictions$"
+                              [compact]="true"
+                              [height]="200">
+        </app-prediction-chart>
     </mat-card-content>
 
 
