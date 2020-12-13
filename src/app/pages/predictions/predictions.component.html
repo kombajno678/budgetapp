@@ -1,7 +1,8 @@
 <div class="container h-50">
     <div class="row">
         <div class="col">
-            <app-prediction-chart [data$]="predictions$.asObservable()"> ... </app-prediction-chart>
+            <app-prediction-chart [data$]="predictions$.asObservable()"
+                                  (onDayClicked)="onDayClicked($event)"> ... </app-prediction-chart>
         </div>
     </div>
     <div class="row">
@@ -49,59 +50,123 @@
 
         </div>
     </div>
+
+
     <div class="row">
+
+        <div class="col">
+            <ng-container *ngIf="selectedPP$ | async as pp; else clickhelp">
+                <mat-expansion-panel expanded>
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                            {{pp.date.toISOString().substr(0, 10)}} : {{displayValue(pp.value)}}
+                        </mat-panel-title>
+                        <mat-panel-description>
+                            change : {{ displayValue(pp.delta) }}
+                        </mat-panel-description>
+                    </mat-expansion-panel-header>
+
+
+                    <div *ngIf="pp.fixedPoint">
+                        fixed point : {{ pp.fixedPoint.exact_value }}
+                    </div>
+
+
+                    <mat-list>
+                        <div mat-subheader>operations</div>
+                        <mat-list-item *ngFor="let op of pp.operations">
+                            <app-operation-list-element [op]="op"
+                                                        [compact]="true"
+                                                        [displayButton]="true">...
+                            </app-operation-list-element>
+                        </mat-list-item>
+                    </mat-list>
+
+                </mat-expansion-panel>
+
+            </ng-container>
+
+            <ng-template #clickhelp>
+                <div class="p-3">
+                    <h1>
+                        <mat-icon>info</mat-icon> Hint
+                    </h1>
+                    <p>Click on a day in chart to see details here
+                    </p>
+                </div>
+
+
+
+            </ng-template>
+
+
+
+        </div>
+    </div>
+
+    <div class="row"
+         *ngIf="false">
         <div class="col">
 
 
-            <ng-container *ngIf="(predictions$ | async) as list">
+            <ng-container *ngIf="(loading$ | async) as loading; else loaded">
+                <mat-spinner>
 
-                Days : {{ list.length }}
-                <cdk-virtual-scroll-viewport itemSize="48"
-                                             class="days-viewport">
-                    <mat-accordion class="example-headers-align"
-                                   multi>
-
-
-                        <mat-list dense
-                                  class="w-100">
-                            <ng-container *cdkVirtualFor="let pp of getPredictionsWhereDeltaNotZero(list)">
-
-                                <mat-expansion-panel>
-                                    <mat-expansion-panel-header>
-                                        <mat-panel-title>
-                                            {{pp.date.toISOString().substr(0, 10)}} : {{displayValue(pp.value)}}
-                                        </mat-panel-title>
-                                        <mat-panel-description>
-                                            change : {{ displayValue(pp.delta) }}
-                                        </mat-panel-description>
-                                    </mat-expansion-panel-header>
-
-
-                                    <div *ngIf="pp.fixedPoint">
-                                        fixed point : {{ pp.fixedPoint.exact_value }}
-                                    </div>
-
-
-                                    <mat-list>
-                                        <div mat-subheader>operations</div>
-                                        <mat-list-item *ngFor="let op of pp.operations">
-                                            <app-operation-list-element [op]="op"
-                                                                        [compact]="true"
-                                                                        [displayButton]="true">...
-                                            </app-operation-list-element>
-                                        </mat-list-item>
-                                    </mat-list>
-
-                                </mat-expansion-panel>
-
-
-                            </ng-container>
-                        </mat-list>
-                    </mat-accordion>
-
-                </cdk-virtual-scroll-viewport>
-
+                </mat-spinner>
             </ng-container>
+            <ng-template #loaded>
+                <ng-container *ngIf="(predictions$ | async) as list">
+
+                    Days : {{ list.length }}
+                    <cdk-virtual-scroll-viewport itemSize="48"
+                                                 class="days-viewport">
+                        <mat-accordion class="example-headers-align"
+                                       multi>
+
+
+                            <mat-list dense
+                                      class="w-100">
+                                <ng-container *cdkVirtualFor="let pp of getPredictionsWhereDeltaNotZero(list)">
+
+                                    <mat-expansion-panel>
+                                        <mat-expansion-panel-header>
+                                            <mat-panel-title>
+                                                {{pp.date.toISOString().substr(0, 10)}} : {{displayValue(pp.value)}}
+                                            </mat-panel-title>
+                                            <mat-panel-description>
+                                                change : {{ displayValue(pp.delta) }}
+                                            </mat-panel-description>
+                                        </mat-expansion-panel-header>
+
+
+                                        <div *ngIf="pp.fixedPoint">
+                                            fixed point : {{ pp.fixedPoint.exact_value }}
+                                        </div>
+
+
+                                        <mat-list>
+                                            <div mat-subheader>operations</div>
+                                            <mat-list-item *ngFor="let op of pp.operations">
+                                                <app-operation-list-element [op]="op"
+                                                                            [compact]="true"
+                                                                            [displayButton]="true">...
+                                                </app-operation-list-element>
+                                            </mat-list-item>
+                                        </mat-list>
+
+                                    </mat-expansion-panel>
+
+
+                                </ng-container>
+                            </mat-list>
+                        </mat-accordion>
+
+                    </cdk-virtual-scroll-viewport>
+
+                </ng-container>
+
+
+            </ng-template>
 
 
 

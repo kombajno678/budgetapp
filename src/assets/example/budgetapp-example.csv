@@ -1,0 +1,95 @@
+mBank S.A. Bankowo�� Detaliczna;
+		Skrytka Pocztowa 2108;
+		90-959 ��d� 2;
+		www.mBank.pl;
+		mLinia: 801 300 800;
+		+48 (42) 6 300 800;
+		
+
+#Klient;
+---- ---------;
+
+Lista operacji;
+
+#Za okres:;
+01.01.2020;01.01.2020;
+
+#zgodnie z wybranymi filtrami wyszukiwania;
+      #dla rachunk�w:;
+      eKonto - xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx;
+      
+      #Lista nie jest dokumentem w rozumieniu art. 7 Ustawy Prawo Bankowe (Dz. U. Nr 140 z 1997 roku, poz.939 z p�niejszymi zmianami), poniewa� operacje mo�na samodzielnie edytowa�.;
+      
+      #Waluta;#Wp�ywy;#Wydatki;
+PLN;0;0;
+      
+#Data operacji;#Opis operacji;#Rachunek;#Kategoria;#Kwota;
+2020-01-10;"Praca - wyplata";"eKonto xxxxxx";"Wynagrodzenie";2950,69 PLN;;
+2020-02-10;"Praca - wyplata";"eKonto xxxxxx";"Wynagrodzenie";2902,69 PLN;;
+2020-03-10;"Praca - wyplata";"eKonto xxxxxx";"Wynagrodzenie";2977,69 PLN;;
+2020-04-10;"Praca - wyplata";"eKonto xxxxxx";"Wynagrodzenie";2950,69 PLN;;
+2020-05-10;"Praca - wyplata";"eKonto xxxxxx";"Wynagrodzenie";2988,69 PLN;;
+2020-06-10;"Praca - wyplata";"eKonto xxxxxx";"Wynagrodzenie";2850,69 PLN;;
+2020-07-10;"Praca - wyplata";"eKonto xxxxxx";"Wynagrodzenie";3250,69 PLN;;
+2020-08-10;"Praca - wyplata";"eKonto xxxxxx";"Wynagrodzenie";2950,69 PLN;;
+2020-09-10;"Praca - wyplata";"eKonto xxxxxx";"Wynagrodzenie";3015,69 PLN;;
+2020-10-10;"Praca - wyplata";"eKonto xxxxxx";"Wynagrodzenie";2950,69 PLN;;
+2020-11-10;"Praca - wyplata";"eKonto xxxxxx";"Wynagrodzenie";3350,69 PLN;;
+2020-12-10;"Praca - wyplata";"eKonto xxxxxx";"Wynagrodzenie";2750,69 PLN;;
+2020-01-05;"Biedronka";"eKonto xxxxxx";"Zakupy";-150,54 PLN;;
+2020-02-05;"Biedronka";"eKonto xxxxxx";"Zakupy";-124,54 PLN;;
+2020-03-05;"Biedronka";"eKonto xxxxxx";"Zakupy";-111,54 PLN;;
+2020-04-05;"Biedronka";"eKonto xxxxxx";"Zakupy";-185,54 PLN;;
+2020-05-05;"Biedronka";"eKonto xxxxxx";"Zakupy";-141,54 PLN;;
+2020-06-05;"Biedronka";"eKonto xxxxxx";"Zakupy";-196,54 PLN;;
+2020-07-05;"Biedronka";"eKonto xxxxxx";"Zakupy";-101,54 PLN;;
+2020-08-05;"Biedronka";"eKonto xxxxxx";"Zakupy";-175,54 PLN;;
+2020-09-05;"Biedronka";"eKonto xxxxxx";"Zakupy";-185,54 PLN;;
+2020-10-05;"Biedronka";"eKonto xxxxxx";"Zakupy";-145,54 PLN;;
+2020-11-05;"Biedronka";"eKonto xxxxxx";"Zakupy";-165,54 PLN;;
+2020-12-05;"Biedronka";"eKonto xxxxxx";"Zakupy";-121,54 PLN;;
+2020-01-15;"Lidl";"eKonto xxxxxx";"Zakupy";-50,54 PLN;;
+2020-02-15;"Lidl";"eKonto xxxxxx";"Zakupy";-24,54 PLN;;
+2020-03-15;"Lidl";"eKonto xxxxxx";"Zakupy";-11,54 PLN;;
+2020-04-15;"Lidl";"eKonto xxxxxx";"Zakupy";-85,54 PLN;;
+2020-05-15;"Lidl";"eKonto xxxxxx";"Zakupy";-41,54 PLN;;
+2020-06-15;"Lidl";"eKonto xxxxxx";"Zakupy";-96,54 PLN;;
+2020-07-15;"Lidl";"eKonto xxxxxx";"Zakupy";-01,54 PLN;;
+2020-08-15;"Lidl";"eKonto xxxxxx";"Zakupy";-75,54 PLN;;
+2020-09-15;"Lidl";"eKonto xxxxxx";"Zakupy";-85,54 PLN;;
+2020-10-15;"Lidl";"eKonto xxxxxx";"Zakupy";-45,54 PLN;;
+2020-11-15;"Lidl";"eKonto xxxxxx";"Zakupy";-65,54 PLN;;
+2020-12-15;"Lidl";"eKonto xxxxxx";"Zakupy";-21,54 PLN;;
+2020-01-10;"Zabka";"eKonto xxxxxx";"Zakupy";-5,54 PLN;;
+2020-02-10;"Zabka";"eKonto xxxxxx";"Zakupy";-2,54 PLN;;
+2020-03-10;"Zabka";"eKonto xxxxxx";"Zakupy";-1,54 PLN;;
+2020-04-10;"Zabka";"eKonto xxxxxx";"Zakupy";-8,54 PLN;;
+2020-05-10;"Zabka";"eKonto xxxxxx";"Zakupy";-4,54 PLN;;
+2020-06-10;"Zabka";"eKonto xxxxxx";"Zakupy";-9,54 PLN;;
+2020-07-10;"Zabka";"eKonto xxxxxx";"Zakupy";-0,54 PLN;;
+2020-08-10;"Zabka";"eKonto xxxxxx";"Zakupy";-7,54 PLN;;
+2020-09-10;"Zabka";"eKonto xxxxxx";"Zakupy";-8,54 PLN;;
+2020-10-10;"Zabka";"eKonto xxxxxx";"Zakupy";-4,54 PLN;;
+2020-11-10;"Zabka";"eKonto xxxxxx";"Zakupy";-6,54 PLN;;
+2020-12-10;"Zabka";"eKonto xxxxxx";"Zakupy";-2,54 PLN;;
+2020-01-28;"Orlen	";"eKonto xxxxxx";"Paliwo";-95,50 PLN;;
+2020-02-24;"Orlen	";"eKonto xxxxxx";"Paliwo";-92,50 PLN;;
+2020-03-22;"BP		";"eKonto xxxxxx";"Paliwo";-91,70 PLN;;
+2020-04-20;"Orlen	";"eKonto xxxxxx";"Paliwo";-98,74 PLN;;
+2020-05-18;"Circle K";"eKonto xxxxxx";"Paliwo";-94,79 PLN;;
+2020-06-19;"BP		";"eKonto xxxxxx";"Paliwo";-99,59 PLN;;
+2020-07-28;"Circle K";"eKonto xxxxxx";"Paliwo";-90,59 PLN;;
+2020-08-25;"Orlen	";"eKonto xxxxxx";"Paliwo";-97,84 PLN;;
+2020-09-20;"BP		";"eKonto xxxxxx";"Paliwo";-98,87 PLN;;
+2020-10-17;"Circle K";"eKonto xxxxxx";"Paliwo";-94,87 PLN;;
+2020-11-29;"Orlen	";"eKonto xxxxxx";"Paliwo";-96,57 PLN;;
+2020-12-30;"Orlen	";"eKonto xxxxxx";"Paliwo";-92,54 PLN;;
+2020-01-01;"Allegro";"eKonto xxxxxx";"Zakupy internetowe";-155,50 PLN;;
+2020-03-02;"Allegro";"eKonto xxxxxx";"Zakupy internetowe";-55,70 PLN;;
+2020-04-12;"Allegro";"eKonto xxxxxx";"Zakupy internetowe";-55,74 PLN;;
+2020-05-12;"Allegro";"eKonto xxxxxx";"Zakupy internetowe";-94,79 PLN;;
+2020-06-16;"Allegro";"eKonto xxxxxx";"Zakupy internetowe";-149,59 PLN;;
+2020-08-26;"Allegro";"eKonto xxxxxx";"Zakupy internetowe";-147,84 PLN;;
+2020-09-27;"Allegro";"eKonto xxxxxx";"Zakupy internetowe";-290,87 PLN;;
+2020-11-27;"Allegro";"eKonto xxxxxx";"Zakupy internetowe";-200,57 PLN;;
+2020-12-01;"Allegro";"eKonto xxxxxx";"Zakupy internetowe";-102,54 PLN;;

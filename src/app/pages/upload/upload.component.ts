@@ -17,6 +17,10 @@ import { Category } from 'src/app/models/Category';
 
 
 import { ChangeDetectionStrategy } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { UploadHelpDialogComponent } from 'src/app/components/dialogs/upload-help-dialog/upload-help-dialog.component';
+
+
 
 export interface ReportResult {
 
@@ -35,6 +39,8 @@ export interface ReportResult {
 })
 export class UploadComponent implements OnInit, AfterViewInit {
 
+  exampleFilePath = '/assets/example/budgetapp-example.csv';
+
   myForm = new FormGroup({
     file: new FormControl('', [Validators.required]),
     fileSource: new FormControl('', [Validators.required])
@@ -49,6 +55,9 @@ export class UploadComponent implements OnInit, AfterViewInit {
   uploadProgress: number = 0;
   uploadBarMode: string = 'determinate';
 
+  success: boolean = false;
+  uploading: boolean = false;
+
 
 
   constructor(
@@ -57,6 +66,7 @@ export class UploadComponent implements OnInit, AfterViewInit {
     private scheduledOpsService: ScheduledOperationsService,
     private fixedPointsService: FixedPointsService,
     private categoriesService: CategoryService,
+    private dialog: MatDialog
   ) {
 
   }
@@ -79,6 +89,17 @@ export class UploadComponent implements OnInit, AfterViewInit {
   onCancel() {
     console.log('cancel');
     localStorage.removeItem('lastReport');
+    this.report = null;
+    this.report$.next(null);
+  }
+
+  onHelpButtonClick() {
+    this.dialog.open(UploadHelpDialogComponent, { width: '500px', maxWidth: '98vw' });
+  }
+
+  onExampleButtonClick() {
+    //
+    //download example csv file
   }
 
 
@@ -113,8 +134,19 @@ export class UploadComponent implements OnInit, AfterViewInit {
   }
 
 
+  private onSuccess() {
+    localStorage.removeItem('lastReport');
+    this.report = null;
+    this.report$.next(this.report);
+    this.success = true;
+
+
+
+
+  }
   onSave() {
     console.log('save');
+    this.report$.next(null);
     // TODO: actually implement categories
     /*
     this.report.Operations.forEach(op => {
@@ -233,9 +265,9 @@ export class UploadComponent implements OnInit, AfterViewInit {
                         console.log('createdOps = ', createdOps);
                         console.log('createdSops = ', createdSops);
 
-                        localStorage.removeItem('lastReport');
-                        this.report = null;
-                        this.report$.next(this.report);
+
+                        console.log('success');
+                        this.onSuccess();
 
 
 
@@ -251,7 +283,9 @@ export class UploadComponent implements OnInit, AfterViewInit {
                         //delete scheduled
                         this.scheduledOpsService.deleteMany(createdSops).subscribe(deleted => {
                           console.log('reverting changes scheduledOpsService.deleteMany(createdSops)');
-                        })
+                        });
+
+                        this.report$.next(this.report);
                       }
                     })
                   } else {
@@ -262,6 +296,8 @@ export class UploadComponent implements OnInit, AfterViewInit {
                     this.categoriesService.deleteMany(createdCategories).subscribe(deleted => {
                       console.log('reverting changes categoriesService.deleteMany(createdCategories)');
                     })
+
+                    this.report$.next(this.report);
                   }
                 })
               } else {
@@ -269,6 +305,8 @@ export class UploadComponent implements OnInit, AfterViewInit {
                   console.log('reverting changes fixedPointsService.delete(createdNewFp)');
                 })
                 console.error('error while creating categories');
+
+                this.report$.next(this.report);
               }
 
             })
@@ -314,17 +352,25 @@ export class UploadComponent implements OnInit, AfterViewInit {
     this.uploadProgress = 0;
     this.uploadBarMode = 'determinate';
 
-    this.report = null;
-    this.report$.next(this.report);
+    this.report = {
+      Operations: [],
+      ScheduledOperations: [],
+      Categories: [],
+    };
+    this.report$.next(null);
+
+    this.uploading = true;
 
     this.budgetService.upload(formData).pipe(
       map(event => {
         switch (event.type) {
           case HttpEventType.UploadProgress:
             this.uploadProgress = Math.round(event.loaded * 100 / event.total);
+            console.log('uploadProgress = ', this.uploadProgress);
             if (this.uploadProgress >= 100) {
               this.uploadBarMode = 'indeterminate';
             }
+            console.log('uploadBarMode = ', this.uploadBarMode);
             break;
           case HttpEventType.Response:
             return event;
@@ -332,14 +378,17 @@ export class UploadComponent implements OnInit, AfterViewInit {
       }),
       catchError((error: HttpErrorResponse) => {
         this.uploadProgress = 0;
+
+        this.uploading = false;
         return of(`upload failed`);
       })).subscribe((event: any) => {
         if (typeof (event) === 'object') {
           console.log('upload finished', event);
           this.uploadProgress = 100;
-          this.uploadBarMode = 'determinate';
+          this.uploadBarMode = 'indeterminate';
           this.report = event.body;
           this.report$.next(this.report);
+          this.uploading = false;
 
           localStorage.setItem('lastReport', JSON.stringify(event.body));
         }

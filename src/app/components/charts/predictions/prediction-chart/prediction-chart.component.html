@@ -1,4 +1,14 @@
-<ng-container *ngIf="(this.data$ | async ) as x; else loading">
+<ng-container *ngIf="(this.loading$ | async ) as loading; else loaded">
+
+  <app-loading-spinner></app-loading-spinner>
+
+
+
+
+</ng-container>
+
+
+<ng-template #loaded>
   <div style="display: block;">
     <canvas baseChart
             id="chart"
@@ -10,12 +20,9 @@
             [colors]="lineChartColors"
             [legend]="lineChartLegend"
             [chartType]="lineChartType"
-            [plugins]="lineChartPlugins">
+            [plugins]="lineChartPlugins"
+            (chartClick)="onChartClick($event)">
     </canvas>
   </div>
-</ng-container>
 
-
-<ng-template #loading>
-  <app-loading-spinner></app-loading-spinner>
 </ng-template>

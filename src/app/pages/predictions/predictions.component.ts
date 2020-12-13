@@ -3,13 +3,14 @@ import { BudgetOperation } from 'src/app/models/BudgetOperation';
 import { FixedPointsService } from 'src/app/services/budget/fixed-points.service';
 import { BudgetOperationService } from 'src/app/services/budget/budget-operation.service';
 import { PredictionPoint } from 'src/app/models/internal/PredictionPoint';
-import { BehaviorSubject, combineLatest, forkJoin, merge, Observable, of } from 'rxjs';
+import { BehaviorSubject, combineLatest, forkJoin, merge, Observable, of, ReplaySubject } from 'rxjs';
 import { Globals } from 'src/app/Globals';
 import { BudgetService } from 'src/app/services/budget/budget.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import moment from 'moment';
 import { MatButtonToggleChange } from '@angular/material/button-toggle';
 import { tap } from 'rxjs/operators';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   templateUrl: './predictions.component.html',
@@ -20,9 +21,13 @@ export class PredictionsComponent implements OnInit, AfterViewInit {
 
   predictions: PredictionPoint[] = [];
   predictions$: BehaviorSubject<PredictionPoint[]>;
-  todaysPrediction$: BehaviorSubject<PredictionPoint>;
+  loading$: ReplaySubject<boolean>;
+  //todaysPrediction$: BehaviorSubject<PredictionPoint>;
 
   generatorSubscribtion: Observable<any>;
+  selectedPP$: BehaviorSubject<PredictionPoint>;
+
+
 
   form: FormGroup;
 
@@ -37,12 +42,21 @@ export class PredictionsComponent implements OnInit, AfterViewInit {
     private budgetService: BudgetService,
     private fixedPointService: FixedPointsService,
     private operationsService: BudgetOperationService,
-    private fb: FormBuilder
-  ) { }
+    private fb: FormBuilder,
+    private route: ActivatedRoute
+  ) {
+    this.selectedPP$ = new BehaviorSubject<PredictionPoint>(null)
+
+
+  }
 
   ngOnInit(): void {
+    this.loading$ = new ReplaySubject<boolean>(1);
+    this.loading$.next(true);
+
     this.predictions$ = new BehaviorSubject<PredictionPoint[]>(null);
-    this.todaysPrediction$ = new BehaviorSubject<PredictionPoint>(null);
+    //this.todaysPrediction$ = new BehaviorSubject<PredictionPoint>(null);
+
     this.form = this.fb.group({
       startDate: [moment(), { validators: [Validators.required], updateOn: 'blur' }],
       endDate: [moment(), { validators: [Validators.required], updateOn: 'blur' }]
@@ -51,11 +65,39 @@ export class PredictionsComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
 
-    this.setDateRageMonths();
 
-    this.generate();
+    this.route.queryParams.subscribe(params => {
+      if (params['start'] && params['end']) {
+        this.startDate = new Date(params['start']);
+        this.endDate = new Date(params['end']);
+
+        this.form.controls.startDate.setValue(params['start']);
+        this.form.controls.endDate.setValue(params['end']);
+
+      } else {
+        this.setDateRageMonths();
+      }
+      this.generate();
+    });
+
+
 
   }
+
+  onDayClicked(day: Date) {
+    console.log('received day click event');
+    console.log('clicked day = ', day.toISOString().substr(0, 10));
+
+    this.predictions$.subscribe(pps => {
+      console.log('pps = ', pps);
+
+      this.selectedPP$.next(pps.find(pp => Globals.compareDates(pp.date, day)))
+    })
+
+
+
+  }
+
 
   onFormSubmit() {
     this.startDate = this.form.controls.startDate.value.toDate();
@@ -125,18 +167,22 @@ export class PredictionsComponent implements OnInit, AfterViewInit {
 
   }
   generate() {
-    console.log('generating ... , ', this.startDate, this.endDate);
+    this.loading$.next(true);
+    console.log('predictions > generating ... , ', this.startDate, this.endDate);
     this.budgetService.generatePredictionsBetweenDates(this.startDate, this.endDate).subscribe(
       (r) => {
         console.log('RECEIVED  generatePredictionsBetweenDates prediction for ', r.length, ' days');
         this.predictions = r;
         this.predictions$.next(this.predictions);
+        this.loading$.next(false);
       },
       (error) => {
         console.error('RECEIVED generatePredictionsBetweenDates error: ', error);
+        this.loading$.next(false);
       },
       () => {
         console.log('RECEIVED generatePredictionsBetweenDates completed');
+        this.loading$.next(false);
       }
     );
 

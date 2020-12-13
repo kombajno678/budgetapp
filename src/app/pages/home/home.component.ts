@@ -32,7 +32,7 @@ export class HomeComponent implements OnInit {
       endDate: new Date(),
       title: 'Last month'
     }
-    this.config2.startDate.setMonth(this.config1.endDate.getMonth() - 1);
+    this.config2.startDate.setMonth(this.config2.endDate.getMonth() - 1);
 
 
 

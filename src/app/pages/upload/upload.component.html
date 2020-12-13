@@ -1,18 +1,27 @@
-<div class="row m-1">
-  <mat-progress-bar [value]="uploadProgress"
-                    [mode]="uploadBarMode">
+<h1>Uploading .csv file</h1>
 
-  </mat-progress-bar>
-</div>
+
 <div class="row m-1">
-  <div class="col-12">
-    Currently, only supported bank is mBank. <a href="#">How do I export data?</a>
+  <div class="col-12 mb-3">
+    <h3>Need help getting file?</h3>
+    <button mat-flat-button
+            color="secondary"
+            (click)="onHelpButtonClick()">How do I export data?</button>
   </div>
-  <div class="col">
+
+  <div class="col-12 mb-3">
+    <h3>Want to try with example file?</h3>
+    <a mat-flat-button
+       color="secondary"
+       [href]="exampleFilePath"
+       target="_blank">Download example csv file</a>
+  </div>
+
+
+  <div class="col mb-3">
     <form [formGroup]="myForm"
           (ngSubmit)="submit()">
 
-      <label for="file">.csv file:</label>
       <input formControlName="file"
              id="file"
              type="file"
@@ -33,6 +42,20 @@
 
 </div>
 
+
+
+<div class="row m-1"
+     *ngIf="uploading">
+  <div class="col"></div>
+  <div class="col-auto">
+    <mat-progress-spinner [value]="uploadProgress"
+                          [mode]="uploadBarMode">
+
+    </mat-progress-spinner>
+
+  </div>
+  <div class="col"></div>
+</div>
 
 
 <ng-container *ngIf="(report$ | async) as r; else loading">
@@ -204,17 +227,41 @@
 </ng-container>
 
 <ng-template #loading>
-  <div class="row m-1">
-    <div class="col"></div>
-    <div class="col-auto">
-      <mat-progress-spinner [value]="uploadProgress"
-                            [mode]="uploadBarMode">
 
-      </mat-progress-spinner>
 
-    </div>
-    <div class="col"></div>
-  </div>
+
+
+
+  <ng-container *ngIf="!success; else successMsg">
+
+    <ng-container *ngIf="report">
+      <div class="row m-1">
+        <div class="col"></div>
+        <div class="col-auto">
+          <mat-progress-spinner [value]="uploadProgress"
+                                [mode]="uploadBarMode">
+
+          </mat-progress-spinner>
+
+        </div>
+        <div class="col"></div>
+      </div>
+    </ng-container>
+
+
+
+  </ng-container>
+
+  <ng-template #successMsg>
+    <h1>
+      Import successflul!
+    </h1>
+    <a mat-flat-button
+       color="primary"
+       href="/">Go to home page</a>
+  </ng-template>
+
+
 
 
 </ng-template>

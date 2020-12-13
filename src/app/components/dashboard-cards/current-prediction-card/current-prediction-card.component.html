@@ -1,13 +1,13 @@
 <mat-card class="h-100"
           class="small-card">
     <mat-card-header>
-        <h2>Prediction for today</h2>
+        <h2>Predictions</h2>
     </mat-card-header>
 
     <ng-container *ngIf="(predictionsLoaded$ | async) as r">
 
         <div class="text-center">
-            <h1>{{ displayValue(r[0], 0) }}</h1>
+            Today : <h1>{{ displayValue(r[0], 0) }}</h1>
         </div>
 
         <div class="text-center">
@@ -17,12 +17,12 @@
         </div>
 
         <div class="text-center">
-            +3 months : <span class="predition-future">{{ displayValue(r[2]) }}</span> <span
+            +3 months : <span class="predition-future">{{ displayValue(r[2], 0) }}</span> <span
                   class="prediction-delta {{r[2].value - r[0].value > 0 ? 'prediction-plus' : 'prediction-minus'}}">{{
                 r[2].value - r[0].value > 0 ? '+' : '' }}{{ displayValue(r[2].value - r[0].value, 0) }}</span>
         </div>
 
-        <div class="text-center m-3">
+        <div class="text-center m-3 mat-caption">
 
             Incorrect? Try inserting new <a href="/fixedpoints">fixed point</a><br>
 

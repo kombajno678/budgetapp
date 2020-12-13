@@ -1,7 +1,7 @@
-import { Component, OnInit, ViewChild, Input } from '@angular/core';
+import { Component, OnInit, ViewChild, Input, Output, EventEmitter } from '@angular/core';
 import { ChartDataSets, ChartOptions, ChartType } from 'chart.js';
 import { Color, Label, BaseChartDirective } from 'ng2-charts';
-import { Observable } from 'rxjs';
+import { Observable, ReplaySubject, Subject } from 'rxjs';
 
 import { PredictionPoint } from 'src/app/models/internal/PredictionPoint';
 
@@ -30,6 +30,12 @@ export class PredictionChartComponent implements OnInit {
 
   @ViewChild('chart')
   chart: Chart;
+
+  loading$: ReplaySubject<boolean>;
+
+  @Output()
+  onDayClicked: EventEmitter<Date>;
+
 
   displayYear: boolean = true;
   DisplayMonth: boolean = true
@@ -79,6 +85,9 @@ export class PredictionChartComponent implements OnInit {
           id: 'y-axis-0',
           position: 'left',
           ticks: {
+            callback: (value, index, values) => {
+              return value.toLocaleString();
+            },
             display: true,
           }
           /*
@@ -101,6 +110,13 @@ export class PredictionChartComponent implements OnInit {
             minRotation: 0,
             maxRotation: 90,
             //display: !this.compact,
+            callback: (value, index, values) => {
+              if (('' + values[0]).substr(0, 4) === ('' + values[values.length - 1]).substr(0, 4)) {
+                return ('' + value).substring(5);
+              } else {
+                return value;
+              }
+            },
           }
         }
       ]
@@ -237,6 +253,8 @@ export class PredictionChartComponent implements OnInit {
   public lineChartPlugins = [pluginAnnotations, pluginZoom];
 
   constructor() {
+    this.onDayClicked = new EventEmitter<Date>();
+
 
   }
 
@@ -249,22 +267,41 @@ export class PredictionChartComponent implements OnInit {
   resetZoom() {
     //this.chart.resetZoom();
   }
+  onChartClick(event: { event: MouseEvent, active: any[] }) {
+    if (event.active.length == 1) {
+      event.active.forEach(chartElement => {
+        console.log(chartElement);
+        let clickedDate = new Date(chartElement._xScale.ticks[chartElement._index - chartElement._xScale.minIndex]);
+        if (clickedDate.getFullYear() < chartElement._xScale.min.substr(0, 4)) {
+          clickedDate.setFullYear(chartElement._xScale.min.substr(0, 4));
+        }
+
+
+        console.log('click at : ', clickedDate);
+        this.onDayClicked.emit(clickedDate);
+      })
+    }
+  }
 
   ngOnInit() {
-    console.log('this.compact = ', this.compact);
+    //console.log('this.compact = ', this.compact);
+    this.loading$ = new ReplaySubject<boolean>(1);
 
     this.lineChartOptions.tooltips.enabled = !this.compact;
     //this.lineChartOptions.scales.yAxes.forEach(y => y.ticks.display = !this.compact)
     this.lineChartOptions.scales.xAxes.forEach(x => x.ticks.display = !this.compact)
     this.lineChartLegend = !this.compact
 
+    this.loading$.next(true);
     if (this.data$) {
       this.data$.subscribe(r => {
         if (r) {
           //check if one year
+          /*
           if (r[0].date.getFullYear() === r[r.length - 1].date.getFullYear()) {
             this.displayYear = false;
           }
+          */
           this.lineChartData[0].data = [];
           this.lineChartData[1].data = [];
 
@@ -291,11 +328,13 @@ export class PredictionChartComponent implements OnInit {
           })
 
         } else {
-          console.error('prediction chart received incorrent data');
+          console.warn('prediction chart received incorrent data');
         }
+        this.loading$.next(false);
       })
     } else {
       console.error('chart initialized with no data observable');
+      this.loading$.next(false);
     }
 
 
