@@ -94,6 +94,25 @@
 
 
 
+            <mat-step optional>
+                <ng-template matStepLabel>Import data from bank</ng-template>
+
+                <app-upload></app-upload>
+
+                <div>
+                    <button mat-button
+                            matStepperPrevious>Back</button>
+                    <button mat-flat-button
+                            color="primary"
+                            matStepperNext>Next</button>
+
+
+                </div>
+            </mat-step>
+
+
+
+
 
             <mat-step>
                 <ng-template matStepLabel>Add some recurring operations</ng-template>
