@@ -1,14 +1,15 @@
-import { Component, Inject, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatButtonToggleGroup } from '@angular/material/button-toggle';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Globals } from 'src/app/Globals';
 import { FixedPoint } from 'src/app/models/FixedPoint';
 
 @Component({
   templateUrl: './create-new-fixed-point-dialog.component.html',
   styleUrls: ['./create-new-fixed-point-dialog.component.scss']
 })
-export class CreateNewFixedPointDialogComponent implements OnInit {
+export class CreateNewFixedPointDialogComponent implements OnInit, AfterViewInit {
 
   form: FormGroup;
 
@@ -33,6 +34,8 @@ export class CreateNewFixedPointDialogComponent implements OnInit {
       this.fixedPoint = data;
       this.acceptButtonTest = this.updateButtonText;
       this.title = this.updateTitle;
+
+      
     } else {
       this.fixedPoint = new FixedPoint();
       this.fixedPoint.exact_value = null;
@@ -51,6 +54,23 @@ export class CreateNewFixedPointDialogComponent implements OnInit {
   }
 
   ngOnInit(): void {
+
+    
+
+  }
+  
+  ngAfterViewInit(){
+    let yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+
+      if(Globals.compareDates(new Date(), this.fixedPoint.when)){
+        this.operationDateOption.value = 'today';
+      }else if(Globals.compareDates(yesterday, this.fixedPoint.when)){
+        this.operationDateOption.value = 'yesterday';
+      }else{
+        this.operationDateOption.value = 'other';
+
+      }
   }
 
 

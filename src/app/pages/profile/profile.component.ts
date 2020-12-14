@@ -1,9 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import { AuthService } from '@auth0/auth0-angular';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
+import { BudgetOperationService } from 'src/app/services/budget/budget-operation.service';
+import { CategoryService } from 'src/app/services/budget/category.service';
+import { FixedPointsService } from 'src/app/services/budget/fixed-points.service';
+import { ScheduledOperationsService } from 'src/app/services/budget/scheduled-operations.service';
 
 @Component({
   selector: 'app-profile',
@@ -13,46 +17,37 @@ import { map, startWith } from 'rxjs/operators';
 export class ProfileComponent implements OnInit {
   profileJson: string = null;
 
+  constructor(
+    public auth: AuthService, 
+    public snack: MatSnackBar,
 
+    private budgetOperationService:BudgetOperationService,
+    private categoryService:CategoryService,
+    private fixedPointsService:FixedPointsService,
+    private scheduledOperationsService:ScheduledOperationsService) {
 
-  weekdays = [
-    { name: 'Monday' },
-    { name: 'Tuesday' },
-    { name: 'Wednesday' },
-    { name: 'Thursday' },
-    { name: 'Friday' },
-    { name: 'Saturday' },
-    { name: 'Sunday' },
-  ];
-  displayWeekday(subject) {
-    return subject ? subject.name : undefined;
   }
 
-  randomNumber;
-  sidenavOpened: boolean = true;
+  deleteAll(){
+    if(confirm("Are you absolutely sure that you want to dele all your data? (This means essentially starting from scratch, like on a new account)")){
+      console.log('brrr, deleting all', 'close');
 
-  exampleForm: FormGroup;
-
-  exampleformControl: FormControl;
-  filteredOptions: Observable<any>;
-
-
-  constructor(public auth: AuthService, public snack: MatSnackBar) {
-
-
-
-    this.randomNumber = new Date().getUTCSeconds();
-
-    this.exampleformControl = new FormControl();
-
-    this.filteredOptions = this.exampleformControl.valueChanges.pipe(
-      startWith(''),
-      map(value => this._filter(value))
-
-    )
+      this.budgetOperationService.deleteAll().subscribe(r => {
+        this.scheduledOperationsService.deleteAll().subscribe(r => {
+          this.fixedPointsService.deleteAll().subscribe(r => {
+            this.categoryService.deleteAll().subscribe(r => {
+              console.log('deleting done');
+              this.snack.open('Deleted all your data');
+            })
+          })
+        })
+      })
 
 
 
+    }else{
+      this.snack.open('Nothing has been deleted', 'close');
+    }
   }
 
   ngOnInit() {
@@ -65,49 +60,6 @@ export class ProfileComponent implements OnInit {
   }
 
 
-
-  openCustomSnack() {
-    this.snack.openFromComponent(CustomSnackbarComponent, { duration: 2000 })
-  }
-
-  openSnack(msg: string, action?: string) {
-
-
-
-    let snackRef = this.snack.open(msg, action ? action : null, { duration: 2000 });
-
-
-    snackRef.afterDismissed().subscribe(r => {
-      console.log('snackbar dismissed', r);
-    })
-
-    snackRef.onAction().subscribe(r => {
-      console.log('snackbar action triggered', r);
-    })
-  }
-
-  private _filter(value: string): any[] {
-    const filtervalue = value.toLowerCase();
-
-    return this.weekdays.filter(w => w.name.toLowerCase().includes(filtervalue));
-  }
-
-  log(state) {
-    console.log('log : ', state);
-  }
-
-  getNow() {
-    return new Date().toISOString();
-  }
-
 }
 
 
-
-@Component({
-  selector: 'custom-snackbar',
-  template: `<span style='color:green'> Home </span>`,
-})
-export class CustomSnackbarComponent {
-
-}

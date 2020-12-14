@@ -71,7 +71,8 @@ export class CreateNewOperationDialogComponent implements OnInit {
   constructor(
     public dialogRef: MatDialogRef<CreateNewOperationDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: BudgetOperation,
-    private categoryService: CategoryService) {
+    private categoryService: CategoryService
+  ) {
 
 
     this.categoryService.getAll().subscribe(r => {

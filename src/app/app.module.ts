@@ -9,7 +9,7 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HomeComponent } from './pages/home/home.component';
-import { ProfileComponent, CustomSnackbarComponent } from './pages/profile/profile.component';
+import { ProfileComponent } from './pages/profile/profile.component';
 import { NavBarComponent } from './components/nav-bar/nav-bar.component';
 
 
@@ -72,7 +72,6 @@ function tokenGetter(): string {
     ProfileComponent,
     NavBarComponent,
     SidenavComponent,
-    CustomSnackbarComponent,
     UserAvatarComponent,
     OperationsComponent,
     RecentOperationsTableComponent,
@@ -99,7 +98,7 @@ function tokenGetter(): string {
     UploadHelpDialogComponent
 
   ],
-  entryComponents: [CustomSnackbarComponent],
+  entryComponents: [],
   imports: [
 
     BrowserModule,

@@ -17,6 +17,7 @@ import { BehaviorSubject, combineLatest } from 'rxjs';
 import { ScheduledOperationsService } from 'src/app/services/budget/scheduled-operations.service';
 import { modifyEvent } from 'src/app/models/internal/modifyEvent';
 import { CategoryService } from 'src/app/services/budget/category.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-operations',
@@ -52,7 +53,8 @@ export class OperationsComponent implements OnInit, AfterViewInit, OnDestroy {
     private categoriesService: CategoryService,
     private budgetService: BudgetService,
     private dialog: MatDialog,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private snack:MatSnackBar
   ) {
 
 
@@ -178,8 +180,8 @@ export class OperationsComponent implements OnInit, AfterViewInit, OnDestroy {
       this.operationService.getAll(),
       this.categoriesService.getAll(),
     ]).subscribe(r => {
+      console.log('combineLatest : ', r);
       if (r[0] && r[1] && r[2]) {
-        //console.log(r);
         this.allOperations = r[1].sort((a, b) => b.when.getTime() - a.when.getTime());
         this.allOperations.forEach(op => {
           if (op.scheduled_operation_id) {
@@ -189,8 +191,16 @@ export class OperationsComponent implements OnInit, AfterViewInit, OnDestroy {
             op.category = r[2].find(so => so.id === op.category_id);
           }
         })
-        this.updateDisplayedOperations();
+      }else{
+        this.allOperations = [];
+        
+        
       }
+      if(this.allOperations.length == 0){
+        this.snack.open('You have no operations :(', 'close');
+
+      }
+      this.updateDisplayedOperations();
     })
   }
 
@@ -223,7 +233,7 @@ export class OperationsComponent implements OnInit, AfterViewInit, OnDestroy {
       return filter && op.when >= this.startDate && op.when <= this.endDate;
     });
 
-    //console.log('next : ', x);
+    console.log('next : ', x);
     this.displayedOperations$.next(x);
 
   }
