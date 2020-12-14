@@ -16,12 +16,13 @@
     </mat-card-header>
 
     <mat-card-content>
-        <mat-list dense>
+        <ng-container *ngIf="this.operations as list; else loading">
+            <mat-list dense *ngIf="list.length > 0; else empty">
 
 
-            <ng-container *ngFor="let op of this.operations; index as i; first as isFirst">
+            <ng-container *ngFor="let op of list; index as i; first as isFirst">
 
-                <ng-container *ngIf="isFirst || !compareDates(op.when, this.operations[i-1].when)">
+                <ng-container *ngIf="isFirst || !compareDates(op.when, list[i-1].when)">
                     <mat-divider *ngIf="!isFirst"></mat-divider>
                     <div mat-subheader>{{ op.when.toISOString().substr(0, 10)}}</div>
 
@@ -35,6 +36,16 @@
 
 
         </mat-list>
+        </ng-container>
+
+
+        <ng-template #loading>
+            <mat-spinner></mat-spinner>
+          </ng-template>
+          <ng-template #empty>
+            it's empty here
+          </ng-template>
+
     </mat-card-content>
 
 
