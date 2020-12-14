@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatSidenav } from '@angular/material/sidenav';
 import { AuthService } from '@auth0/auth0-angular';
+import { BudgetService } from 'src/app/services/budget/budget.service';
 
 @Component({
   selector: 'app-sidenav',
@@ -99,7 +100,7 @@ export class SidenavComponent implements OnInit {
     },
   ];
 
-  constructor(public auth: AuthService) { }
+  constructor(public auth: AuthService, public budget: BudgetService) { }
 
   ngOnInit(): void {
   }
@@ -110,5 +111,11 @@ export class SidenavComponent implements OnInit {
   close() {
     this.sidenav.close();
   }
+
+  logout() {
+    this.budget.onLogout();
+    this.auth.logout({ returnTo: '' });
+  }
+
 
 }

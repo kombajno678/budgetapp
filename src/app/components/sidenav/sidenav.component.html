@@ -73,6 +73,26 @@
             Change theme
         </a>
 
+        <mat-divider></mat-divider>
+
+
+
+        <ng-container *ngIf="auth.user$ | async as user">
+            <a mat-list-item
+               *ngIf="this.user"
+               [routerLink]="''"
+               (click)="logout()">
+                <mat-icon>
+                    user
+                </mat-icon>
+                Log out
+            </a>
+        </ng-container>
+
+
+
+
+
 
 
     </mat-nav-list>
