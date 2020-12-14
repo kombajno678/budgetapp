@@ -43,6 +43,12 @@ export class ScheduledOperationsCardComponent implements OnInit {
         fps.sort((a, b) => {
           return a.date.getTime() - b.date.getTime();
         });
+        console.log('FUTURE OPERATIONS : ', fps);
+        fps.forEach(fp => {
+          if(fp.operations.find(op => !op.scheduled_operation)){
+            console.warn(fp)
+          }
+        })
         this.futurePredictionPoints$.next(fps);
       }
     })

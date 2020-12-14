@@ -20,6 +20,8 @@ import { ScheduledBudgetOperation } from 'src/app/models/ScheduledBudgetOperatio
 })
 export class BudgetService {
 
+  verbose: boolean = true//false;
+
 
   public user$: BehaviorSubject<User> = new BehaviorSubject<User>(null);
   private user: User = null;
@@ -91,7 +93,7 @@ export class BudgetService {
 
   afterLogin() {
     this.auth.getAccessTokenSilently({ ignoreCache: true, audience: environment.auth.audience }).subscribe(token => {
-      console.log('received token, ', token)
+      if (this.verbose) console.log('received token, ', token)
       localStorage.setItem('budgetapp-token', token);
       this.getUser().subscribe(u => {
         localStorage.setItem('user', JSON.stringify(u));
@@ -126,7 +128,7 @@ export class BudgetService {
 
 
   generatePredictionForDate(date: Date): Observable<PredictionPoint> {
-    console.log('GENERATOR: asked for prediction at : ', date.toISOString());
+    if (this.verbose) console.log('GENERATOR: asked for prediction at : ', date.toISOString());
 
     let ob: ReplaySubject<PredictionPoint> = new ReplaySubject<PredictionPoint>(1);
     this.generatePredictionsBetweenDates(date, date).subscribe(r => {
@@ -139,16 +141,16 @@ export class BudgetService {
 
   //predictions$: Subject<PredictionPoint[]>;
   generatePredictionsBetweenDates(start: Date, end: Date): Observable<PredictionPoint[]> {
-    console.log('GENERATOR ionvoked ', start.toISOString(), end.toISOString());
+    if (this.verbose) console.log('GENERATOR ionvoked ', start.toISOString(), end.toISOString());
     let predictions$ = new ReplaySubject<PredictionPoint[]>(2);
     /*
         if (!this.predictions$) {
           this.predictions$ = new Subject<PredictionPoint[]>();
         }
         */
-    console.log('GENERATOR generating days range ');
+    if (this.verbose) console.log('GENERATOR generating days range ');
     let daysRange = Globals.getDaysInRange(start, end);
-    console.log('GENERATOR got days range ', daysRange.length);
+    if (this.verbose) console.log('GENERATOR got days range ', daysRange.length);
 
     combineLatest([
       this.fixedPointsService.getAll(),
@@ -157,11 +159,12 @@ export class BudgetService {
 
     ]).subscribe(r => {
       if (r.every(x => x)) {
-        console.log('GENERATOR START ');
+        if(this.verbose)console.log('GENERATOR START ');
 
         let predictions = daysRange.map(p => new PredictionPoint(p, 0));
         let fixedPoints = r[0];
         let operations = r[1];
+        let scheduledOps = r[2];
 
         fixedPoints = fixedPoints.filter(fp => fp.when <= end);
         operations = operations.filter(op => /*op.when >= start && */op.when <= end);
@@ -173,6 +176,7 @@ export class BudgetService {
 
         predictions.forEach(p => {
           p.operations = operations.filter(op => Globals.compareDates(p.date, op.when));
+          //
         })
 
 
@@ -180,7 +184,7 @@ export class BudgetService {
 
         let today = new Date();
         if (end > today) {
-          let scheduledOps = r[2];
+          
           //let schedules = r[3];
           //consider futur operations
           let futureOperations = [];
@@ -214,7 +218,7 @@ export class BudgetService {
           let sorted = fixedPoints.sort((a, b) => b.when.getTime() - a.when.getTime()); // desc
           let lastFp = sorted.find(f => f.when < start);
           if (lastFp) {
-            console.log('lastFp = ', lastFp);
+            if(this.verbose)console.log('lastFp = ', lastFp);
             let toSum = r[1].filter(op => op.when >= lastFp.when && op.when <= start);
             let diff = toSum.length > 0 ? toSum.map(op => op.value).reduce((p, c, ci, a) => p = p + c) : 0;
             firstDayValue = 0;
@@ -240,10 +244,10 @@ export class BudgetService {
           } else {
             firstDayValue = 0;
           }
-          console.log('firstDayValue = ', firstDayValue, predictions[0].date.toISOString());
+          if(this.verbose)console.log('firstDayValue = ', firstDayValue, predictions[0].date.toISOString());
           predictions[0].value = firstDayValue;
           predictions[0].delta = 0;
-          ;
+          
         }
 
         for (let i = (firstDayValue ? 1 : 0); i < predictions.length; i++) {
@@ -252,14 +256,20 @@ export class BudgetService {
           if (predictions[i].fixedPoint) {
             predictions[i].value = predictions[i].fixedPoint.exact_value;
           }
+          if(predictions[i].date > today){
+            //attach scheduled operation to any operation in the future, bc bugs might happend otherwise
+            predictions[i].operations.forEach(op => {
+              op.scheduled_operation = scheduledOps.find(so => so.id === op.scheduled_operation_id);
+            })
+          }
         }
-        console.log('GENERATOR NEXT ', predictions.length);
+        if(this.verbose)console.log('GENERATOR NEXT ', predictions.length);
         predictions$.next(predictions);
         //this.predictions$.complete();
       }
     })
 
-    console.log('GENERATOR RETURN ', predictions$);
+    if(this.verbose)console.log('GENERATOR RETURN ', predictions$);
     //predictions$.complete();
     return predictions$.asObservable();
 
@@ -297,7 +307,7 @@ export class BudgetService {
       //check how many new operations to add between last generated date and now
       this.generateListOfOperationsToAdd(whenLast).subscribe(ops => {
         if (ops && ops.length > 0) {
-          console.log('ye, i need to generate thoose ', ops.length, ' operations');
+          if(this.verbose)console.log('ye, i need to generate thoose ', ops.length, ' operations');
           subject.next(ops.length);
 
         }
@@ -426,7 +436,7 @@ export class BudgetService {
           operations = operations.filter(operation => operation.scheduled_operation_id && operation.when > latestFixedPoint.when);
 
           //iterate throught days and match scheduled operations 
-          console.log('iterating through ' + days.length + ' days ...');
+          if(this.verbose)console.log('iterating through ' + days.length + ' days ...');
           days.forEach(d => {
             //let thisDaysOperations = operations.filter(operation => operation.when.getTime() === d.getTime());
 
@@ -439,7 +449,10 @@ export class BudgetService {
                   //console.log(d, so, 'already exists');
                 } else {
                   //console.log('operationsToAdd = ' + operationsToAdd.length);
-                  operationsToAdd.push(new BudgetOperation(so.name, so.value, d, so.id));
+                  let temp:BudgetOperation = new BudgetOperation(so.name, so.value, d, so.id);
+                  temp.scheduled_operation = so;
+                  temp.scheduled_operation_id = so.id;
+                  operationsToAdd.push(temp);
 
                 }
               } else {
@@ -450,16 +463,16 @@ export class BudgetService {
           })
 
           //gone through all days, now add operations
-          console.log('execcuting operationsToAdd = ' + operationsToAdd.length);
+          if(this.verbose)console.log('execcuting operationsToAdd = ' + operationsToAdd.length);
 
 
 
           this.operationsService.createMany(operationsToAdd).subscribe(r => {
             if (r) {
-              console.log('generator: created ', operationsToAdd.length);
+              if(this.verbose)console.log('generator: created ', operationsToAdd.length);
               this.user.last_generated_operations_at = new Date();
               this.updateUser().subscribe(r => {
-                console.log('last_generated_operations_at updated');
+                if(this.verbose)console.log('last_generated_operations_at updated');
               });
 
             } else {
