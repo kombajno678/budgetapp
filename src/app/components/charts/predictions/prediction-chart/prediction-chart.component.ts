@@ -326,15 +326,16 @@ export class PredictionChartComponent implements OnInit {
 
             this.lineChartLabels.push(d);
           })
+          this.loading$.next(false);
 
         } else {
           console.warn('prediction chart received incorrent data');
         }
-        this.loading$.next(false);
+        
       })
     } else {
       console.error('chart initialized with no data observable');
-      this.loading$.next(false);
+      //this.loading$.next(false);
     }
 
 

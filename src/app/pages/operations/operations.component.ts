@@ -197,7 +197,7 @@ export class OperationsComponent implements OnInit, AfterViewInit, OnDestroy {
         
       }
       if(this.allOperations.length == 0){
-        this.snack.open('You have no operations :(', 'close');
+        this.snack.open('You have no operations :(', 'close', {duration: 3000});
 
       }
       this.updateDisplayedOperations();

@@ -1,17 +1,14 @@
-<div class="container">
-  <!--
-  <div class="row ">
-    <div class="col">
-      <app-fixedpoints-chart [fixedPoints$]="fixedPoints$"> ... </app-fixedpoints-chart>
-
-    </div>
+<div class="row p-2">
+  <div class="col">
+      <span class="mat-display-1">
+        Fixed points
+      </span>
   </div>
-  -->
+</div>
 
   <div class="row">
     <div class="col">
       <mat-list>
-        <div mat-subheader>Fixed points</div>
         <ng-container *ngFor="let fp of fixedPoints">
 
           <mat-list-item>
@@ -65,5 +62,3 @@
     </div>
   </div>
 
-
-</div>

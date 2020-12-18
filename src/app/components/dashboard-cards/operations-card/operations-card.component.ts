@@ -10,7 +10,7 @@ import { BudgetService } from 'src/app/services/budget/budget.service';
 })
 export class OperationsCardComponent implements OnInit {
 
-  operations = [];
+  operations = null;
 
   link = {
     title: 'Recent operations',
@@ -31,6 +31,8 @@ export class OperationsCardComponent implements OnInit {
         if (r) {
 
           this.operations = r.slice(0, 5);
+        }else{
+          this.operations = null;
         }
       })
   }

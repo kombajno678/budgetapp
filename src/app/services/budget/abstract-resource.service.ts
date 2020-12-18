@@ -4,7 +4,9 @@ import { BehaviorSubject, forkJoin, merge, Observable, of, ReplaySubject } from 
 import { catchError, map, tap } from 'rxjs/operators';
 import { AbstractResource } from 'src/app/models/AbstractResource';
 import { environment } from 'src/environments/environment';
+import { BudgetService } from './budget.service';
 import { ResourceServiceInterface } from './ResourceServiceInterface';
+import { UserService } from './user.service';
 /*
 @Injectable({
   providedIn: 'root'
@@ -22,7 +24,7 @@ export abstract class AbstractResourceService<T extends AbstractResource> implem
   public resource: ReplaySubject<T[]>;
   public mapWhenRefreshing = (resource) => resource;
 
-  constructor(pathSuffix: string, customMap, public http: HttpClient) {
+  constructor(pathSuffix: string, customMap, public http: HttpClient, public userService:UserService) {
     this.pathSuffix = pathSuffix;
     if (!this.pathSuffix) {
       throw 'pathSuffix not sppecified';
@@ -34,7 +36,13 @@ export abstract class AbstractResourceService<T extends AbstractResource> implem
       this.mapWhenRefreshing = customMap;
 
     }
-    this.refreshResource();
+
+    this.userService.getUser().subscribe(user => {
+      if(user){
+        this.refreshResource();
+
+      }
+    })
 
 
   }
@@ -54,14 +62,14 @@ export abstract class AbstractResourceService<T extends AbstractResource> implem
     return this.http.get<T[]>(this.path).pipe(
       tap(_ => this.log(this.path)),
       map(this.mapWhenRefreshing),
-      catchError(this.handleError<any>(this.path, null)),
+      catchError(this.handleError<T[]>(this.path, null)),
     );
   }
 
   get(id: number) {
     return this.http.get<T>(this.path + '/' + id).pipe(
       tap(_ => this.log(this.path)),
-      catchError(this.handleError<any>(this.path, null)),
+      catchError(this.handleError<T>(this.path, null)),
     );
   }
 
@@ -75,7 +83,7 @@ export abstract class AbstractResourceService<T extends AbstractResource> implem
         if (log) this.log(this.path);
         if (refresh) this.refreshResource();
       }),
-      catchError(this.handleError<any>(this.path, null)),
+      catchError(this.handleError<T>(this.path, null)),
     )
   }
 
@@ -89,7 +97,7 @@ export abstract class AbstractResourceService<T extends AbstractResource> implem
           if (log) this.log(this.path);
           if (refresh) this.refreshResource();
         }),
-        catchError(this.handleError<any>(this.path, null)),
+        catchError(this.handleError<T[]>(this.path, null)),
       );
       observableRequests.push(x);
     });
@@ -120,7 +128,7 @@ export abstract class AbstractResourceService<T extends AbstractResource> implem
         if (log) this.log(this.path);
         if (refresh) this.refreshResource();
       }),
-      catchError(this.handleError<any>(this.path, null)),
+      catchError(this.handleError<T>(this.path, null)),
     );
   }
 
@@ -134,7 +142,7 @@ export abstract class AbstractResourceService<T extends AbstractResource> implem
         if (log) this.log(this.path);
         if (refresh) this.refreshResource();
       }),
-      catchError(this.handleError<any>(this.path, null)),
+      catchError(this.handleError<T>(this.path, null)),
     );
   }
 
@@ -145,7 +153,7 @@ export abstract class AbstractResourceService<T extends AbstractResource> implem
         if (log) this.log(this.path);
         if (refresh) this.refreshResource();
       }),
-      catchError(this.handleError<any>(this.path, null)),
+      catchError(this.handleError<T[]>(this.path, null)),
     );
   }
 

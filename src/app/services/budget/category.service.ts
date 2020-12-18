@@ -3,6 +3,8 @@ import { Category } from '../../models/Category';
 
 import { HttpClient } from '@angular/common/http';
 import { AbstractResourceService } from './abstract-resource.service';
+import { BudgetService } from './budget.service';
+import { UserService } from './user.service';
 
 const pathSuffix = '/users/0/categories';
 
@@ -18,8 +20,8 @@ export class CategoryService extends AbstractResourceService<Category> {
   }
 
 
-  constructor(public http: HttpClient) {
-    super(pathSuffix, CategoryService.customMap(), http);
+  constructor(public http: HttpClient, public userService:UserService) {
+    super(pathSuffix, CategoryService.customMap(), http, userService);
 
 
   }

@@ -1,7 +1,6 @@
 <div *ngIf="auth.isLoading$ | async; else loaded">
 </div>
 <ng-template #loaded>
-
     <ng-container *ngIf="auth.user$ | async as user; else notLoggedIn">
 
 
@@ -113,7 +112,6 @@
 
 
     </ng-template>
-
 
 
 

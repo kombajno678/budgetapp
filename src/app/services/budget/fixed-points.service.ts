@@ -5,6 +5,8 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { tap, catchError, map } from 'rxjs/operators';
 import { AbstractResourceService } from './abstract-resource.service';
+import { BudgetService } from './budget.service';
+import { UserService } from './user.service';
 
 
 const customMap = (resource) => {
@@ -23,15 +25,15 @@ const pathSuffix = '/users/0/fixed_points';
   providedIn: 'root'
 })
 export class FixedPointsService extends AbstractResourceService<FixedPoint> {
-  constructor(public http: HttpClient) {
-    super(pathSuffix, customMap, http);
+  constructor(public http: HttpClient, public userService:UserService) {
+    super(pathSuffix, customMap, http, userService);
   }
 
   getLatest() {
     return this.getAllOnce().pipe(
       map(fps => {
         let latestFixedPoint = null;
-        fps.forEach(fp => {
+        fps?.forEach(fp => {
           if (!latestFixedPoint) {
             latestFixedPoint = fp;
           } else {

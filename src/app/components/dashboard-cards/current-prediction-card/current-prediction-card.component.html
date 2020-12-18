@@ -4,7 +4,7 @@
         <h2>Predictions</h2>
     </mat-card-header>
 
-    <ng-container *ngIf="(predictionsLoaded$ | async) as r">
+    <ng-container *ngIf="(predictionsLoaded$ | async) as r; else loading">
 
         <div class="text-center">
             Today : <h1>{{ displayValue(r[0], 0) }}</h1>
@@ -39,6 +39,12 @@
 
 
     </ng-container>
+
+    <ng-template #loading>
+
+        <app-loading-spinner></app-loading-spinner>
+    </ng-template>
+    
 
 
     <mat-card-footer>

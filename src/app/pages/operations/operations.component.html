@@ -11,12 +11,14 @@
 
         <button mat-button
                 type="button"
+                [disabled]="!this.allOperations"
                 (click)="onNewClick()">
             Add new
         </button>
 
         <button mat-button
                 type="button"
+                [disabled]="!this.allOperations ||  this.allOperations.length == 0"
                 (click)="deleteAllOperations()">
             Delete all
         </button>

@@ -13,6 +13,8 @@ import { ScheduledOperationsService } from 'src/app/services/budget/scheduled-op
 export class ScheduledOperationsCardComponent implements OnInit {
   operations = [];
 
+  
+
   futurePredictionPoints$: BehaviorSubject<PredictionPoint[]>;
 
   compareDates = Globals.compareDates;
@@ -50,6 +52,8 @@ export class ScheduledOperationsCardComponent implements OnInit {
           }
         })
         this.futurePredictionPoints$.next(fps);
+      }else{
+        this.futurePredictionPoints$.next(null);
       }
     })
 

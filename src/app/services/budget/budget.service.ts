@@ -14,6 +14,7 @@ import { Globals } from 'src/app/Globals';
 import { PredictionPoint } from 'src/app/models/internal/PredictionPoint';
 import { AuthService } from '@auth0/auth0-angular';
 import { ScheduledBudgetOperation } from 'src/app/models/ScheduledBudgetOperation';
+import { UserService } from './user.service';
 
 @Injectable({
   providedIn: 'root'
@@ -23,12 +24,13 @@ export class BudgetService {
   verbose: boolean = true//false;
 
 
-  public user$: BehaviorSubject<User> = new BehaviorSubject<User>(null);
-  private user: User = null;
 
 
   constructor(
     private http: HttpClient,
+
+    private userService: UserService,
+
 
     public auth: AuthService,
 
@@ -36,7 +38,6 @@ export class BudgetService {
     private operationsService: BudgetOperationService,
     private scheduledOperations: ScheduledOperationsService,
   ) {
-    this.user$.subscribe(u => this.user = u);
 
   }
 
@@ -72,61 +73,6 @@ export class BudgetService {
 
 
 
-
-
-  testToken() {
-    let path = environment.apiUrl + '/testtoken';
-
-    return this.http.get<any>(path).pipe(
-      tap(_ => this.log(path)),
-      catchError(this.handleError<any>(path, null))
-    )
-  }
-
-
-  onLogout() {
-    localStorage.removeItem('budgetapp-token');
-    localStorage.removeItem('user');
-    this.user$.next(null);
-  }
-
-
-  afterLogin() {
-    this.auth.getAccessTokenSilently({ ignoreCache: true, audience: environment.auth.audience }).subscribe(token => {
-      if (this.verbose) console.log('received token, ', token)
-      localStorage.setItem('budgetapp-token', token);
-      this.getUser().subscribe(u => {
-        localStorage.setItem('user', JSON.stringify(u));
-        this.user$.next(u);
-
-        let last = new Date(u.last_generated_operations_at);
-        if (Globals.daysDifference(new Date(), last) >= 1) {
-          this.generateOperations();
-        }
-
-
-
-
-      });
-
-    })
-  }
-
-  getUser(): Observable<User> {
-    let path = environment.apiUrl + '/users/0';
-    return this.http.get<User>(path).pipe(
-      catchError(this.handleError<any>(path, null))
-    );
-  }
-  updateUser() {
-    let path = environment.apiUrl + '/users/0';
-    return this.http.put<User>(path, this.user).pipe(
-      catchError(this.handleError<any>(path, null))
-    );
-
-  }
-
-
   generatePredictionForDate(date: Date): Observable<PredictionPoint> {
     if (this.verbose) console.log('GENERATOR: asked for prediction at : ', date.toISOString());
 
@@ -159,7 +105,7 @@ export class BudgetService {
 
     ]).subscribe(r => {
       if (r.every(x => x)) {
-        if(this.verbose)console.log('GENERATOR START ');
+        if (this.verbose) console.log('GENERATOR START ');
 
         let predictions = daysRange.map(p => new PredictionPoint(p, 0));
         let fixedPoints = r[0];
@@ -184,7 +130,7 @@ export class BudgetService {
 
         let today = new Date();
         if (end > today) {
-          
+
           //let schedules = r[3];
           //consider futur operations
           let futureOperations = [];
@@ -218,7 +164,7 @@ export class BudgetService {
           let sorted = fixedPoints.sort((a, b) => b.when.getTime() - a.when.getTime()); // desc
           let lastFp = sorted.find(f => f.when < start);
           if (lastFp) {
-            if(this.verbose)console.log('lastFp = ', lastFp);
+            if (this.verbose) console.log('lastFp = ', lastFp);
             let toSum = r[1].filter(op => op.when >= lastFp.when && op.when <= start);
             let diff = toSum.length > 0 ? toSum.map(op => op.value).reduce((p, c, ci, a) => p = p + c) : 0;
             firstDayValue = 0;
@@ -244,10 +190,10 @@ export class BudgetService {
           } else {
             firstDayValue = 0;
           }
-          if(this.verbose)console.log('firstDayValue = ', firstDayValue, predictions[0].date.toISOString());
+          if (this.verbose) console.log('firstDayValue = ', firstDayValue, predictions[0].date.toISOString());
           predictions[0].value = firstDayValue;
           predictions[0].delta = 0;
-          
+
         }
 
         for (let i = (firstDayValue ? 1 : 0); i < predictions.length; i++) {
@@ -256,20 +202,20 @@ export class BudgetService {
           if (predictions[i].fixedPoint) {
             predictions[i].value = predictions[i].fixedPoint.exact_value;
           }
-          if(predictions[i].date > today){
+          if (predictions[i].date > today) {
             //attach scheduled operation to any operation in the future, bc bugs might happend otherwise
             predictions[i].operations.forEach(op => {
               op.scheduled_operation = scheduledOps.find(so => so.id === op.scheduled_operation_id);
             })
           }
         }
-        if(this.verbose)console.log('GENERATOR NEXT ', predictions.length);
+        if (this.verbose) console.log('GENERATOR NEXT ', predictions.length);
         predictions$.next(predictions);
         //this.predictions$.complete();
       }
     })
 
-    if(this.verbose)console.log('GENERATOR RETURN ', predictions$);
+    if (this.verbose) console.log('GENERATOR RETURN ', predictions$);
     //predictions$.complete();
     return predictions$.asObservable();
 
@@ -282,43 +228,40 @@ export class BudgetService {
 
     let subject = new ReplaySubject<number>();
 
-
-    let whenLast: Date = this.user.last_generated_operations_at;
-
-    this.fixedPointsService.getLatest().subscribe(fpl => {
-
-      //never, new user
-      if (whenLast == null) {
-        whenLast = new Date(fpl.when);
-      }
+    this.userService.user$.asObservable().subscribe(user => {
 
 
+      let whenLast: Date = user.last_generated_operations_at;
 
+      this.fixedPointsService.getLatest().subscribe(fpl => {
 
-      if (Globals.compareDates(new Date(), whenLast)) {
-        //today, no need to generate again
-        subject.next(0);
-        return subject.asObservable();
-      }
-
-
-
-
-      //check how many new operations to add between last generated date and now
-      this.generateListOfOperationsToAdd(whenLast).subscribe(ops => {
-        if (ops && ops.length > 0) {
-          if(this.verbose)console.log('ye, i need to generate thoose ', ops.length, ' operations');
-          subject.next(ops.length);
-
+        //never, new user
+        if (whenLast == null) {
+          whenLast = new Date(fpl.when);
         }
+
+
+
+
+        if (Globals.compareDates(new Date(), whenLast)) {
+          //today, no need to generate again
+          subject.next(0);
+          return subject.asObservable();
+        }
+
+
+
+
+        //check how many new operations to add between last generated date and now
+        this.generateListOfOperationsToAdd(whenLast).subscribe(ops => {
+          if (ops && ops.length > 0) {
+            if (this.verbose) console.log('ye, i need to generate thoose ', ops.length, ' operations');
+            subject.next(ops.length);
+
+          }
+        });
       });
-
-
-
-
-    });
-
-
+    })
 
 
 
@@ -436,7 +379,7 @@ export class BudgetService {
           operations = operations.filter(operation => operation.scheduled_operation_id && operation.when > latestFixedPoint.when);
 
           //iterate throught days and match scheduled operations 
-          if(this.verbose)console.log('iterating through ' + days.length + ' days ...');
+          if (this.verbose) console.log('iterating through ' + days.length + ' days ...');
           days.forEach(d => {
             //let thisDaysOperations = operations.filter(operation => operation.when.getTime() === d.getTime());
 
@@ -449,7 +392,7 @@ export class BudgetService {
                   //console.log(d, so, 'already exists');
                 } else {
                   //console.log('operationsToAdd = ' + operationsToAdd.length);
-                  let temp:BudgetOperation = new BudgetOperation(so.name, so.value, d, so.id);
+                  let temp: BudgetOperation = new BudgetOperation(so.name, so.value, d, so.id);
                   temp.scheduled_operation = so;
                   temp.scheduled_operation_id = so.id;
                   operationsToAdd.push(temp);
@@ -463,16 +406,18 @@ export class BudgetService {
           })
 
           //gone through all days, now add operations
-          if(this.verbose)console.log('execcuting operationsToAdd = ' + operationsToAdd.length);
+          if (this.verbose) console.log('execcuting operationsToAdd = ' + operationsToAdd.length);
 
 
 
           this.operationsService.createMany(operationsToAdd).subscribe(r => {
             if (r) {
-              if(this.verbose)console.log('generator: created ', operationsToAdd.length);
-              this.user.last_generated_operations_at = new Date();
-              this.updateUser().subscribe(r => {
-                if(this.verbose)console.log('last_generated_operations_at updated');
+              if (this.verbose) console.log('generator: created ', operationsToAdd.length);
+
+
+              this.userService.user.last_generated_operations_at = new Date();
+              this.userService.updateUser(this.userService.user).subscribe(r => {
+                if (this.verbose) console.log('last_generated_operations_at updated');
               });
 
             } else {

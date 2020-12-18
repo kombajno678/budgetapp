@@ -7,6 +7,10 @@ import { environment } from 'src/environments/environment';
 import { User } from './models/User';
 import { BudgetService } from './services/budget/budget.service';
 import { NavigationEnd, Router } from "@angular/router"
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { Globals } from './Globals';
+import { UserService } from './services/budget/user.service';
 
 type Theme = 'light-theme' | 'dark-theme';
 
@@ -67,7 +71,9 @@ export class AppComponent implements OnInit {
     public breakpointObserver: BreakpointObserver,
     private themeService: ThemeService,
     private budget: BudgetService,
-    private router: Router
+    private userService: UserService,
+    private router: Router,
+    private snack:MatSnackBar
   ) {
 
     breakpointObserver.observe([
@@ -79,9 +85,9 @@ export class AppComponent implements OnInit {
       }
     });
 
-    this.budget.user$.asObservable().subscribe(u => {
+    this.userService.user$.asObservable().subscribe(u => {
       this.user = u;
-      console.log('received new user : ', u);
+      console.log('received new user from backend : ', u);
       if (u) {
         if (!u.last_generated_operations_at) {
           // beep boop, alert, new user has logged in
@@ -89,6 +95,10 @@ export class AppComponent implements OnInit {
           this.router.navigate(['/quickstart'])
 
         }
+      }else{
+        console.warn('received null user from backend');
+        //this.snack.open('Server error :(', 'dismiss', {duration: 10_000});
+        //
       }
     })
 
@@ -124,7 +134,17 @@ export class AppComponent implements OnInit {
 
 
 
-    this.budget.afterLogin();
+    this.userService.afterLogin();
+      this.userService.user$.asObservable().subscribe(u =>{
+        if(u){
+          let last = new Date(u.last_generated_operations_at);
+          if (Globals.daysDifference(new Date(), last) >= 1) {
+            console.log('afterLogin => generateOperations');
+            this.budget.generateOperations();
+          }
+        }
+      });
+
 
 
 

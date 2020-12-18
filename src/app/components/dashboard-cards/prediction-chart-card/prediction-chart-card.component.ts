@@ -56,7 +56,9 @@ export class PredictionChartCardComponent implements OnInit {
     console.log('received day click event');
 
     this.predictions$.subscribe(pps => {
-      this.selectedPP$.next(pps.find(pp => Globals.compareDates(pp.date, day)))
+      if(pps){
+        this.selectedPP$.next(pps.find(pp => Globals.compareDates(pp.date, day)));
+      }
     })
 
 
@@ -69,7 +71,10 @@ export class PredictionChartCardComponent implements OnInit {
 
     this.budgetService.generatePredictionsBetweenDates(this.config.startDate, this.config.endDate).subscribe(
       (r) => {
-        this.predictions$.next(r);
+        if(r){
+          this.predictions$.next(r);
+
+        }
       },
       (error) => {
         console.error('RECEIVED generatePredictionsBetweenDates error: ', error);

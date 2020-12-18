@@ -8,6 +8,7 @@ import { BudgetOperationService } from 'src/app/services/budget/budget-operation
 import { CategoryService } from 'src/app/services/budget/category.service';
 import { FixedPointsService } from 'src/app/services/budget/fixed-points.service';
 import { ScheduledOperationsService } from 'src/app/services/budget/scheduled-operations.service';
+import { UserService } from 'src/app/services/budget/user.service';
 
 @Component({
   selector: 'app-profile',
@@ -20,6 +21,7 @@ export class ProfileComponent implements OnInit {
   constructor(
     public auth: AuthService, 
     public snack: MatSnackBar,
+    private userService:UserService,
 
     private budgetOperationService:BudgetOperationService,
     private categoryService:CategoryService,
@@ -36,8 +38,15 @@ export class ProfileComponent implements OnInit {
         this.scheduledOperationsService.deleteAll().subscribe(r => {
           this.fixedPointsService.deleteAll().subscribe(r => {
             this.categoryService.deleteAll().subscribe(r => {
-              console.log('deleting done');
-              this.snack.open('Deleted all your data');
+              this.userService.user.last_generated_operations_at = null;
+              this.userService.updateUser(this.userService.user).subscribe(u => {
+                console.log('deleting done');
+                this.snack.open('Deleted all your data');
+              })
+
+              
+
+
             })
           })
         })

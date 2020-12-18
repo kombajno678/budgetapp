@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '@auth0/auth0-angular';
+import { Globals } from 'src/app/Globals';
 import { BudgetService } from 'src/app/services/budget/budget.service';
+import { UserService } from 'src/app/services/budget/user.service';
 import { environment } from 'src/environments/environment';
 @Component({
   selector: 'app-user-avatar',
@@ -9,7 +11,7 @@ import { environment } from 'src/environments/environment';
 })
 export class UserAvatarComponent implements OnInit {
 
-  constructor(public auth: AuthService, public budget: BudgetService) { }
+  constructor(public userService: UserService,public auth: AuthService, public budget: BudgetService) { }
 
   ngOnInit(): void {
   }
@@ -17,7 +19,16 @@ export class UserAvatarComponent implements OnInit {
   loginWithRedirect() {
     this.auth.loginWithPopup().subscribe(r => {
       console.log('after login');
-      this.budget.afterLogin();
+      this.userService.afterLogin();
+      this.userService.user$.asObservable().subscribe(u =>{
+        if(u){
+          let last = new Date(u.last_generated_operations_at);
+          if (Globals.daysDifference(new Date(), last) >= 1) {
+            console.log('afterLogin => generateOperations');
+            this.budget.generateOperations();
+          }
+        }
+      });
     });
   }
 
@@ -27,7 +38,7 @@ export class UserAvatarComponent implements OnInit {
   // }
 
   logout() {
-    this.budget.onLogout();
+    this.userService.onLogout();
     this.auth.logout({ returnTo: '' });
   }
 

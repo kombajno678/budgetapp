@@ -12,12 +12,14 @@
 
         <button mat-flat-button
                 color="primary"
+                [disabled]="!this.scheduledOperations"
                 (click)="onNewClick()">
             New
         </button>
 
         <button mat-button
                 type="button"
+                [disabled]="!this.scheduledOperations || this.scheduledOperations.length == 0"
                 (click)="deleteAll()">
             Delete all
         </button>
@@ -28,30 +30,37 @@
 <div class="row no-gutters">
     <div class="col">
 
-        <mat-list>
+        <ng-container *ngIf="(this.scheduledOperations$ | async);else loading">
+            <mat-list>
 
-            <ng-container *ngFor="let type of getScheduleTypes()">
-                <ng-container *ngIf="this.getScheduledOperationsByType(type) as list ">
-                    <div mat-subheader
-                         *ngIf="list.length > 0">{{getScheduleTypeName(type)}}</div>
-
-                    <ng-container *ngFor="let so of list">
-
-                        <app-scheduled-operation-list-element [so]="so"
-                                                              (onDelete)="deleteOperation($event)"
-                                                              (onModify)="modifyOperation($event)"
-                                                              (onChangeActiveState)="chnageActiveState($event)">
-                            ...
-                        </app-scheduled-operation-list-element>
-
+                <ng-container *ngFor="let type of getScheduleTypes()">
+                    <ng-container *ngIf="this.getScheduledOperationsByType(type) as list ">
+                        <div mat-subheader
+                             *ngIf="list.length > 0">{{getScheduleTypeName(type)}}</div>
+    
+                        <ng-container *ngFor="let so of list">
+    
+                            <app-scheduled-operation-list-element [so]="so"
+                                                                  (onDelete)="deleteOperation($event)"
+                                                                  (onModify)="modifyOperation($event)"
+                                                                  (onChangeActiveState)="chnageActiveState($event)">
+                                ...
+                            </app-scheduled-operation-list-element>
+    
+                        </ng-container>
+    
+    
                     </ng-container>
-
-
+    
                 </ng-container>
+    
+    
+            </mat-list>
+        </ng-container>
+        <ng-template #loading>
+            <app-loading-spinner></app-loading-spinner>
+        </ng-template>
 
-            </ng-container>
-
-
-        </mat-list>
+        
     </div>
 </div>

@@ -1,55 +1,10 @@
-<div *ngIf="(auth.isLoading$ | async); else loaded"
-     class="">
+<ng-container *ngIf="(auth.isLoading$ | async); else loaded"></ng-container>
 
-</div>
 <ng-template #loaded>
 
-
-
-
-    <ng-container *ngIf="auth.user$ | async as user; else notLoggedIn">
-
-        <!--
-    <img [src]="user.picture"
-         [matMenuTriggerFor]="myMenu"
-         class="avatar "
-         alt="...">
-         -->
-
-         <!--
-        <div [matMenuTriggerFor]="myMenu"
-             class="img-wrapper text-right rounded  clickable "
-             [style.background-image]="'url(' + user.picture + ')'">
-            <mat-icon class="expand-icon">expand_more</mat-icon>
-        </div>
-        
-
-
-
-        <mat-menu #myMenu="matMenu"
-                  xPosition="before"
-                  yPosition="below">
-            <span mat-menu-item
-                  *ngIf="user">
-
-                Hello {{ user.name }}
-
-            </span>
-
-
-
-
-
-            <button mat-menu-item
-                    *ngIf="this.user"
-                    (click)="logout()"
-                    id="qsLogoutBtn">
-                Log out
-            </button>
-        </mat-menu>
-        -->
+    <ng-container *ngIf="(auth.user$ | async) as user; else notLoggedIn">
+        Hello
     </ng-container>
-
 
     <ng-template #notLoggedIn>
         <button mat-button

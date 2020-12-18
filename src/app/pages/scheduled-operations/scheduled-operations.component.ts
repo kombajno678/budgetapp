@@ -7,6 +7,7 @@ import { BehaviorSubject, combineLatest, forkJoin, merge, zip } from 'rxjs';
 import { getScheduleTypeName, ScheduleType } from 'src/app/models/internal/ScheduleType';
 import { modifyEvent } from 'src/app/models/internal/modifyEvent';
 import { CategoryService } from 'src/app/services/budget/category.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-scheduled-operations',
@@ -37,7 +38,7 @@ export class ScheduledOperationsComponent implements OnInit, OnDestroy {
   constructor(
     private scheduledOperationsService: ScheduledOperationsService,
     private categoriesService: CategoryService,
-
+    private snack:MatSnackBar,
     private dialog: MatDialog
   ) { }
 
@@ -73,6 +74,10 @@ export class ScheduledOperationsComponent implements OnInit, OnDestroy {
           })
           this.updateOperations(r[0]);
           console.log('this.scheduledOperations = ', this.scheduledOperations);
+          if (this.scheduledOperations.length == 0) {
+            this.snack.open('You have no operations :(', 'close', {duration: 3000});
+
+          }
         }
       },
       err => console.error('both: error : ', err),
