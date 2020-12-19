@@ -8,7 +8,8 @@
 
     <div class="col p-3">
         <span class="">
-            Here you can find out when wiil you have certain amount of money. That's useful for example when you want to figure out when will be the right time to buy something.
+            Here you can find out when wiil you have certain amount of money. That's useful for example when you want to
+            figure out when will be the right time to buy something.
         </span>
     </div>
 
@@ -17,24 +18,46 @@
 <div class="row">
     <div clas="col">
 
-        <form [formGroup]="form" (submit)="onFormSubmit()">
+        <form [formGroup]="form"
+              (submit)="onFormSubmit()">
             <mat-form-field>
 
-                <input type="number" matInput formControlName="amount">
+                <input type="number"
+                       matInput
+                       formControlName="amount">
 
 
             </mat-form-field>
 
-            <button mat-flat-button color="primary">
+            <button mat-flat-button
+                    color="primary">
                 Check
             </button>
         </form>
 
     </div>
 
-    <div class="col" *ngIf="resultDateA">
-        <h2>
-            {{resultDateA.toISOString().substr(0, 10)}}
-        </h2>
-    </div>
+    <ng-container *ngIf="(result | async) as ObservedResult">
+
+
+        <div class="col-12">
+            <h2>
+                {{ObservedResult.resultDateA.toISOString().substr(0, 10)}}
+            </h2>
+            <p> in {{ ObservedResult.yearsDiff ? ObservedResult.yearsDiff + ' years ' : ''}} {{ ObservedResult.monthsDiff ? ObservedResult.monthsDiff + ' months ' : ''}} {{
+                ObservedResult.daysDiff ? ObservedResult.daysDiff + ' days ' : ''}} </p>
+        </div>
+
+
+        <div class="col-12">
+
+            <app-prediction-chart-card [config]="ObservedResult.chartConfig">
+            </app-prediction-chart-card>
+
+        </div>
+
+
+    </ng-container>
+
+
 </div>

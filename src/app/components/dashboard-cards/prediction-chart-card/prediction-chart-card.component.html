@@ -9,11 +9,22 @@
     </mat-card-header>
 
     <mat-card-content>
-        <app-prediction-chart [data$]="predictions$"
+        <span *ngFor="let m of config.marks">
+            {{ m.toISOString() }}, 
+
+        </span>
+        <ng-container *ngIf="(predictions$ | async)">
+
+            <app-prediction-chart [data$]="predictions$"
+                              [marks]="config.marks"
                               [compact]="true"
                               [height]="200"
                               (onDayClicked)="onDayClicked($event)">
         </app-prediction-chart>
+
+        </ng-container>
+
+        
     </mat-card-content>
 
 

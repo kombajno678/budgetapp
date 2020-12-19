@@ -24,6 +24,9 @@ export class PredictionChartComponent implements OnInit {
   data$: Observable<PredictionPoint[]>;
 
   @Input()
+  marks: any[] = [];
+
+  @Input()
   width: number
   @Input()
   height: number
@@ -255,6 +258,8 @@ export class PredictionChartComponent implements OnInit {
   constructor() {
     this.onDayClicked = new EventEmitter<Date>();
 
+    
+
 
   }
 
@@ -290,7 +295,30 @@ export class PredictionChartComponent implements OnInit {
     this.lineChartOptions.tooltips.enabled = !this.compact;
     //this.lineChartOptions.scales.yAxes.forEach(y => y.ticks.display = !this.compact)
     this.lineChartOptions.scales.xAxes.forEach(x => x.ticks.display = !this.compact)
-    this.lineChartLegend = !this.compact
+    this.lineChartLegend = !this.compact;
+
+
+
+    console.log('chart constructior : marks:', this.marks);
+
+    this.marks.forEach(m => {
+      this.lineChartOptions.annotation.annotations.push({
+        type: 'line',
+        mode: 'vertical',
+        scaleID: 'days',
+        value: this.dateToStr(m),
+        borderColor: 'yellow',
+        borderWidth: 4,
+        label: {
+          enabled: true,
+          fontColor: 'yellow',
+          content: ''
+        }
+      },);
+    })
+
+
+    
 
     this.loading$.next(true);
     if (this.data$) {

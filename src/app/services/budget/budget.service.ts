@@ -73,7 +73,7 @@ export class BudgetService {
 
 
   public i = 0;
-  someF(dateA: Date, step: number, directionForward: boolean, valueToFind:number): Observable<Date> {
+  private findValueRecursive(dateA: Date, step: number, directionForward: boolean, valueToFind:number): Observable<Date> {
     this.i++;
     console.log(this.i, ' > someF(',dateA, step, directionForward, valueToFind, ' )');
     let result: ReplaySubject<Date> = new ReplaySubject<Date>(1);
@@ -101,16 +101,34 @@ export class BudgetService {
       this.generatePredictionForDate(dateA),
       this.generatePredictionForDate(dateB)
     ]).subscribe(r => {
-      console.log(this.i + ' >combineLatest  ' , r);
       if (r.every(x => x)) {
         let valueA = r[0];
         let valueB = r[1];
 
         console.log(this.i + ' > checking value at ' + dateA.toISOString() + '  : ' + valueA.value);
         console.log(this.i + ' > checking value at ' + dateB.toISOString() + '  : ' + valueB.value);
+        //console.log(this.i + ' > ', (valueB.value - valueA.value > 0) ? 'rising' : 'decreasing');
 
+
+        // if money is rising and x < both values, return lower date
+        if(valueB.value - valueA.value > 0 && (valueToFind < valueB.value && valueToFind < valueA.value)){
+          result.next(dateA < dateB ? dateA : dateB );
+          console.log(this.i + ' > money is rising and x < both values, return lower date');
+          return;
+        }
+
+        // if money is decreasing and x > both values, return lower date
+        if(valueB.value - valueA.value < 0 && (valueToFind > valueB.value && valueToFind > valueA.value)){
+          result.next(dateA < dateB ? dateA : dateB );
+          console.log(this.i + ' > money is decreasing and x > both values, return lower date');
+
+          return;
+        }
+
+
+
+        //x between prev and next
         if ((valueToFind > valueA.value && valueToFind < valueB.value) || ((valueToFind < valueA.value && valueToFind > valueB.value))) {
-          //x between prev and next
           if(step < 2){
             
             if(Math.abs(valueToFind - valueA.value) < Math.abs(valueToFind - valueB.value) ){
@@ -126,7 +144,7 @@ export class BudgetService {
             console.log(this.i + ' > step = step / 2; directionForward = !directionForward');
             step = Math.floor(step / 2);
             directionForward = !directionForward;
-            this.someF(dateB, step, directionForward, valueToFind).subscribe(r => {
+            this.findValueRecursive(dateB, step, directionForward, valueToFind).subscribe(r => {
               if(r){
                 result.next(r);
               }
@@ -137,7 +155,7 @@ export class BudgetService {
           step = Math.floor(step * 1.25);
           console.log(this.i + ' > step = step * 2');
 
-          this.someF(dateB, step, directionForward, valueToFind).subscribe(r => {
+          this.findValueRecursive(dateB, step, directionForward, valueToFind).subscribe(r => {
             if(r){
               result.next(r);
             }
@@ -157,12 +175,29 @@ export class BudgetService {
 
   findDateWithValue(valueToFind: number): Observable<Date> {
     this.i = 0;
+    let result = new ReplaySubject<Date>(1);
     let step = 7;
     let directionForward: boolean = true;
     let startingDate = new Date();
     startingDate.setUTCHours(12, 0, 0, 0);
 
-    return this.someF(startingDate, step, directionForward, valueToFind);
+    this.generatePredictionForDate(startingDate).subscribe(r => {
+      if(r){
+        if(valueToFind < r.value ){
+          //you already have this money
+          result.next(startingDate);
+          
+        }else{
+           
+          this.findValueRecursive(startingDate, step, directionForward, valueToFind).subscribe(r => {
+            result.next(r);
+          });
+        }
+      }
+    })
+    return result; 
+
+    
     
   }
 

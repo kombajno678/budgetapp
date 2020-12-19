@@ -9,7 +9,8 @@ import { BudgetService } from 'src/app/services/budget/budget.service';
 export interface PredictionChartCardConfig {
   startDate: Date,
   endDate: Date,
-  title: string
+  title: string,
+  marks?: any[],
 }
 
 
@@ -41,8 +42,10 @@ export class PredictionChartCardComponent implements OnInit {
     private router: Router
   ) {
 
-    this.predictions$ = new BehaviorSubject<PredictionPoint[]>(null)
-    this.selectedPP$ = new BehaviorSubject<PredictionPoint>(null)
+    this.predictions$ = new BehaviorSubject<PredictionPoint[]>(null);
+    this.selectedPP$ = new BehaviorSubject<PredictionPoint>(null);
+
+    
 
   }
 
@@ -56,7 +59,7 @@ export class PredictionChartCardComponent implements OnInit {
     console.log('received day click event');
 
     this.predictions$.subscribe(pps => {
-      if(pps){
+      if (pps) {
         this.selectedPP$.next(pps.find(pp => Globals.compareDates(pp.date, day)));
       }
     })
@@ -68,10 +71,11 @@ export class PredictionChartCardComponent implements OnInit {
 
 
   ngOnInit(): void {
+    
 
     this.budgetService.generatePredictionsBetweenDates(this.config.startDate, this.config.endDate).subscribe(
       (r) => {
-        if(r){
+        if (r) {
           this.predictions$.next(r);
 
         }

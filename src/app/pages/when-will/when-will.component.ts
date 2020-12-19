@@ -1,6 +1,19 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs';
+import { tap } from 'rxjs/operators';
+import { PredictionChartCardConfig } from 'src/app/components/dashboard-cards/prediction-chart-card/prediction-chart-card.component';
 import { BudgetService } from 'src/app/services/budget/budget.service';
+
+
+export interface WhenWillResult {
+  resultDateA: Date;
+  yearsDiff: number;
+  monthsDiff: number;
+  daysDiff: number;
+  chartConfig: PredictionChartCardConfig;
+
+}
 
 @Component({
   selector: 'app-when-will',
@@ -10,39 +23,119 @@ import { BudgetService } from 'src/app/services/budget/budget.service';
 export class WhenWillComponent implements OnInit {
 
 
-  
+
   @Input()
   displayTitle: boolean = true;
 
-  form:FormGroup;
+  form: FormGroup;
 
-  resultDateA:Date;
+  paddingDays = 7;
+
+  result:BehaviorSubject<WhenWillResult>;
 
 
-  
+
   constructor(
-    private budget:BudgetService
+    private budget: BudgetService
   ) {
 
     this.form = new FormGroup({
-      'amount' : new FormControl(null, [Validators.required]),
+      'amount': new FormControl(null, [Validators.required]),
     });
 
-    
+    this.result = new BehaviorSubject<WhenWillResult>(null);
+
+
 
   }
 
   ngOnInit(): void {
   }
 
-  onFormSubmit(){
-    console.log(this.form.controls.amount.value);
+  daysInMonth(month, year) {
+    return new Date(year, month, 0).getDate();
+  }
 
-    this.budget.findDateWithValue(this.form.controls.amount.value).subscribe(r => {
-      if(r){
-        this.resultDateA = r;
+
+  whenWillIHaveX(x: number): Observable<WhenWillResult> {
+
+    let result = new ReplaySubject<WhenWillResult>(1);
+
+
+    let today = new Date();
+    today.setUTCHours(12, 0, 0, 0);
+
+    this.budget.findDateWithValue(x).subscribe(r => {
+      if (r) {
+        let when = r;
+
+        //find years diff
+        let yearsDiff = when.getFullYear() - today.getFullYear();
+
+
+        //find months diff
+        let monthsDiff = when.getUTCMonth() - today.getUTCMonth();
+        if (monthsDiff < 0) {
+          yearsDiff--;
+          monthsDiff += 12
+        }
+
+        //find days diff
+        let daysDiff = when.getUTCDate() - today.getUTCDate();
+        if (daysDiff < 0) {
+          monthsDiff--;
+          let daysInMonth = this.daysInMonth(when.getMonth(), when.getFullYear());
+          daysDiff += daysInMonth
+        }
+
+
+
+        let start = new Date(today);
+        start.setDate(start.getDate() - this.paddingDays);
+
+
+        let end = new Date(when);
+        end.setDate(end.getDate() + this.paddingDays);
+
+        let chartConfig = {
+          startDate: start,
+          endDate: end,
+          title: `You will have ${x} at ${when.toISOString().substr(0, 10)}`,
+          marks: [when],
+
+        }
+
+        //init and next result
+        result.next({
+          resultDateA: when,
+          yearsDiff: yearsDiff,
+          monthsDiff: monthsDiff,
+          daysDiff: daysDiff,
+          chartConfig: chartConfig
+        });
+
+
+
+
       }
     });
+
+    return result;
+
+  }
+
+
+  onFormSubmit() {
+    //console.log(this.form.controls.amount.value);
+
+
+    let x = this.form.controls.amount.value;
+
+    this.whenWillIHaveX(x).pipe(tap(r => console.log('ipie => tap : ', r))).subscribe(r => {
+      this.result.next(r);
+    });
+
+
 
 
 
