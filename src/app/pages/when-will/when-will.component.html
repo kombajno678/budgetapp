@@ -1,0 +1,40 @@
+<div *ngIf="displayTitle"
+     class="row p-2">
+    <div class="col-12">
+        <span class="mat-display-1">
+            When will I have ...
+        </span>
+    </div>
+
+    <div class="col p-3">
+        <span class="">
+            Here you can find out when wiil you have certain amount of money. That's useful for example when you want to figure out when will be the right time to buy something.
+        </span>
+    </div>
+
+</div>
+
+<div class="row">
+    <div clas="col">
+
+        <form [formGroup]="form" (submit)="onFormSubmit()">
+            <mat-form-field>
+
+                <input type="number" matInput formControlName="amount">
+
+
+            </mat-form-field>
+
+            <button mat-flat-button color="primary">
+                Check
+            </button>
+        </form>
+
+    </div>
+
+    <div class="col" *ngIf="resultDateA">
+        <h2>
+            {{resultDateA.toISOString().substr(0, 10)}}
+        </h2>
+    </div>
+</div>

@@ -31,7 +31,22 @@
         <mat-divider>
 
         </mat-divider>
-        <ng-container *ngFor="let link of links">
+        <ng-container *ngFor="let link of predictionsLinks">
+            <a mat-list-item
+               [routerLink]="link.url"
+               (click)="close()"
+               [disabled]="link.disabled">
+                <mat-icon>
+                    {{link.icon}}
+                </mat-icon>
+                {{link.title}}
+            </a>
+
+        </ng-container>
+        <mat-divider>
+
+        </mat-divider>
+        <ng-container *ngFor="let link of resourcesLinks">
             <a mat-list-item
                [routerLink]="link.url"
                (click)="close()"

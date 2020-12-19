@@ -10,6 +10,7 @@ import { PredictionsComponent } from './pages/predictions/predictions.component'
 import { QuickStartComponent } from './pages/quick-start/quick-start.component';
 import { UploadComponent } from './pages/upload/upload.component';
 import { CategoriesComponent } from './pages/categories/categories.component';
+import { WhenWillComponent } from './pages/when-will/when-will.component';
 
 const routes: Routes = [
   {
@@ -50,6 +51,11 @@ const routes: Routes = [
   {
     path: 'upload',
     component: UploadComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'whenwill',
+    component: WhenWillComponent,
     canActivate: [AuthGuard],
   },
   {

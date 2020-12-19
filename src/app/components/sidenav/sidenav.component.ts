@@ -35,21 +35,32 @@ export class SidenavComponent implements OnInit {
   ];
 
 
-  links = [
+  predictionsLinks = [{
+    title: 'Predictions',
+    url: '/predictions',
+    icon: 'show_chart',
+    loginRequired: true,
+    disabled: false,
+  },
+  {
+    title: 'When will i have ...',
+    url: '/whenwill',
+    icon: 'event',
+    loginRequired: true,
+    disabled: false,
+  },
+  ];
 
-    {
-      title: 'Predictions',
-      url: '/predictions',
-      icon: 'show_chart',
-      loginRequired: true,
-      disabled: false,
-    },
+
+  resourcesLinks = [
+
 
     {
       title: 'Operations',
       url: '/operations',
       icon: 'money',
       loginRequired: true,
+      disabled: false,
 
 
     },
@@ -58,6 +69,7 @@ export class SidenavComponent implements OnInit {
       url: '/categories',
       icon: 'category',
       loginRequired: true,
+      disabled: false,
 
 
     },
@@ -66,6 +78,7 @@ export class SidenavComponent implements OnInit {
       url: '/scheduledoperations',
       icon: 'event',
       loginRequired: true,
+      disabled: false,
 
 
     },
@@ -74,6 +87,7 @@ export class SidenavComponent implements OnInit {
       url: '/fixedpoints',
       icon: 'insights',
       loginRequired: true,
+      disabled: false,
 
 
     },

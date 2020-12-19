@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, combineLatest, Observable, of, ReplaySubject, Subject } from 'rxjs';
+import { BehaviorSubject, combineLatest, forkJoin, Observable, of, ReplaySubject, Subject } from 'rxjs';
 import { catchError, finalize, first, map, share, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 
@@ -21,7 +21,7 @@ import { UserService } from './user.service';
 })
 export class BudgetService {
 
-  verbose: boolean = true//false;
+  verbose: boolean = false;//true//false;
 
 
 
@@ -72,12 +72,109 @@ export class BudgetService {
   }
 
 
+  public i = 0;
+  someF(dateA: Date, step: number, directionForward: boolean, valueToFind:number): Observable<Date> {
+    this.i++;
+    console.log(this.i, ' > someF(',dateA, step, directionForward, valueToFind, ' )');
+    let result: ReplaySubject<Date> = new ReplaySubject<Date>(1);
+    //check value at today
+    /*
+    let dateA = new Date(startingDate);
+    if (directionForward) {
+      dateA.setDate(dateA.getDate() + (i * step));
+    } else {
+      dateA.setDate(dateA.getDate() - (i * step));
+    }
+    */
+   
+    let dateB = new Date(dateA);
+    if (directionForward) {
+      dateB.setDate(dateB.getDate() + step);
+    } else {
+      dateB.setDate(dateB.getDate() - step);
+    }
+
+    //let valueA = await this.generatePredictionForDate(dateA).toPromise();
+    //let valueB = await this.generatePredictionForDate(dateB).toPromise();
+
+    combineLatest([
+      this.generatePredictionForDate(dateA),
+      this.generatePredictionForDate(dateB)
+    ]).subscribe(r => {
+      console.log(this.i + ' >combineLatest  ' , r);
+      if (r.every(x => x)) {
+        let valueA = r[0];
+        let valueB = r[1];
+
+        console.log(this.i + ' > checking value at ' + dateA.toISOString() + '  : ' + valueA.value);
+        console.log(this.i + ' > checking value at ' + dateB.toISOString() + '  : ' + valueB.value);
+
+        if ((valueToFind > valueA.value && valueToFind < valueB.value) || ((valueToFind < valueA.value && valueToFind > valueB.value))) {
+          //x between prev and next
+          if(step < 2){
+            
+            if(Math.abs(valueToFind - valueA.value) < Math.abs(valueToFind - valueB.value) ){
+              
+              result.next(dateA);
+            }else{
+              result.next(dateB);
+
+            }
+
+
+          }else{
+            console.log(this.i + ' > step = step / 2; directionForward = !directionForward');
+            step = Math.floor(step / 2);
+            directionForward = !directionForward;
+            this.someF(dateB, step, directionForward, valueToFind).subscribe(r => {
+              if(r){
+                result.next(r);
+              }
+            });
+          }
+          
+        } else {
+          step = Math.floor(step * 1.25);
+          console.log(this.i + ' > step = step * 2');
+
+          this.someF(dateB, step, directionForward, valueToFind).subscribe(r => {
+            if(r){
+              result.next(r);
+            }
+          });
+        }
+
+      }
+    })
+
+    return result;
+
+
+
+
+
+  }
+
+  findDateWithValue(valueToFind: number): Observable<Date> {
+    this.i = 0;
+    let step = 7;
+    let directionForward: boolean = true;
+    let startingDate = new Date();
+    startingDate.setUTCHours(12, 0, 0, 0);
+
+    return this.someF(startingDate, step, directionForward, valueToFind);
+    
+  }
+
+
 
   generatePredictionForDate(date: Date): Observable<PredictionPoint> {
-    if (this.verbose) console.log('GENERATOR: asked for prediction at : ', date.toISOString());
-
+    if (this.verbose)console.log('GENERATOR: asked for prediction at : ', date.toISOString());
+    
     let ob: ReplaySubject<PredictionPoint> = new ReplaySubject<PredictionPoint>(1);
     this.generatePredictionsBetweenDates(date, date).subscribe(r => {
+      //
+      if (this.verbose) console.log('GENERATOR: ', date.toISOString(), ' => ',r[r.length - 1]);
       ob.next(r[r.length - 1]);
     })
     return ob.asObservable();

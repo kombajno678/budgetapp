@@ -59,6 +59,7 @@ import { CategoryListElementComponent } from './components/list-elements/categor
 import { CategoryDialogComponent } from './components/dialogs/category-dialog/category-dialog.component';
 import { PredictionChartCardComponent } from './components/dashboard-cards/prediction-chart-card/prediction-chart-card.component';
 import { UploadHelpDialogComponent } from './components/dialogs/upload-help-dialog/upload-help-dialog.component';
+import { WhenWillComponent } from './pages/when-will/when-will.component';
 
 
 function tokenGetter(): string {
@@ -95,7 +96,8 @@ function tokenGetter(): string {
     CategoryListElementComponent,
     CategoryDialogComponent,
     PredictionChartCardComponent,
-    UploadHelpDialogComponent
+    UploadHelpDialogComponent,
+    WhenWillComponent
 
   ],
   entryComponents: [],
