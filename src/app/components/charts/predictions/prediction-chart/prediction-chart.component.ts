@@ -1,12 +1,16 @@
-import { Component, OnInit, ViewChild, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, Input, Output, EventEmitter } from '@angular/core';
 import { ChartDataSets, ChartOptions, ChartType } from 'chart.js';
 import { Color, Label, BaseChartDirective } from 'ng2-charts';
-import { Observable, ReplaySubject, Subject } from 'rxjs';
+import { combineLatest, Observable, ReplaySubject, Subject } from 'rxjs';
+
 
 import { PredictionPoint } from 'src/app/models/internal/PredictionPoint';
 
 import * as pluginAnnotations from 'chartjs-plugin-annotation';
 import * as pluginZoom from 'chartjs-plugin-zoom';
+import { PredictionChartCardConfig } from 'src/app/components/dashboard-cards/prediction-chart-card/prediction-chart-card.component';
+
+
 
 
 @Component({
@@ -17,6 +21,25 @@ import * as pluginZoom from 'chartjs-plugin-zoom';
 export class PredictionChartComponent implements OnInit {
 
 
+  todayAnnotation = {
+    type: 'line',
+    mode: 'vertical',
+    scaleID: 'days',
+    value: this.dateToStr(new Date()),
+    borderColor: 'orange',
+    borderWidth: 2,
+    label: {
+      enabled: true,
+      fontColor: 'orange',
+      content: ''
+    }
+  };
+
+
+
+  @Input()
+  config$: Observable<PredictionChartCardConfig>;// = false;
+
 
   @Input()
   compact: boolean;// = false;
@@ -24,15 +47,12 @@ export class PredictionChartComponent implements OnInit {
   data$: Observable<PredictionPoint[]>;
 
   @Input()
-  marks: any[] = [];
-
-  @Input()
   width: number
   @Input()
   height: number
 
-  @ViewChild('chart')
-  chart: Chart;
+  @ViewChild(BaseChartDirective) chart: BaseChartDirective;
+
 
   loading$: ReplaySubject<boolean>;
 
@@ -258,7 +278,7 @@ export class PredictionChartComponent implements OnInit {
   constructor() {
     this.onDayClicked = new EventEmitter<Date>();
 
-    
+
 
 
   }
@@ -288,6 +308,43 @@ export class PredictionChartComponent implements OnInit {
     }
   }
 
+  redrawChart() {
+
+    this.lineChartData = this.lineChartData.slice()
+
+
+
+  }
+
+
+  lastDateTest = new Date();
+  test() {
+
+    this.lineChartOptions.annotation.annotations = [];
+
+    this.lastDateTest.setDate(this.lastDateTest.getDate() + 1);
+
+    this.lineChartOptions.annotation.annotations.push({
+      type: 'line',
+      mode: 'vertical',
+      scaleID: 'days',
+      value: this.dateToStr(this.lastDateTest),
+      borderColor: 'red',
+      borderWidth: 4,
+      label: {
+        enabled: true,
+        fontColor: 'red',
+        content: ''
+      }
+    });
+    this.redrawChart();
+
+
+
+
+  }
+
+
   ngOnInit() {
     //console.log('this.compact = ', this.compact);
     this.loading$ = new ReplaySubject<boolean>(1);
@@ -299,48 +356,60 @@ export class PredictionChartComponent implements OnInit {
 
 
 
-    console.log('chart constructior : marks:', this.marks);
-
-    this.marks.forEach(m => {
-      this.lineChartOptions.annotation.annotations.push({
-        type: 'line',
-        mode: 'vertical',
-        scaleID: 'days',
-        value: this.dateToStr(m),
-        borderColor: 'yellow',
-        borderWidth: 4,
-        label: {
-          enabled: true,
-          fontColor: 'yellow',
-          content: ''
-        }
-      },);
-    })
-
 
     
 
+
     this.loading$.next(true);
-    if (this.data$) {
-      this.data$.subscribe(r => {
-        if (r) {
-          //check if one year
+
+    combineLatest([
+      this.config$,
+      this.data$
+    ]).subscribe(r => {
+      if (r) {
+        let config = r[0];
+        let data = r[1];
+
+        if(config){
+          this.lineChartOptions.annotation.annotations = [];
+          this.lineChartOptions.annotation.annotations.push(this.todayAnnotation);
           /*
-          if (r[0].date.getFullYear() === r[r.length - 1].date.getFullYear()) {
-            this.displayYear = false;
+          if(config.marks){
+            console.log('CHART > initing annotations : marks:', config.marks);
+            config.marks.forEach(m => {
+              this.lineChartOptions.annotation.annotations.push({
+                type: 'line',
+                mode: 'vertical',
+                scaleID: 'days',
+                value: this.dateToStr(m),
+                borderColor: 'yellow',
+                borderWidth: 4,
+                label: {
+                  enabled: true,
+                  fontColor: 'yellow',
+                  content: ''
+                }
+              });
+            });
           }
           */
+  
+          
+        }
+
+        if(data){
+
           this.lineChartData[0].data = [];
           this.lineChartData[1].data = [];
-
+  
           this.lineChartLabels = [];
-
+  
           let n = this.dateToStr(new Date());
-          r.forEach(p => {
+          data.forEach(p => {
             let d = this.dateToStr(p.date);
-
+  
             let value: number = Number(p.value.toFixed(2));
-
+  
             if (d < n) {
               this.lineChartData[0].data.push(value);
               this.lineChartData[1].data.push(null);
@@ -351,20 +420,72 @@ export class PredictionChartComponent implements OnInit {
               this.lineChartData[0].data.push(value);
               this.lineChartData[1].data.push(value);
             }
-
+  
             this.lineChartLabels.push(d);
           })
-          this.loading$.next(false);
-
-        } else {
-          console.warn('prediction chart received incorrent data');
         }
+
+
         
-      })
-    } else {
-      console.error('chart initialized with no data observable');
-      //this.loading$.next(false);
-    }
+
+        
+
+        this.loading$.next(false);
+
+        this.redrawChart();
+
+
+
+
+      }
+    });
+
+
+
+
+
+    /*
+        this.loading$.next(true);
+        if (this.data$) {
+          this.data$.subscribe(r => {
+            if (r) {
+              
+              this.lineChartData[0].data = [];
+              this.lineChartData[1].data = [];
+    
+              this.lineChartLabels = [];
+    
+              let n = this.dateToStr(new Date());
+              r.forEach(p => {
+                let d = this.dateToStr(p.date);
+    
+                let value: number = Number(p.value.toFixed(2));
+    
+                if (d < n) {
+                  this.lineChartData[0].data.push(value);
+                  this.lineChartData[1].data.push(null);
+                } else if (d > n) {
+                  this.lineChartData[0].data.push(null);
+                  this.lineChartData[1].data.push(value);
+                } else {
+                  this.lineChartData[0].data.push(value);
+                  this.lineChartData[1].data.push(value);
+                }
+    
+                this.lineChartLabels.push(d);
+              })
+              this.loading$.next(false);
+    
+            } else {
+              console.warn('prediction chart received incorrent data');
+            }
+    
+          })
+        } else {
+          console.error('chart initialized with no data observable');
+          //this.loading$.next(false);
+        }
+        */
 
 
   }

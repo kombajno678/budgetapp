@@ -31,7 +31,8 @@ export class WhenWillComponent implements OnInit {
 
   paddingDays = 7;
 
-  result:BehaviorSubject<WhenWillResult>;
+  result$:BehaviorSubject<WhenWillResult> = new BehaviorSubject<WhenWillResult>(null);
+  chartConfig$:BehaviorSubject<PredictionChartCardConfig>= new BehaviorSubject<PredictionChartCardConfig>(null);
 
 
 
@@ -43,7 +44,6 @@ export class WhenWillComponent implements OnInit {
       'amount': new FormControl(null, [Validators.required]),
     });
 
-    this.result = new BehaviorSubject<WhenWillResult>(null);
 
 
 
@@ -132,7 +132,8 @@ export class WhenWillComponent implements OnInit {
     let x = this.form.controls.amount.value;
 
     this.whenWillIHaveX(x).pipe(tap(r => console.log('ipie => tap : ', r))).subscribe(r => {
-      this.result.next(r);
+      this.result$.next(r);
+      this.chartConfig$.next(r.chartConfig);
     });
 
 

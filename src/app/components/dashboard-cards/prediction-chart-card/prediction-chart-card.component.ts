@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { Globals } from 'src/app/Globals';
 import { PredictionPoint } from 'src/app/models/internal/PredictionPoint';
 import { BudgetService } from 'src/app/services/budget/budget.service';
@@ -34,7 +34,9 @@ export class PredictionChartCardComponent implements OnInit {
   selectedPP$: BehaviorSubject<PredictionPoint>;
 
   @Input()
-  config: PredictionChartCardConfig;
+  config$: Observable<PredictionChartCardConfig>;
+
+  localConfig:PredictionChartCardConfig;
 
 
   constructor(
@@ -47,11 +49,15 @@ export class PredictionChartCardComponent implements OnInit {
 
     
 
+
+
+    
+
   }
 
   redirect() {
 
-    this.router.navigate([this.link.url], { queryParams: { start: this.config.startDate.toISOString().substr(0, 10), end: this.config.endDate.toISOString().substr(0, 10) } });
+    this.router.navigate([this.link.url], { queryParams: { start: this.localConfig.startDate.toISOString().substr(0, 10), end: this.localConfig.endDate.toISOString().substr(0, 10) } });
 
   }
 
@@ -68,12 +74,8 @@ export class PredictionChartCardComponent implements OnInit {
 
   }
 
-
-
-  ngOnInit(): void {
-    
-
-    this.budgetService.generatePredictionsBetweenDates(this.config.startDate, this.config.endDate).subscribe(
+  refresh(){
+    this.budgetService.generatePredictionsBetweenDates(this.localConfig.startDate, this.localConfig.endDate).subscribe(
       (r) => {
         if (r) {
           this.predictions$.next(r);
@@ -87,6 +89,21 @@ export class PredictionChartCardComponent implements OnInit {
         console.log('RECEIVED generatePredictionsBetweenDates completed');
       }
     );
+  }
+
+
+
+  ngOnInit(): void {
+
+    this.config$.subscribe(r => {
+      if(r){
+        this.localConfig = r;
+        this.refresh();
+      }
+    })
+    
+
+    
 
 
 

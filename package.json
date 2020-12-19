@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "scripts": {
     "ng": "ng",
-    "serve": "ng serve",
+    "serve": "ng serve --host 0.0.0.0 --port 4200 --progress --source-map --watch",
     "dev": "npm i && ng serve",
     "start": "node server.js",
     "config": "ts-node ./config-env.ts",

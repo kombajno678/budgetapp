@@ -1,31 +1,31 @@
 <mat-card>
-    <mat-card-header>
 
-        <button mat-button
-                (click)="redirect()">
-            {{config.title}}
-        </button>
 
-    </mat-card-header>
+        <mat-card-header *ngIf="(config$ | async) as config">
 
-    <mat-card-content>
-        <span *ngFor="let m of config.marks">
-            {{ m.toISOString() }}, 
+            <button mat-button
+                    (click)="redirect()">
+                {{config.title}}
+            </button>
 
-        </span>
-        <ng-container *ngIf="(predictions$ | async)">
+        </mat-card-header>
 
-            <app-prediction-chart [data$]="predictions$"
-                              [marks]="config.marks"
-                              [compact]="true"
-                              [height]="200"
-                              (onDayClicked)="onDayClicked($event)">
-        </app-prediction-chart>
+        <mat-card-content *ngIf="config$ | async">
+            
+            
 
-        </ng-container>
+                <app-prediction-chart [data$]="predictions$"
+                                      [config$]="config$"
+                                      [compact]="true"
+                                      [height]="200"
+                                      (onDayClicked)="onDayClicked($event)">
+                </app-prediction-chart>
 
-        
-    </mat-card-content>
+
+
+        </mat-card-content>
+
+
 
 
 </mat-card>

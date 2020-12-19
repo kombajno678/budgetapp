@@ -37,27 +37,36 @@
 
     </div>
 
-    <ng-container *ngIf="(result | async) as ObservedResult">
-
-
+    <ng-container *ngIf="(result$ | async) as result">
+        
+        
         <div class="col-12">
             <h2>
-                {{ObservedResult.resultDateA.toISOString().substr(0, 10)}}
+                {{result.resultDateA.toISOString().substr(0, 10)}}
             </h2>
-            <p> in {{ ObservedResult.yearsDiff ? ObservedResult.yearsDiff + ' years ' : ''}} {{ ObservedResult.monthsDiff ? ObservedResult.monthsDiff + ' months ' : ''}} {{
-                ObservedResult.daysDiff ? ObservedResult.daysDiff + ' days ' : ''}} </p>
-        </div>
+            <p> in {{ result.yearsDiff ? result.yearsDiff + ' years ' : ''}} {{ result.monthsDiff ? result.monthsDiff + ' months ' : ''}} {{
+                result.daysDiff ? result.daysDiff + ' days ' : ''}} </p>
+            </div>
+            
+            
+            <div class="col-12">
+                <ng-container *ngIf="chartConfig$">
+                    
+                                    <app-prediction-chart-card [config$]="chartConfig$.asObservable()">
+                                    </app-prediction-chart-card>
+                            
+
+                </ng-container>
+            </div>
+            
+            
+        </ng-container>
+
+            
 
 
-        <div class="col-12">
 
-            <app-prediction-chart-card [config]="ObservedResult.chartConfig">
-            </app-prediction-chart-card>
-
-        </div>
-
-
-    </ng-container>
+   
 
 
 </div>

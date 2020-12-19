@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '@auth0/auth0-angular';
+import { ReplaySubject } from 'rxjs';
 import { PredictionChartCardConfig } from 'src/app/components/dashboard-cards/prediction-chart-card/prediction-chart-card.component';
 
 
@@ -13,29 +14,33 @@ import { PredictionChartCardConfig } from 'src/app/components/dashboard-cards/pr
 })
 export class HomeComponent implements OnInit {
 
-  config1: PredictionChartCardConfig;
-  config2: PredictionChartCardConfig;
+  config1: ReplaySubject<PredictionChartCardConfig> = new ReplaySubject<PredictionChartCardConfig>(1);
+  config2: ReplaySubject<PredictionChartCardConfig> = new ReplaySubject<PredictionChartCardConfig>(1);
 
 
   constructor(public auth: AuthService) {
 
+    let endDate = new Date();
+    endDate.setMonth(endDate.getMonth() + 3);
 
-    this.config1 = {
+    this.config1.next({
       startDate: new Date(),
-      endDate: new Date(),
+      endDate: new Date(endDate),
       title: 'Next 3 months'
-    }
-    this.config1.endDate.setMonth(this.config1.endDate.getMonth() + 3);
+    })
 
-    this.config2 = {
-      startDate: new Date(),
+    let startDate = new Date();
+    startDate.setMonth(startDate.getMonth() - 1);
+    this.config2.next({
+      startDate: new Date(startDate),
       endDate: new Date(),
       title: 'Last month'
-    }
-    this.config2.startDate.setMonth(this.config2.endDate.getMonth() - 1);
+    })
 
 
 
+
+    
 
 
   }
