@@ -11,6 +11,7 @@ import moment from 'moment';
 import { MatButtonToggleChange } from '@angular/material/button-toggle';
 import { tap } from 'rxjs/operators';
 import { ActivatedRoute } from '@angular/router';
+import { PredictionChartCardConfig } from 'src/app/components/dashboard-cards/prediction-chart-card/prediction-chart-card.component';
 
 @Component({
   templateUrl: './predictions.component.html',
@@ -21,6 +22,9 @@ export class PredictionsComponent implements OnInit, AfterViewInit {
 
   predictions: PredictionPoint[] = [];
   predictions$: BehaviorSubject<PredictionPoint[]>;
+
+  config$: BehaviorSubject<PredictionChartCardConfig>;
+
   loading$: ReplaySubject<boolean>;
   //todaysPrediction$: BehaviorSubject<PredictionPoint>;
 
@@ -55,7 +59,9 @@ export class PredictionsComponent implements OnInit, AfterViewInit {
     this.loading$.next(true);
 
     this.predictions$ = new BehaviorSubject<PredictionPoint[]>(null);
+    this.config$ = new BehaviorSubject<PredictionChartCardConfig>(null);
     //this.todaysPrediction$ = new BehaviorSubject<PredictionPoint>(null);
+    this.config$.next({title: 'haha'});
 
     this.form = this.fb.group({
       startDate: [moment(), { validators: [Validators.required], updateOn: 'blur' }],

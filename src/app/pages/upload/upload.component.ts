@@ -1,6 +1,6 @@
 
 import { HttpErrorResponse, HttpEventType } from '@angular/common/http';
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { forkJoin, of, ReplaySubject, Subject } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
@@ -58,6 +58,9 @@ export class UploadComponent implements OnInit, AfterViewInit {
 
   success: boolean = false;
   uploading: boolean = false;
+
+  @Input()
+  displayGoToHomeButton:boolean = true;
 
 
   @ViewChild('fileInput') fileInput: ElementRef;
@@ -157,9 +160,6 @@ export class UploadComponent implements OnInit, AfterViewInit {
     this.report = null;
     this.report$.next(this.report);
     this.success = true;
-
-
-
 
   }
   onSave() {
@@ -389,11 +389,7 @@ export class UploadComponent implements OnInit, AfterViewInit {
     this.uploadProgress = 0;
     this.uploadBarMode = 'determinate';
 
-    this.report = {
-      Operations: [],
-      ScheduledOperations: [],
-      Categories: [],
-    };
+    
     this.report$.next(null);
 
     this.uploading = true;
@@ -438,11 +434,6 @@ export class UploadComponent implements OnInit, AfterViewInit {
 
 
 
-
-
-
-
-
   deleteCategory(category: Category) {
     console.log('receiver delete event, ', category);
     this.categoriesService.delete(category).subscribe(r => {
@@ -456,16 +447,6 @@ export class UploadComponent implements OnInit, AfterViewInit {
       console.log('result = ', r);
     })
   }
-
-  //
-
-
-
-
-
-
-
-
 
 
   deleteOperation(operation: BudgetOperation) {

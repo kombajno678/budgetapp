@@ -22,6 +22,9 @@ export class ScheduledOperationsComponent implements OnInit, OnDestroy {
   @Input()
   displayTitle: boolean = true;
 
+  
+  @Input()
+  quiet:boolean = false;
 
   scheduledOperations: ScheduledBudgetOperation[];
   scheduledOperations$: BehaviorSubject<ScheduledBudgetOperation[]> = new BehaviorSubject<ScheduledBudgetOperation[]>(null);
@@ -75,7 +78,7 @@ export class ScheduledOperationsComponent implements OnInit, OnDestroy {
           this.updateOperations(r[0]);
           console.log('this.scheduledOperations = ', this.scheduledOperations);
           if (this.scheduledOperations.length == 0) {
-            this.snack.open('You have no operations :(', 'close', {duration: 3000});
+            if(!this.quiet)this.snack.open('You have no operations :(', 'close', {duration: 3000});
 
           }
         }

@@ -97,14 +97,14 @@
             <mat-step optional>
                 <ng-template matStepLabel>Import data from bank</ng-template>
 
-                <app-upload></app-upload>
+                <app-upload [displayGoToHomeButton]="false"></app-upload>
 
                 <div>
                     <button mat-button
                             matStepperPrevious>Back</button>
                     <button mat-flat-button
                             color="primary"
-                            matStepperNext>Next</button>
+                            matStepperNext>Next step</button>
 
 
                 </div>
@@ -157,7 +157,7 @@
 
                     <mat-card class="mat-elevation-z0 p-0">
 
-                        <app-scheduled-operations [displayTitle]="false"> ... </app-scheduled-operations>
+                        <app-scheduled-operations [quiet]="true" [displayTitle]="false"> ... </app-scheduled-operations>
                     </mat-card>
                 </div>
 
@@ -166,7 +166,7 @@
                             matStepperPrevious>Back</button>
                     <button mat-flat-button
                             color="primary"
-                            matStepperNext>Next</button>
+                            matStepperNext>Next step</button>
 
 
                 </div>
@@ -233,7 +233,7 @@
                             matStepperPrevious>Back</button>
                     <button mat-flat-button
                             color="primary"
-                            matStepperNext>Next</button>
+                            matStepperNext>Next step</button>
 
 
                 </div>

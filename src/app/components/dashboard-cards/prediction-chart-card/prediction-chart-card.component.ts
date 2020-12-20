@@ -7,8 +7,8 @@ import { BudgetService } from 'src/app/services/budget/budget.service';
 
 
 export interface PredictionChartCardConfig {
-  startDate: Date,
-  endDate: Date,
+  startDate?: Date,
+  endDate?: Date,
   title: string,
   marks?: any[],
 }

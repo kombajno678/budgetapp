@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { BudgetOperationService } from 'src/app/services/budget/budget-operation.service';
 import { CreateNewOperationDialogComponent } from 'src/app/components/dialogs/create-new-operation-dialog/create-new-operation-dialog.component'
@@ -38,6 +38,9 @@ export class OperationsComponent implements OnInit, AfterViewInit, OnDestroy {
   filtershowExponses: boolean = true;
 
   dateRangeDynamic: boolean = false;
+
+  @Input()
+  quiet:boolean = false;
 
   //howManyDays = 5;
 
@@ -197,7 +200,7 @@ export class OperationsComponent implements OnInit, AfterViewInit, OnDestroy {
         
       }
       if(this.allOperations.length == 0){
-        this.snack.open('You have no operations :(', 'close', {duration: 3000});
+        if(!this.quiet)this.snack.open('You have no operations :(', 'close', {duration: 3000});
 
       }
       this.updateDisplayedOperations();

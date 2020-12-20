@@ -2,6 +2,7 @@
     <div class="row">
         <div class="col">
             <app-prediction-chart [data$]="predictions$.asObservable()"
+                                  [config$]="config$.asObservable()"
                                   (onDayClicked)="onDayClicked($event)"> ... </app-prediction-chart>
         </div>
     </div>

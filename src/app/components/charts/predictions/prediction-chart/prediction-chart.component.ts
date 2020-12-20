@@ -362,7 +362,7 @@ export class PredictionChartComponent implements OnInit {
 
     this.loading$.next(true);
 
-    combineLatest([
+    combineLatest([//undefined if not refreshed ? why fuck
       this.config$,
       this.data$
     ]).subscribe(r => {

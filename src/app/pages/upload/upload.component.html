@@ -1,7 +1,8 @@
 <h1>Uploading .csv file</h1>
 
 
-<div class="row m-1">
+<div class="row m-1"
+     *ngIf="!report && !success && !uploading">
   <div class="col-12 col-md-6 mb-3 text-center">
     <h3>Need help getting file?</h3>
     <button mat-stroked-button
@@ -16,6 +17,9 @@
        [href]="exampleFilePath"
        target="_blank">Download example csv file</a>
   </div>
+
+
+
 
 
   <div class="col-8 mb-0 pb-0 pr-0">
@@ -61,11 +65,11 @@
             color="primary"
             (click)="submit()"
             [disabled]="f.file.invalid">
-            Submit
-            <mat-icon>
-              publish
-            </mat-icon>
-          </button>
+      Submit
+      <mat-icon>
+        publish
+      </mat-icon>
+    </button>
   </div>
 
   <div class="col">
@@ -76,6 +80,10 @@
     </div>
   </div>
 
+
+
+
+
 </div>
 
 
@@ -83,12 +91,11 @@
 <div class="row m-1"
      *ngIf="uploading">
   <div class="col"></div>
-  <div class="col-auto">
+  <div class="col-auto text-center">
     <mat-spinner>
     </mat-spinner>
-    <span class="text-center p-3">
-      uploading ...
-
+    <span class="text-center pt-3">
+      <h3>uploading and analyzing ...</h3>
     </span>
 
   </div>
@@ -264,6 +271,11 @@
 
 </ng-container>
 
+
+
+
+
+
 <ng-template #loading>
 
 
@@ -275,11 +287,12 @@
     <ng-container *ngIf="report">
       <div class="row m-1">
         <div class="col"></div>
-        <div class="col-auto">
-          <mat-progress-spinner [value]="uploadProgress"
-                                [mode]="uploadBarMode">
-
-          </mat-progress-spinner>
+        <div class="col-auto text-center">
+          <mat-spinner>
+          </mat-spinner>
+          <span class="text-center pt-3">
+            <h3>saving ...</h3>
+          </span>
 
         </div>
         <div class="col"></div>
@@ -291,10 +304,11 @@
   </ng-container>
 
   <ng-template #successMsg>
-    <h1>
+    <h2>
       Import successflul!
-    </h1>
-    <a mat-flat-button
+    </h2>
+    <a *ngIf="displayGoToHomeButton"
+       mat-flat-button
        color="primary"
        href="/">Go to home page</a>
   </ng-template>
