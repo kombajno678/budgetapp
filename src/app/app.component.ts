@@ -11,6 +11,10 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Globals } from './Globals';
 import { UserService } from './services/budget/user.service';
+import { BudgetOperationService } from './services/budget/budget-operation.service';
+import { ScheduledOperationsService } from './services/budget/scheduled-operations.service';
+import { combineLatest } from 'rxjs';
+import { FixedPointsService } from './services/budget/fixed-points.service';
 
 type Theme = 'light-theme' | 'dark-theme';
 
@@ -73,7 +77,11 @@ export class AppComponent implements OnInit {
     private budget: BudgetService,
     private userService: UserService,
     private router: Router,
-    private snack:MatSnackBar
+    private snack:MatSnackBar,
+    private operationsService:BudgetOperationService,
+    private scheduledService:ScheduledOperationsService,
+    private fixedPointsService:FixedPointsService
+
   ) {
 
     breakpointObserver.observe([
@@ -85,53 +93,13 @@ export class AppComponent implements OnInit {
       }
     });
 
-    this.userService.user$.asObservable().subscribe(u => {
-      this.user = u;
-      console.log('received new user from backend : ', u);
-      if (u) {
-        if (!u.last_generated_operations_at) {
-          // beep boop, alert, new user has logged in
-          console.log('redirect to quick start');
-          this.router.navigate(['/quickstart'])
 
-        }
-      }else{
-        console.warn('received null user from backend');
-        //this.snack.open('Server error :(', 'dismiss', {duration: 10_000});
-        //
-      }
-    })
+    
 
-    if (this.isDarkTheme) {
-      this.setCurrentTheme('dark-theme');
-    } else {
-      this.setCurrentTheme('light-theme');
+    this.initTheme();
 
-    }
-
-
-    this.router.events.subscribe(event => {
-      //NavigationEnd 
-      if (event instanceof NavigationEnd) {
-        console.log('router : ', event);
-
-        if (event.url == '/') {
-          //is on home page
-          this.animatedBg = true;
-        } else {
-          this.animatedBg = false;
-
-        }
-
-
-
-      }
-    });
-
-
-
-
-
+    this.setAnimatedBgIfHomePage();
+    
 
 
     this.userService.afterLogin();
@@ -155,8 +123,59 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
 
+    this.redirectToQuickStartIfNewUser();
+
   }
 
+
+  setAnimatedBgIfHomePage(){
+
+    this.router.events.subscribe(event => {
+      //NavigationEnd 
+      if (event instanceof NavigationEnd) {
+        console.log('router : ', event);
+
+        if (event.url == '/') {
+          //is on home page
+          this.animatedBg = true;
+        } else {
+          this.animatedBg = false;
+
+        }
+
+
+
+      }
+    });
+
+  }
+
+  initTheme(){
+
+    if (this.isDarkTheme) {
+      this.setCurrentTheme('dark-theme');
+    } else {
+      this.setCurrentTheme('light-theme');
+
+    }
+
+  }
+
+  redirectToQuickStartIfNewUser(){
+
+    console.log('redirectToQuickStartIfNewUser');
+    
+    this.fixedPointsService.getAll().subscribe(r => {
+      console.log('redirectToQuickStartIfNewUser result : ', r);
+      
+      if(r && r.length == 0){
+        console.log('redirectToQuickStartIfNewUser redirecting ... ');
+        this.router.navigate(['/quickstart'])
+      }
+    })
+
+
+  }
 
   // getToken() {
   //   this.auth.getAccessTokenSilently({ ignoreCache: true, audience: environment.auth.audience }).subscribe(token => {

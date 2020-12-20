@@ -21,7 +21,8 @@ export abstract class AbstractResourceService<T extends AbstractResource> implem
   //to override
   pathSuffix: string;
 
-  public resource: ReplaySubject<T[]>;
+  public resource$: BehaviorSubject<T[]>;
+  private resource: T[];
   public mapWhenRefreshing = (resource) => resource;
 
   constructor(pathSuffix: string, customMap, public http: HttpClient, public userService:UserService) {
@@ -31,7 +32,11 @@ export abstract class AbstractResourceService<T extends AbstractResource> implem
     }
     this.path = this.url + this.pathSuffix;
 
-    this.resource = new ReplaySubject<T[]>(1);
+    this.resource$ = new BehaviorSubject<T[]>(null);
+    this.resource$.subscribe(r => {
+      this.resource = r;
+    })
+
     if (customMap) {
       this.mapWhenRefreshing = customMap;
 
@@ -48,14 +53,17 @@ export abstract class AbstractResourceService<T extends AbstractResource> implem
   }
 
   refreshResource() {
-    this.getAllOnce().subscribe(result => this.resource.next(result))
+    this.getAllOnce().subscribe(result => this.resource$.next(result))
   }
 
 
 
   getAll(): Observable<T[]> {
+    if(!this.resource){
+      this.refreshResource(); 
+    }
 
-    return this.resource.asObservable();
+    return this.resource$.asObservable();
   }
 
   getAllOnce(): Observable<T[]> {
