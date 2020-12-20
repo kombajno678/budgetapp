@@ -15,3 +15,41 @@
 mat-list {
   max-width: 100%;
 }
+
+
+
+
+
+/*
+.mat-form-field {
+  margin: 40px 0;
+  width: 500px !important;
+}
+*/
+
+
+
+.mat-toolbar-single-row {
+  height: auto !important;
+  background: transparent;
+}
+
+.mat-toolbar-single-row button {
+  width: 200px;
+  height:60px;
+}
+
+.mat-form-field {
+  width: 100%;
+}
+
+#uploadFile {
+  top: 0px;
+  left: 0px;
+  width: 100%;    
+  z-index: 9;
+  opacity: 0;
+  height: 100%;
+  cursor: pointer;
+  position: absolute;
+}

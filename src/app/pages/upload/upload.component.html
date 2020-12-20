@@ -2,42 +2,78 @@
 
 
 <div class="row m-1">
-  <div class="col-12 mb-3">
+  <div class="col-12 col-md-6 mb-3 text-center">
     <h3>Need help getting file?</h3>
-    <button mat-flat-button
+    <button mat-stroked-button
             color="secondary"
             (click)="onHelpButtonClick()">How do I export data?</button>
   </div>
 
-  <div class="col-12 mb-3">
+  <div class="col-12 col-md-6 mb-3 text-center">
     <h3>Want to try with example file?</h3>
-    <a mat-flat-button
+    <a mat-stroked-button
        color="secondary"
        [href]="exampleFilePath"
        target="_blank">Download example csv file</a>
   </div>
 
 
-  <div class="col mb-3">
+  <div class="col-8 mb-0 pb-0 pr-0">
     <form [formGroup]="myForm"
-          (ngSubmit)="submit()">
+          class="w-100">
 
-      <input formControlName="file"
-             id="file"
-             type="file"
-             class="form-control"
-             (change)="onFileChange($event)">
-      <div *ngIf="f.file.touched && f.file.invalid">
-        <div *ngIf="f.file.errors.required">
-          File is required.
+
+      <mat-form-field class="p-0">
+        <div>
+          <mat-toolbar>
+            <!-- Display files names -->
+            <input matInput
+                   formControlName="fileAttr"
+                   readonly />
+
+            <!-- Browse Button -->
+
+            <mat-icon>
+              attach_file
+
+            </mat-icon>
+          </mat-toolbar>
+
+          <!-- Fetch selected filed on change -->
+          <input formControlName="file"
+                 type="file"
+                 id="file"
+                 #fileInput
+                 id="uploadFile"
+                 (change)="onFileChange($event)"
+                 name="uploadFile" />
         </div>
-      </div>
+      </mat-form-field>
 
-
-      <button mat-flat-button
-              color="primary"
-              type="submit">Submit</button>
     </form>
+
+  </div>
+
+
+  <div class="col-4 text-center pb-3 pl-0">
+    <button mat-flat-button
+            class="w-100 h-100"
+            color="primary"
+            (click)="submit()"
+            [disabled]="f.file.invalid">
+            Submit
+            <mat-icon>
+              publish
+            </mat-icon>
+          </button>
+  </div>
+
+  <div class="col">
+    <div *ngIf="f.file.touched && f.file.invalid">
+      <div *ngIf="f.file.errors.required">
+        File is required.
+      </div>
+    </div>
   </div>
 
 </div>
@@ -48,10 +84,12 @@
      *ngIf="uploading">
   <div class="col"></div>
   <div class="col-auto">
-    <mat-progress-spinner [value]="uploadProgress"
-                          [mode]="uploadBarMode">
+    <mat-spinner>
+    </mat-spinner>
+    <span class="text-center p-3">
+      uploading ...
 
-    </mat-progress-spinner>
+    </span>
 
   </div>
   <div class="col"></div>

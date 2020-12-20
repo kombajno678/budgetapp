@@ -42,6 +42,7 @@ export class UploadComponent implements OnInit, AfterViewInit {
   exampleFilePath = '/assets/example/budgetapp-example.csv';
 
   myForm = new FormGroup({
+    fileAttr : new FormControl('Choose file ...', []),
     file: new FormControl('', [Validators.required]),
     fileSource: new FormControl('', [Validators.required])
   });
@@ -58,6 +59,11 @@ export class UploadComponent implements OnInit, AfterViewInit {
   success: boolean = false;
   uploading: boolean = false;
 
+
+  @ViewChild('fileInput') fileInput: ElementRef;
+  /*
+  fileAttr = 'Choose File';
+*/
 
 
   constructor(
@@ -85,6 +91,18 @@ export class UploadComponent implements OnInit, AfterViewInit {
 
     }
   }
+
+
+
+  uploadFileEvt(imgFile: any) {
+
+    console.log(imgFile);
+
+    
+    
+    
+  }
+
 
   onCancel() {
     console.log('cancel');
@@ -337,6 +355,25 @@ export class UploadComponent implements OnInit, AfterViewInit {
   }
 
   onFileChange(event) {
+
+
+    if (event.target.files && event.target.files[0]) {
+      let temp = '';
+      
+      Array.from(event.target.files).forEach((file: File, index, array) => {
+        temp += file.name;
+        if(index < array.length-1){
+          temp += ', ';
+        }
+      });
+      this.myForm.controls.fileAttr.setValue(temp);
+
+      // Reset if duplicate image uploaded again
+      //this.fileInput.nativeElement.value = "";
+    } else {
+      this.myForm.controls.fileAttr.setValue('Choose File');
+    }
+
 
     if (event.target.files.length > 0) {
       const file = event.target.files[0];
