@@ -60,6 +60,7 @@ import { CategoryDialogComponent } from './components/dialogs/category-dialog/ca
 import { PredictionChartCardComponent } from './components/dashboard-cards/prediction-chart-card/prediction-chart-card.component';
 import { UploadHelpDialogComponent } from './components/dialogs/upload-help-dialog/upload-help-dialog.component';
 import { WhenWillComponent } from './pages/when-will/when-will.component';
+import { HowMuchWillComponent } from './pages/how-much-will/how-much-will.component';
 
 
 function tokenGetter(): string {
@@ -97,7 +98,8 @@ function tokenGetter(): string {
     CategoryDialogComponent,
     PredictionChartCardComponent,
     UploadHelpDialogComponent,
-    WhenWillComponent
+    WhenWillComponent,
+    HowMuchWillComponent
 
   ],
   entryComponents: [],

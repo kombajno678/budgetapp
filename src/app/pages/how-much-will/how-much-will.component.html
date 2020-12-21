@@ -1,0 +1,56 @@
+<div *ngIf="displayTitle"
+     class="row p-2">
+    <div class="col-12">
+        <span class="mat-display-1">
+            How much money will i have ...
+        </span>
+    </div>
+
+    <div class="col p-3">
+        <span class="">
+            Here you can find out how much moeny will you have at any given day in the future. Also, how much would you
+            have had to cut down your expenses to accumulate given amount of money at that day.
+        </span>
+    </div>
+
+</div>
+
+
+<div class="row">
+    <div class="col text-center">
+
+        <span *ngIf="(predictedAmount | async) as amount" class="mat-display-1">
+
+            {{amount.toLocaleString()}}
+
+        </span>
+
+    </div>
+    <div class="col">
+
+        <form [formGroup]="form">
+            <mat-form-field class="example-full-width"
+                            appearance="fill">
+                <mat-label>Choose a date</mat-label>
+                <input matInput
+                       (dateChange)="dateChange($event)"
+                       [matDatepicker]="picker"
+                       [matDatepickerFilter]="dateFilter">
+                <mat-datepicker #picker></mat-datepicker>
+
+
+            </mat-form-field>
+            <button mat-raised-button
+                    (click)="picker.open()">
+                <span class="">
+                    Pick a day
+
+                </span>
+            </button>
+
+        </form>
+
+
+
+    </div>
+</div>

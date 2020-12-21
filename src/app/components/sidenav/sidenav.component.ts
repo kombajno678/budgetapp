@@ -49,6 +49,13 @@ export class SidenavComponent implements OnInit {
     loginRequired: true,
     disabled: false,
   },
+  {
+    title: 'How much money will i have ...',
+    url: '/howmuchwill',
+    icon: 'event',
+    loginRequired: true,
+    disabled: false,
+  },
   ];
 
 

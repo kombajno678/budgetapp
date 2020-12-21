@@ -11,6 +11,7 @@ import { QuickStartComponent } from './pages/quick-start/quick-start.component';
 import { UploadComponent } from './pages/upload/upload.component';
 import { CategoriesComponent } from './pages/categories/categories.component';
 import { WhenWillComponent } from './pages/when-will/when-will.component';
+import { HowMuchWillComponent } from './pages/how-much-will/how-much-will.component';
 
 const routes: Routes = [
   {
@@ -56,6 +57,11 @@ const routes: Routes = [
   {
     path: 'whenwill',
     component: WhenWillComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'howmuchwill',
+    component: HowMuchWillComponent,
     canActivate: [AuthGuard],
   },
   {
