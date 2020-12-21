@@ -67,6 +67,18 @@ export class PredictionChartComponent implements OnInit {
   public lineChartData: ChartDataSets[] = [
     {
       data: [],
+      label: 'Fixed points',
+      borderWidth: 12,
+      pointRadius: 12,
+      pointHitRadius: 12,
+      //pointHoverBorderWidth: 10,
+      //pointHoverBorderColor: 'rgb(255, 255, 255, 0.5)',
+      lineTension: 0,
+      spanGaps: false,
+    },
+
+    {
+      data: [],
       label: 'History',
       borderWidth: 6,
       pointRadius: 0,
@@ -87,6 +99,7 @@ export class PredictionChartComponent implements OnInit {
       lineTension: 0,
       spanGaps: false,
     },
+
   ];
   public lineChartLabels: Label[] = [];
   public lineChartOptions: (ChartOptions & { annotation: any } & { pan: any } & { zoom: any }) = {
@@ -261,6 +274,11 @@ export class PredictionChartComponent implements OnInit {
   };
   public lineChartColors: Color[] = [
     {
+      backgroundColor: 'rgba(192, 255, 0,0.3)',
+      borderColor: 'rgba(192, 255, 0)'
+
+    },
+    {
       backgroundColor: 'rgba(255, 64, 192,0.3)',
       borderColor: 'rgba(255, 64, 192)'
 
@@ -268,8 +286,8 @@ export class PredictionChartComponent implements OnInit {
     {
       backgroundColor: 'rgba(32, 128, 255,0.3)',
       borderColor: 'rgba(32, 128, 255)'
-
     },
+
   ];
   public lineChartLegend = true;
   public lineChartType: ChartType = 'line';
@@ -357,7 +375,7 @@ export class PredictionChartComponent implements OnInit {
 
 
 
-    
+
 
 
     this.loading$.next(true);
@@ -370,9 +388,17 @@ export class PredictionChartComponent implements OnInit {
         let config = r[0];
         let data = r[1];
 
-        if(config){
-          this.lineChartOptions.annotation.annotations = [];
-          this.lineChartOptions.annotation.annotations.push(this.todayAnnotation);
+        this.lineChartOptions.annotation.annotations = [];
+
+        this.todayAnnotation.value =  this.dateToStr(new Date()),
+
+
+        this.lineChartOptions.annotation.annotations.push(this.todayAnnotation);
+        console.log('this.todayAnnotation : ', this.todayAnnotation);
+
+
+        if (config) {
+
           /*
           if(config.marks){
             console.log('CHART > initing annotations : marks:', config.marks);
@@ -393,42 +419,54 @@ export class PredictionChartComponent implements OnInit {
             });
           }
           */
-  
-          
+
+
         }
 
-        if(data){
+        if (data) {
 
-          this.lineChartData[0].data = [];
-          this.lineChartData[1].data = [];
-  
+          this.lineChartData[0].data = [];// fps
+          this.lineChartData[1].data = [];//history
+          this.lineChartData[2].data = [];//futur
+
+          let fps = this.lineChartData[0].data;
+          let history = this.lineChartData[1].data;
+          let futur = this.lineChartData[2].data;
+
           this.lineChartLabels = [];
-  
+
           let n = this.dateToStr(new Date());
           data.forEach(p => {
             let d = this.dateToStr(p.date);
-  
+
             let value: number = Number(p.value.toFixed(2));
-  
+
             if (d < n) {
-              this.lineChartData[0].data.push(value);
-              this.lineChartData[1].data.push(null);
+              history.push(value);
+              futur.push(null);
             } else if (d > n) {
-              this.lineChartData[0].data.push(null);
-              this.lineChartData[1].data.push(value);
+              history.push(null);
+              futur.push(value);
             } else {
-              this.lineChartData[0].data.push(value);
-              this.lineChartData[1].data.push(value);
+              history.push(value);
+              futur.push(value);
             }
-  
+
+            if (p.fixedPoint) {
+              fps.push(p.fixedPoint.exact_value);
+            } else {
+              fps.push(null);
+
+            }
+
             this.lineChartLabels.push(d);
           })
         }
 
 
-        
 
-        
+
+
 
         this.loading$.next(false);
 
