@@ -109,6 +109,7 @@ export class PredictionChartComponent implements OnInit {
     tooltips: {
       bodyFontSize: 16,
       enabled: true,
+      mode : 'index',
     },
     maintainAspectRatio: false,
     elements: {
@@ -148,6 +149,9 @@ export class PredictionChartComponent implements OnInit {
           distribution: 'linear',
           time : {
             minUnit : 'day',
+            unit: 'day', 
+            round : 'day',
+            stepSize:7,
             displayFormats : {
               month : 'MM.YYYY',
               week : 'DD.MM.YYYY',
@@ -225,7 +229,7 @@ export class PredictionChartComponent implements OnInit {
       speed: 10,
 
       // Minimal pan distance required before actually applying pan
-      threshold: 10,
+      threshold: 0,
 
       // Function called while the user is panning
       //onPan: function ({ chart }) { console.log(`I'm panning!!!`); },
