@@ -39,6 +39,9 @@ export class PredictionChartComponent implements OnInit {
 
 
 
+  displayChart: boolean = true;
+
+
   @Input()
   config$: Observable<PredictionChartCardConfig>;// = false;
 
@@ -109,7 +112,7 @@ export class PredictionChartComponent implements OnInit {
     tooltips: {
       bodyFontSize: 16,
       enabled: true,
-      mode : 'index',
+      mode: 'index',
     },
     maintainAspectRatio: false,
     elements: {
@@ -147,17 +150,17 @@ export class PredictionChartComponent implements OnInit {
           id: 'days',
           type: "time",
           distribution: 'linear',
-          time : {
-            minUnit : 'day',
-            unit: 'day', 
-            round : 'day',
-            stepSize:7,
-            displayFormats : {
-              month : 'MM.YYYY',
-              week : 'DD.MM.YYYY',
-              day : 'DD.MM.YYYY',
-              hour : 'DD.MM.YYYY hh:00',
-              minute : 'DD.MM.YYYY hh:mm',
+          time: {
+            minUnit: 'day',
+            unit: 'day',
+            round: 'day',
+            stepSize: 7,
+            displayFormats: {
+              month: 'MM.YYYY',
+              week: 'DD.MM.YYYY',
+              day: 'DD.MM.YYYY',
+              hour: 'DD.MM.YYYY hh:00',
+              minute: 'DD.MM.YYYY hh:mm',
             },
           },
           ticks: {
@@ -335,7 +338,7 @@ export class PredictionChartComponent implements OnInit {
       event.active.forEach(chartElement => {
         console.log(chartElement);
         //let clickedDate:Moment = moment(chartElement._xScale._labelItems[chartElement._index]);
-        let clickedDate:Moment = moment(this.lineChartLabels[chartElement._index]);
+        let clickedDate: Moment = moment(this.lineChartLabels[chartElement._index]);
         //let clickedDate:Moment = (this.lineChartLabels[chartElement._index]);
 
         //if (clickedDate.getFullYear() < chartElement._xScale.min.substr(0, 4)) {
@@ -352,9 +355,68 @@ export class PredictionChartComponent implements OnInit {
     }
   }
 
+
+
+
+  clearAnnotations() {
+
+    this.lineChartOptions.annotation.annotations = [];
+    console.log(this.lineChartOptions.annotation.annotations);
+  }
+  lastDateTest = new Date();
+  addAnnotation() {
+
+    this.lineChartData[0].data.push(0);
+
+    this.lastDateTest.setDate(this.lastDateTest.getDate() + 1);
+
+
+
+    this.lineChartOptions.annotation.annotations.push({
+      type: 'line',
+      mode: 'vertical',
+      scaleID: 'days',
+      value: this.dateToStr(this.lastDateTest),
+      borderColor: 'red',
+      borderWidth: 4,
+      label: {
+        enabled: true,
+        fontColor: 'red',
+        content: ''
+      }
+    });
+
+
+    this.lineChartData[0].data.pop();
+
+    console.log(this.lineChartOptions.annotation.annotations);
+
+  }
+  chartRender() {
+    this.chartCanvas.chart.render({
+      duration: 800,
+      lazy: false,
+      easing: 'easeOutBounce'
+    });
+
+  }
+  chartUpdate() {
+    this.chartCanvas.chart.update({
+      duration: 800,
+      easing: 'easeOutBounce'
+    });
+    console.log(this.chartCanvas.chart);
+  }
+  chartDataUpdate() {
+    this.lineChartData = this.lineChartData.slice();
+
+  }
+
+
   redrawChart() {
 
     this.chartCanvas?.chart.update();
+    this.chartCanvas?.chart.render();
     this.lineChartData = this.lineChartData.slice();
 
     if (this.chartCanvas && this.chartCanvas.chart) {
@@ -373,32 +435,7 @@ export class PredictionChartComponent implements OnInit {
   }
 
 
-  lastDateTest = new Date();
-  test() {
 
-    this.lineChartOptions.annotation.annotations = [];
-
-    this.lastDateTest.setDate(this.lastDateTest.getDate() + 1);
-
-    this.lineChartOptions.annotation.annotations.push({
-      type: 'line',
-      mode: 'vertical',
-      scaleID: 'days',
-      value: this.dateToStr(this.lastDateTest),
-      borderColor: 'red',
-      borderWidth: 4,
-      label: {
-        enabled: true,
-        fontColor: 'red',
-        content: ''
-      }
-    });
-    this.redrawChart();
-
-
-
-
-  }
 
 
   ngOnInit() {
@@ -413,7 +450,10 @@ export class PredictionChartComponent implements OnInit {
 
 
 
-
+    this.todayAnnotation.value = this.dateToStr(new Date()),
+      this.lineChartOptions.annotation.annotations = [];
+    this.lineChartOptions.annotation.annotations.push(this.todayAnnotation);
+    console.log('this.todayAnnotation : ', this.todayAnnotation);
 
 
     this.loading$.next(true);
@@ -426,39 +466,11 @@ export class PredictionChartComponent implements OnInit {
         let config = r[0];
         let data = r[1];
 
-        this.lineChartOptions.annotation.annotations = [];
-
-        this.todayAnnotation.value = this.dateToStr(new Date()),
 
 
-          this.lineChartOptions.annotation.annotations.push(this.todayAnnotation);
-        console.log('this.todayAnnotation : ', this.todayAnnotation);
 
-
-        if (config) {
-
-          
-          if(config.marks){
-            console.log('CHART > initing annotations : marks:', config.marks);
-            config.marks.forEach(m => {
-              this.lineChartOptions.annotation.annotations.push({
-                type: 'line',
-                mode: 'vertical',
-                scaleID: 'days',
-                value: this.dateToStr(m),
-                borderColor: 'yellow',
-                borderWidth: 4,
-                label: {
-                  enabled: true,
-                  fontColor: 'yellow',
-                  content: ''
-                }
-              });
-            });
-          }
-          
-
-
+        if (data && config) {
+          this.displayChart = false;
         }
 
         if (data) {
@@ -468,7 +480,7 @@ export class PredictionChartComponent implements OnInit {
           this.lineChartData[2].data = [];//futur
 
           let fps = []
-          let history= []
+          let history = []
           let futur = []
 
           this.lineChartLabels = [];
@@ -476,18 +488,18 @@ export class PredictionChartComponent implements OnInit {
           let n = this.dateToStr(new Date());
           data.forEach(p => {
             let d = this.dateToStr(p.date);
-            let m:Moment = moment(p.date);
+            let m: Moment = moment(p.date);
             m.hours(0);
 
             let value: number = Number(p.value.toFixed(2));
 
             let point = {
-              y : value,
-              x : m
+              y: value,
+              x: m
             };
             let emptyPoint = {
-              y : null,
-              x : m
+              y: null,
+              x: m
             }
 
             if (d < n) {
@@ -503,7 +515,7 @@ export class PredictionChartComponent implements OnInit {
 
             if (p.fixedPoint) {
               fps.push({
-                x : m, y : p.fixedPoint.exact_value
+                x: m, y: p.fixedPoint.exact_value
               });
             } else {
               fps.push(emptyPoint);
@@ -522,14 +534,45 @@ export class PredictionChartComponent implements OnInit {
 
         }
 
+        if (config) {
 
+
+          if (config.marks) {
+            this.lineChartOptions.annotation.annotations = [];
+            this.lineChartOptions.annotation.annotations.push(this.todayAnnotation);
+
+            config.marks.forEach(m => {
+              this.lineChartOptions.annotation.annotations.push({
+                type: 'line',
+                mode: 'vertical',
+                scaleID: 'days',
+                value: m,
+                borderColor: 'red',
+                borderWidth: 4,
+                label: {
+                  enabled: true,
+                  fontColor: 'yellow',
+                  content: ''
+                }
+              });
+            });
+          }
+
+
+
+        }
 
 
 
 
         this.loading$.next(false);
+        if (data && config) {
+          setTimeout(() => {
+            this.displayChart = true;
+          }, 300)
+        }
 
-        this.redrawChart();
+
 
 
 

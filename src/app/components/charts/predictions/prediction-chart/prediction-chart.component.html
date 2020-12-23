@@ -12,23 +12,23 @@
   <div style="display: block;">
 
 
+    <ng-container *ngIf="displayChart">
+      <canvas baseChart
+              #mychart
+              [width]="width ? width : 400"
+              [height]="height ? height : 400"
+              [datasets]="lineChartData"
+              [labels]="lineChartLabels"
+              [options]="lineChartOptions"
+              [colors]="lineChartColors"
+              [legend]="lineChartLegend"
+              [chartType]="lineChartType"
+              [plugins]="lineChartPlugins"
+              (chartClick)="onChartClick($event)">
+      </canvas>
+    </ng-container>
 
-    <canvas baseChart
-            #mychart
-            [width]="width ? width : 400"
-            [height]="height ? height : 400"
-            [datasets]="lineChartData"
-            [labels]="lineChartLabels"
-            [options]="lineChartOptions"
-            [colors]="lineChartColors"
-            [legend]="lineChartLegend"
-            [chartType]="lineChartType"
-            [plugins]="lineChartPlugins"
-            (chartClick)="onChartClick($event)">
-    </canvas>
   </div>
-  <button *ngIf="false"
-          mat-button
-          (click)="test()">test</button>
+
 
 </ng-template>
