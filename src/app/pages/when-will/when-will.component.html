@@ -44,8 +44,8 @@
             <h2>
                 {{result.resultDateA.toISOString().substr(0, 10)}}
             </h2>
-            <p> in {{ result.yearsDiff ? result.yearsDiff + ' years ' : ''}} {{ result.monthsDiff ? result.monthsDiff + ' months ' : ''}} {{
-                result.daysDiff ? result.daysDiff + ' days ' : ''}} </p>
+            <p>  {{ (result.yearsDiff == 0 && result.monthsDiff == 0 && result.daysDiff == 0) ? 'today' : 'in: '}}  {{ result.yearsDiff ? result.yearsDiff + ' years ' : ''}} {{ result.monthsDiff ? result.monthsDiff + ' months ' : ''}} {{
+                result.daysDiff ? result.daysDiff + ' days ' : ''}}</p>
             </div>
             
             

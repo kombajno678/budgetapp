@@ -68,11 +68,11 @@ export class PredictionChartComponent implements OnInit {
     {
       data: [],
       label: 'Fixed points',
-      borderWidth: 12,
-      pointRadius: 12,
-      pointHitRadius: 12,
-      //pointHoverBorderWidth: 10,
-      //pointHoverBorderColor: 'rgb(255, 255, 255, 0.5)',
+      borderWidth: 0,
+      pointRadius: 6,
+      pointHitRadius: 6,
+      pointHoverBorderWidth: 8,
+      pointHoverBorderColor: 'rgb(255, 255, 255, 0.5)',
       lineTension: 0,
       spanGaps: false,
     },
@@ -83,7 +83,7 @@ export class PredictionChartComponent implements OnInit {
       borderWidth: 6,
       pointRadius: 0,
       pointHitRadius: 6,
-      pointHoverBorderWidth: 10,
+      pointHoverBorderWidth: 8,
       pointHoverBorderColor: 'rgb(255, 255, 255, 0.5)',
       lineTension: 0,
       spanGaps: false,
@@ -274,8 +274,8 @@ export class PredictionChartComponent implements OnInit {
   };
   public lineChartColors: Color[] = [
     {
-      backgroundColor: 'rgba(192, 255, 0,0.3)',
-      borderColor: 'rgba(192, 255, 0)'
+      //backgroundColor: 'rgba(192, 255, 0,0.3)',
+      borderColor: 'rgba(0, 255, 0)'
 
     },
     {

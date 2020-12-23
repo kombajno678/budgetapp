@@ -21,7 +21,7 @@ import { UserService } from './user.service';
 })
 export class BudgetService {
 
-  verbose: boolean = false;//true//false;
+  verbose: boolean = true;//true//false;
 
 
 
@@ -176,7 +176,7 @@ export class BudgetService {
   findDateWithValue(valueToFind: number): Observable<Date> {
     this.i = 0;
     let result = new ReplaySubject<Date>(1);
-    let step = 7;
+    let step = 32;
     let directionForward: boolean = true;
     let startingDate = new Date();
     startingDate.setUTCHours(12, 0, 0, 0);
@@ -184,7 +184,7 @@ export class BudgetService {
     this.generatePredictionForDate(startingDate).subscribe(r => {
       if(r){
         if(valueToFind < r.value ){
-          //you already have this money
+          //console.log('you already have this money');
           result.next(startingDate);
           
         }else{

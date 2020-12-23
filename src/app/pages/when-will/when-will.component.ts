@@ -59,7 +59,7 @@ export class WhenWillComponent implements OnInit {
 
   whenWillIHaveX(x: number): Observable<WhenWillResult> {
 
-    let result = new ReplaySubject<WhenWillResult>(1);
+    let result = new BehaviorSubject<WhenWillResult>(null);
 
 
     let today = new Date();
@@ -131,7 +131,8 @@ export class WhenWillComponent implements OnInit {
 
     let x = this.form.controls.amount.value;
 
-    this.whenWillIHaveX(x).pipe(tap(r => console.log('ipie => tap : ', r))).subscribe(r => {
+    this.whenWillIHaveX(x).pipe(tap(r => console.log('whenWillIHaveX => tap : ', r))).subscribe(r => {
+      //console.log(r);
       this.result$.next(r);
       this.chartConfig$.next(r.chartConfig);
     });
