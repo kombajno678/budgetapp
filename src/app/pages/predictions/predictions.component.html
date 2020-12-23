@@ -1,12 +1,12 @@
 <div class="container h-50">
-    <div class="row">
+    <div class="row m-0">
         <div class="col">
             <app-prediction-chart [data$]="predictions$.asObservable()"
                                   [config$]="config$.asObservable()"
                                   (onDayClicked)="onDayClicked($event)"> ... </app-prediction-chart>
         </div>
     </div>
-    <div class="row">
+    <div class="row m-0">
         <div class="col">
             <mat-button-toggle-group name="rangeType"
                                      #rangeTypeGroup="matButtonToggleGroup"
@@ -53,7 +53,7 @@
     </div>
 
 
-    <div class="row">
+    <div class="row m-0">
 
         <div class="col">
             <ng-container *ngIf="selectedPP$ | async as pp; else clickhelp">
@@ -105,7 +105,7 @@
         </div>
     </div>
 
-    <div class="row"
+    <div class="row m-0"
          *ngIf="false">
         <div class="col">
 

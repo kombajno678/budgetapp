@@ -3,3 +3,35 @@ mat-sidenav{
 }
 
 
+
+/* width */
+::ng-deep
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+/* Track */
+::ng-deep
+::-webkit-scrollbar-track {
+  background: #ffffff00; 
+  padding: 1px;
+}
+ 
+/* Handle */
+::ng-deep
+::-webkit-scrollbar-thumb {
+  display:none
+  //background: #79797998; 
+  //border-radius: 4px;
+}
+::ng-deep
+*:hover > ::-webkit-scrollbar-thumb {
+  display:block;
+  background: #757575; 
+}
+
+/* Handle on hover */
+::ng-deep
+::-webkit-scrollbar-thumb:hover {
+  background: #a0a0a0
+}

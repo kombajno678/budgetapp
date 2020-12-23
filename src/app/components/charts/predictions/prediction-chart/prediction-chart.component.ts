@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, ElementRef, Input, Output, EventEmitter } from '@angular/core';
-import { ChartDataSets, ChartOptions, ChartType } from 'chart.js';
+import { ChartDataSets, ChartOptions, ChartPoint, ChartType } from 'chart.js';
 import { Color, Label, BaseChartDirective } from 'ng2-charts';
 import { combineLatest, Observable, ReplaySubject, Subject } from 'rxjs';
 
@@ -9,6 +9,8 @@ import { PredictionPoint } from 'src/app/models/internal/PredictionPoint';
 import * as pluginAnnotations from 'chartjs-plugin-annotation';
 import * as pluginZoom from 'chartjs-plugin-zoom';
 import { PredictionChartCardConfig } from 'src/app/components/dashboard-cards/prediction-chart-card/prediction-chart-card.component';
+import Chart from 'chart.js';
+import moment, { Moment } from 'moment';
 
 
 
@@ -51,7 +53,7 @@ export class PredictionChartComponent implements OnInit {
   @Input()
   height: number
 
-  @ViewChild(BaseChartDirective) chart: BaseChartDirective;
+  @ViewChild(BaseChartDirective) chartCanvas: BaseChartDirective;
 
 
   loading$: ReplaySubject<boolean>;
@@ -68,8 +70,8 @@ export class PredictionChartComponent implements OnInit {
     {
       data: [],
       label: 'Fixed points',
-      borderWidth: 0,
-      pointRadius: 6,
+      borderWidth: 1,
+      pointRadius: 4,
       pointHitRadius: 6,
       pointHoverBorderWidth: 8,
       pointHoverBorderColor: 'rgb(255, 255, 255, 0.5)',
@@ -81,7 +83,7 @@ export class PredictionChartComponent implements OnInit {
       data: [],
       label: 'History',
       borderWidth: 6,
-      pointRadius: 0,
+      pointRadius: 1,
       pointHitRadius: 6,
       pointHoverBorderWidth: 8,
       pointHoverBorderColor: 'rgb(255, 255, 255, 0.5)',
@@ -92,7 +94,7 @@ export class PredictionChartComponent implements OnInit {
       data: [],
       label: 'Future',
       borderWidth: 6,
-      pointRadius: 0,
+      pointRadius: 1,
       pointHitRadius: 6,
       pointHoverBorderWidth: 10,
       pointHoverBorderColor: 'rgb(255, 255, 255, 0.5)',
@@ -101,7 +103,7 @@ export class PredictionChartComponent implements OnInit {
     },
 
   ];
-  public lineChartLabels: Label[] = [];
+  public lineChartLabels/*: Label[]*/ = [];
   public lineChartOptions: (ChartOptions & { annotation: any } & { pan: any } & { zoom: any }) = {
     responsive: true,
     tooltips: {
@@ -137,15 +139,30 @@ export class PredictionChartComponent implements OnInit {
 
         },
       ],
+
+
       xAxes: [
         {
           id: 'days',
+          type: "time",
+          distribution: 'linear',
+          time : {
+            minUnit : 'day',
+            displayFormats : {
+              month : 'MM.YYYY',
+              week : 'DD.MM.YYYY',
+              day : 'DD.MM.YYYY',
+              hour : 'DD.MM.YYYY hh:00',
+              minute : 'DD.MM.YYYY hh:mm',
+            },
+          },
           ticks: {
             //sampleSize: 10,
             autoSkipPadding: 14,
             minRotation: 0,
             maxRotation: 90,
             //display: !this.compact,
+            /*
             callback: (value, index, values) => {
               if (('' + values[0]).substr(0, 4) === ('' + values[values.length - 1]).substr(0, 4)) {
                 return ('' + value).substring(5);
@@ -153,6 +170,7 @@ export class PredictionChartComponent implements OnInit {
                 return value;
               }
             },
+            */
           }
         }
       ]
@@ -253,13 +271,13 @@ export class PredictionChartComponent implements OnInit {
 
       // Speed of zoom via mouse wheel
       // (percentage of zoom on a wheel event)
-      speed: 10.0,
+      speed: 0.1,
 
       // Minimal zoom distance required before actually applying zoom
       threshold: 0,
 
       // On category scale, minimal zoom level before actually applying zoom
-      sensitivity: 0,
+      sensitivity: 0.0,
 
       // Function called while the user is zooming
       //onZoom: function ({ chart }) { console.log(`I'm zooming!!!`); },
@@ -274,7 +292,7 @@ export class PredictionChartComponent implements OnInit {
   };
   public lineChartColors: Color[] = [
     {
-      //backgroundColor: 'rgba(192, 255, 0,0.3)',
+      backgroundColor: 'rgba(192, 255, 0,1)',
       borderColor: 'rgba(0, 255, 0)'
 
     },
@@ -307,29 +325,45 @@ export class PredictionChartComponent implements OnInit {
 
   }
 
-  resetZoom() {
-    //this.chart.resetZoom();
-  }
   onChartClick(event: { event: MouseEvent, active: any[] }) {
-    if (event.active.length == 1) {
+    console.log(event);
+    if (event.active.length >= 1) {
       event.active.forEach(chartElement => {
         console.log(chartElement);
-        let clickedDate = new Date(chartElement._xScale.ticks[chartElement._index - chartElement._xScale.minIndex]);
-        if (clickedDate.getFullYear() < chartElement._xScale.min.substr(0, 4)) {
-          clickedDate.setFullYear(chartElement._xScale.min.substr(0, 4));
-        }
+        //let clickedDate:Moment = moment(chartElement._xScale._labelItems[chartElement._index]);
+        let clickedDate:Moment = moment(this.lineChartLabels[chartElement._index]);
+        //let clickedDate:Moment = (this.lineChartLabels[chartElement._index]);
 
+        //if (clickedDate.getFullYear() < chartElement._xScale.min.substr(0, 4)) {
+        //  clickedDate.setFullYear(chartElement._xScale.min.substr(0, 4));
+        //}
 
+        console.log('=========================================================');
+        console.log('chartElement._xScale._minIndex : ', chartElement._xScale._minIndex);
+        console.log('clicked at index : ', chartElement._index);
+        console.log('this.lineChartLabels : ', this.lineChartLabels);
         console.log('click at : ', clickedDate);
-        this.onDayClicked.emit(clickedDate);
+        this.onDayClicked.emit(clickedDate.toDate());
       })
     }
   }
 
   redrawChart() {
 
-    this.lineChartData = this.lineChartData.slice()
+    this.chartCanvas?.chart.update();
+    this.lineChartData = this.lineChartData.slice();
 
+    if (this.chartCanvas && this.chartCanvas.chart) {
+      try {
+
+        this.chartCanvas.chart.resetZoom();
+        //this.chartCanvas.chart.options.zoom.speed = this.lineChartData[0].data.length / 2;
+        //console.log('ZOOM SPEED : ', this.chartCanvas.chart.options.zoom.speed);
+
+      } catch (err) {
+        console.error(err);
+      }
+    }
 
 
   }
@@ -390,16 +424,16 @@ export class PredictionChartComponent implements OnInit {
 
         this.lineChartOptions.annotation.annotations = [];
 
-        this.todayAnnotation.value =  this.dateToStr(new Date()),
+        this.todayAnnotation.value = this.dateToStr(new Date()),
 
 
-        this.lineChartOptions.annotation.annotations.push(this.todayAnnotation);
+          this.lineChartOptions.annotation.annotations.push(this.todayAnnotation);
         console.log('this.todayAnnotation : ', this.todayAnnotation);
 
 
         if (config) {
 
-          /*
+          
           if(config.marks){
             console.log('CHART > initing annotations : marks:', config.marks);
             config.marks.forEach(m => {
@@ -418,7 +452,7 @@ export class PredictionChartComponent implements OnInit {
               });
             });
           }
-          */
+          
 
 
         }
@@ -429,38 +463,59 @@ export class PredictionChartComponent implements OnInit {
           this.lineChartData[1].data = [];//history
           this.lineChartData[2].data = [];//futur
 
-          let fps = this.lineChartData[0].data;
-          let history = this.lineChartData[1].data;
-          let futur = this.lineChartData[2].data;
+          let fps = []
+          let history= []
+          let futur = []
 
           this.lineChartLabels = [];
 
           let n = this.dateToStr(new Date());
           data.forEach(p => {
             let d = this.dateToStr(p.date);
+            let m:Moment = moment(p.date);
+            m.hours(0);
 
             let value: number = Number(p.value.toFixed(2));
 
+            let point = {
+              y : value,
+              x : m
+            };
+            let emptyPoint = {
+              y : null,
+              x : m
+            }
+
             if (d < n) {
-              history.push(value);
-              futur.push(null);
+              history.push(point);
+              futur.push(emptyPoint);
             } else if (d > n) {
-              history.push(null);
-              futur.push(value);
+              history.push(emptyPoint);
+              futur.push(point);
             } else {
-              history.push(value);
-              futur.push(value);
+              history.push(point);
+              futur.push(point);
             }
 
             if (p.fixedPoint) {
-              fps.push(p.fixedPoint.exact_value);
+              fps.push({
+                x : m, y : p.fixedPoint.exact_value
+              });
             } else {
-              fps.push(null);
+              fps.push(emptyPoint);
 
             }
 
-            this.lineChartLabels.push(d);
-          })
+
+            this.lineChartLabels.push(m);
+          });
+
+
+          this.lineChartData[0].data = fps
+          this.lineChartData[1].data = history;
+          this.lineChartData[2].data = futur;
+
+
         }
 
 

@@ -41,8 +41,6 @@ import { FixedPointsComponent } from './pages/fixed-points/fixed-points.componen
 import { CreateNewFixedPointDialogComponent } from './components/dialogs/create-new-fixed-point-dialog/create-new-fixed-point-dialog.component';
 import { PredictionsComponent } from './pages/predictions/predictions.component';
 
-
-import { GoogleChartsModule } from 'angular-google-charts';
 import { ChartsModule } from 'ng2-charts';
 import { PredictionChartComponent } from './components/charts/predictions/prediction-chart/prediction-chart.component';
 import { FixedpointsChartComponent } from './components/charts/fixedpoints/fixedpoints-chart/fixedpoints-chart.component';
@@ -104,7 +102,6 @@ function tokenGetter(): string {
   ],
   entryComponents: [],
   imports: [
-
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
@@ -112,7 +109,7 @@ function tokenGetter(): string {
     FormsModule,
     BrowserAnimationsModule,
     MaterialModule,
-    GoogleChartsModule,
+    //GoogleChartsModule,
     ChartsModule,
     AuthModule.forRoot({
       ...env.auth,

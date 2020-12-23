@@ -10,10 +10,11 @@
 
 <ng-template #loaded>
   <div style="display: block;">
-    
+
 
 
     <canvas baseChart
+            #mychart
             [width]="width ? width : 400"
             [height]="height ? height : 400"
             [datasets]="lineChartData"
@@ -26,7 +27,8 @@
             (chartClick)="onChartClick($event)">
     </canvas>
   </div>
-  <button *ngIf="false" mat-button
+  <button *ngIf="false"
+          mat-button
           (click)="test()">test</button>
 
 </ng-template>

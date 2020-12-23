@@ -28,27 +28,37 @@
       </mat-sidenav>
 
 
-      <mat-sidenav-content>
+        <mat-sidenav-content>
 
-        <app-nav-bar (toggleMenu)="mainSidenav.toggle()">
+          <app-nav-bar (toggleMenu)="mainSidenav.toggle()">
 
-        </app-nav-bar>
-
-
-
-        <div *ngIf="(auth.isLoading$ | async); else router"
-             class="center h-100 mat-bg-background">
-          <mat-spinner></mat-spinner>
-        </div>
+          </app-nav-bar>
 
 
-        <ng-template #router>
-          <div class="container flex-grow-1 flex-shrink-1 p-0 content">
-            <router-outlet></router-outlet>
+
+          <div *ngIf="(auth.isLoading$ | async); else router"
+               class="center h-100 mat-bg-background">
+            <mat-spinner></mat-spinner>
           </div>
-        </ng-template>
 
-      </mat-sidenav-content>
+
+          <ng-template #router>
+
+
+
+
+            <div class="container flex-grow-1 flex-shrink-1 p-0 content">
+              <router-outlet></router-outlet>
+            </div>
+
+
+
+
+
+
+          </ng-template>
+
+        </mat-sidenav-content>
 
 
     </mat-sidenav-container>
