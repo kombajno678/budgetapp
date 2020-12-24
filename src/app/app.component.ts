@@ -1,5 +1,5 @@
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { AuthService } from '@auth0/auth0-angular';
 import { ChartOptions } from 'chart.js';
 import { ThemeService } from 'ng2-charts';
@@ -15,6 +15,7 @@ import { BudgetOperationService } from './services/budget/budget-operation.servi
 import { ScheduledOperationsService } from './services/budget/scheduled-operations.service';
 import { combineLatest } from 'rxjs';
 import { FixedPointsService } from './services/budget/fixed-points.service';
+import { MatDrawer, MatSidenav } from '@angular/material/sidenav';
 
 type Theme = 'light-theme' | 'dark-theme';
 
@@ -25,7 +26,7 @@ type Theme = 'light-theme' | 'dark-theme';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, AfterViewInit {
   title = 'budgetapp';
   isDarkTheme = JSON.parse(localStorage.getItem('isDarkTheme'));
   isHandsetLayout: boolean = false;
@@ -34,6 +35,9 @@ export class AppComponent implements OnInit {
   user: User = null;
 
   animatedBg: boolean = false;
+
+  @ViewChild(MatDrawer)
+  matDrawer;
 
 
 
@@ -77,10 +81,10 @@ export class AppComponent implements OnInit {
     private budget: BudgetService,
     private userService: UserService,
     private router: Router,
-    private snack:MatSnackBar,
-    private operationsService:BudgetOperationService,
-    private scheduledService:ScheduledOperationsService,
-    private fixedPointsService:FixedPointsService
+    private snack: MatSnackBar,
+    private operationsService: BudgetOperationService,
+    private scheduledService: ScheduledOperationsService,
+    private fixedPointsService: FixedPointsService
 
   ) {
 
@@ -89,29 +93,34 @@ export class AppComponent implements OnInit {
       Breakpoints.HandsetPortrait
     ]).subscribe(result => {
       if (result.matches) {
+        console.log('ACTIVATING HANDSET LAYOUT');
         this.activateHandsetLayout();
+      } else {
+        //desktop layout
+        console.log('ACTIVATING DESKTOP LAYOUT');
+
       }
     });
 
 
-    
+
 
     this.initTheme();
 
     this.setAnimatedBgIfHomePage();
-    
+
 
 
     this.userService.afterLogin();
-      this.userService.user$.asObservable().subscribe(u =>{
-        if(u){
-          let last = new Date(u.last_generated_operations_at);
-          if (Globals.daysDifference(new Date(), last) >= 1) {
-            console.log('afterLogin => generateOperations');
-            this.budget.generateOperations();
-          }
+    this.userService.user$.asObservable().subscribe(u => {
+      if (u) {
+        let last = new Date(u.last_generated_operations_at);
+        if (Globals.daysDifference(new Date(), last) >= 1) {
+          console.log('afterLogin => generateOperations');
+          this.budget.generateOperations();
         }
-      });
+      }
+    });
 
 
 
@@ -127,8 +136,15 @@ export class AppComponent implements OnInit {
 
   }
 
+  ngAfterViewInit(): void {
+    //Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
+    //Add 'implements AfterViewInit' to the class.
+    this.matDrawer.disableClose = true;
+    this.matDrawer.opened = true;
+  }
 
-  setAnimatedBgIfHomePage(){
+
+  setAnimatedBgIfHomePage() {
 
     this.router.events.subscribe(event => {
       //NavigationEnd 
@@ -150,7 +166,7 @@ export class AppComponent implements OnInit {
 
   }
 
-  initTheme(){
+  initTheme() {
 
     if (this.isDarkTheme) {
       this.setCurrentTheme('dark-theme');
@@ -161,14 +177,14 @@ export class AppComponent implements OnInit {
 
   }
 
-  redirectToQuickStartIfNewUser(){
+  redirectToQuickStartIfNewUser() {
 
     console.log('redirectToQuickStartIfNewUser');
-    
+
     this.fixedPointsService.getAll().subscribe(r => {
       console.log('redirectToQuickStartIfNewUser result : ', r);
-      
-      if(r && r.length == 0){
+
+      if (r && r.length == 0) {
         console.log('redirectToQuickStartIfNewUser redirecting ... ');
         this.router.navigate(['/quickstart'])
       }

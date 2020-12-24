@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { BudgetOperationService } from 'src/app/services/budget/budget-operation.service';
 import { CreateNewOperationDialogComponent } from 'src/app/components/dialogs/create-new-operation-dialog/create-new-operation-dialog.component'
@@ -18,6 +18,8 @@ import { ScheduledOperationsService } from 'src/app/services/budget/scheduled-op
 import { modifyEvent } from 'src/app/models/internal/modifyEvent';
 import { CategoryService } from 'src/app/services/budget/category.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Category } from 'src/app/models/Category';
+import { MatSelectionList } from '@angular/material/list';
 
 @Component({
   selector: 'app-operations',
@@ -27,7 +29,9 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 export class OperationsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   allOperations: BudgetOperation[];
-  displayedOperations$: BehaviorSubject<BudgetOperation[]>;
+
+  displayedOperations$: BehaviorSubject<BudgetOperation[]> = new BehaviorSubject(null);
+  allCategories$: BehaviorSubject<Category[]> = new BehaviorSubject(null);
 
   //distinctDays: Set<Date>;
 
@@ -42,6 +46,10 @@ export class OperationsComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input()
   quiet:boolean = false;
 
+  @ViewChild(MatSelectionList)
+  categoriesSelectionList:MatSelectionList
+
+
   //howManyDays = 5;
 
   public compareDates = Globals.compareDates;
@@ -51,13 +59,13 @@ export class OperationsComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
   constructor(
-    private operationService: BudgetOperationService,
-    private schedulesOperationsService: ScheduledOperationsService,
-    private categoriesService: CategoryService,
-    private budgetService: BudgetService,
-    private dialog: MatDialog,
-    private fb: FormBuilder,
-    private snack:MatSnackBar
+    public operationService: BudgetOperationService,
+    public schedulesOperationsService: ScheduledOperationsService,
+    public categoriesService: CategoryService,
+    public budgetService: BudgetService,
+    public dialog: MatDialog,
+    public fb: FormBuilder,
+    public snack:MatSnackBar
   ) {
 
 
@@ -143,13 +151,16 @@ export class OperationsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.categoriesService.getAll().subscribe(r => {
+      this.allCategories$.next(r);
+    })
 
-    this.displayedOperations$ = new BehaviorSubject(null);
 
 
     this.form = this.fb.group({
       startDate: [moment(), { validators: [Validators.required], updateOn: 'blur' }],
-      endDate: [moment(), { validators: [Validators.required], updateOn: 'blur' }]
+      endDate: [moment(), { validators: [Validators.required], updateOn: 'blur' }],
+      categories : [[], {validators: [], updateOn:'blur'}]
     })
 
     this.setDateRangeWeek();
@@ -166,6 +177,9 @@ export class OperationsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.form.controls.endDate.valueChanges.subscribe(r => {
       if (this.dateRangeDynamic) this.onDateRangeSelectionchange();
     });
+
+
+    
 
   }
 
@@ -216,23 +230,31 @@ export class OperationsComponent implements OnInit, AfterViewInit, OnDestroy {
   onDateRangeSelectionchange() {
     this.onFormSubmit();
   }
+  categoriesListSelectionChange(){
+    this.onFormSubmit();
+  }
   onFormSubmit() {
     //console.log('onFormSubmit');
-
     this.startDate = new Date(this.form.controls.startDate.value);
     this.endDate = new Date(this.form.controls.endDate.value);
+    this.form.controls.categories.setValue(this.categoriesSelectionList.selectedOptions.selected.map(s => s.value));
     this.updateDisplayedOperations();
-
-
-
 
   }
   updateDisplayedOperations() {
+    let selectedCategories = this.form.controls.categories.value;
+    console.log('selectedCategories = ', selectedCategories);
+
     let x = this.allOperations?.filter(op => {
       let filter = true;
       if (this.filterShowIncome && this.filtershowExponses) filter = true;
       else if (!this.filterShowIncome && this.filtershowExponses) filter = op.value < 0;
       else if (this.filterShowIncome && !this.filtershowExponses) filter = op.value >= 0;
+
+
+      if (selectedCategories.length != 0) filter = filter && selectedCategories.find(cat => cat.id === op.category_id);
+
+
       return filter && op.when >= this.startDate && op.when <= this.endDate;
     });
 

@@ -9,15 +9,17 @@
 <div class="row m-0 p-2">
     <div class="col">
 
-        <button mat-button
+        <button mat-flat-button
                 type="button"
+                color="primary"
                 [disabled]="!this.allOperations"
                 (click)="onNewClick()">
             Add new
         </button>
 
-        <button mat-button
+        <button mat-stroked-button
                 type="button"
+                color="warn"
                 [disabled]="!this.allOperations ||  this.allOperations.length == 0"
                 (click)="deleteAllOperations()">
             Delete all
@@ -30,75 +32,160 @@
         </button>
 
 
-
-
-
-
-
-
-
     </div>
 </div>
 
 
 <div class="row m-0 no-gutters">
-    <div class="col">
+    <div class="col-sm-12 col-md-3">
+        <mat-accordion>
+            <mat-expansion-panel opened>
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        Filter
+                    </mat-panel-title>
+
+                </mat-expansion-panel-header>
+                <form [formGroup]="form"
+                      (submit)="onFormSubmit()"
+                      class="w-100">
+
+                    Date:
 
 
-        <mat-button-toggle-group name="rangeType"
-                                 #rangeTypeGroup="matButtonToggleGroup"
-                                 aria-label="rangeType"
-                                 (change)="onRangeTypeChange($event)">
-            <mat-button-toggle value="month">Last month</mat-button-toggle>
-            <mat-button-toggle value="week"
-                               checked>Last week</mat-button-toggle>
-            <mat-button-toggle value="custom">Custom</mat-button-toggle>
-        </mat-button-toggle-group>
+                    <mat-button-toggle-group name="rangeType"
+                                             #rangeTypeGroup="matButtonToggleGroup"
+                                             aria-label="rangeType"
+                                             (change)="onRangeTypeChange($event)"
+                                             class="w-100">
+                        <mat-button-toggle class="w-100"
+                                           value="month">Month</mat-button-toggle>
+                        <mat-button-toggle class="w-100"
+                                           value="week"
+                                           checked>Week</mat-button-toggle>
+                        <mat-button-toggle class="w-100"
+                                           value="custom">Custom</mat-button-toggle>
+                    </mat-button-toggle-group>
+
+                    <ng-container *ngIf="rangeTypeGroup.value == 'custom'">
+                        <mat-form-field appearance="fill"
+                                        class="w-100">
+                            <mat-label>Enter a date range</mat-label>
+                            <mat-date-range-input [rangePicker]="picker">
+                                <input matStartDate
+                                       formControlName="startDate"
+                                       placeholder="Start date">
+                                <input matEndDate
+                                       formControlName="endDate"
+                                       placeholder="End date">
+                            </mat-date-range-input>
+                            <mat-datepicker-toggle matSuffix
+                                                   [for]="picker"></mat-datepicker-toggle>
+                            <mat-date-range-picker #picker></mat-date-range-picker>
+                        </mat-form-field>
+
+                    </ng-container>
+
+                    <mat-divider></mat-divider>
+
+                    Operation type :
+
+                    <mat-button-toggle-group name="operationsType"
+                                             #operationsTypeGroup="matButtonToggleGroup"
+                                             aria-label="operationsType"
+                                             (change)="onOperationsTypeChange($event)"
+                                             class="w-100">
+                        <mat-button-toggle class="w-100"
+                                           value="all"
+                                           checked>
+                            <mat-icon>add</mat-icon> /
+                            <mat-icon>remove</mat-icon>
+                        </mat-button-toggle>
+                        <mat-button-toggle class="w-100"
+                                           value="income">
+                            <mat-icon>add</mat-icon>
+                        </mat-button-toggle>
+                        <mat-button-toggle class="w-100"
+                                           value="expenses">
+                            <mat-icon>remove</mat-icon>
+                        </mat-button-toggle>
+                    </mat-button-toggle-group>
+
+
+                    <mat-divider></mat-divider>
+
+
+                    Category:
+                    <ng-container *ngIf="(allCategories$ | async) as categoriesList">
+
+
+                        <mat-expansion-panel>
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                    select categories {{categoriesSelectionList.selectedOptions.selected.length > 0 ? ' - ' + categoriesSelectionList.selectedOptions.selected.length : ''}}
+                                </mat-panel-title>
+
+                            </mat-expansion-panel-header>
+
+
+                            <mat-selection-list  dense #categoriesSelectionList (selectionChange)="categoriesListSelectionChange()">
+                                <mat-list-option *ngFor="let cat of categoriesList" [value]="cat">
+                                    <mat-icon matListIcon [style.color]="cat.color">
+                                        {{ cat.icon ? cat.icon : 'category' }}
+                                    </mat-icon>
+                                    <p matLine>
+
+                                        {{cat.name}}
+                                    </p>
+                                </mat-list-option>
+                            </mat-selection-list>
 
 
 
-        <form [formGroup]="form"
-              (submit)="onFormSubmit()">
-            <ng-container *ngIf="rangeTypeGroup.value == 'custom'">
-                <mat-form-field appearance="fill">
-                    <mat-label>Enter a date range</mat-label>
-                    <mat-date-range-input [rangePicker]="picker">
-                        <input matStartDate
-                               formControlName="startDate"
-                               placeholder="Start date">
-                        <input matEndDate
-                               formControlName="endDate"
-                               placeholder="End date">
-                    </mat-date-range-input>
-                    <mat-datepicker-toggle matSuffix
-                                           [for]="picker"></mat-datepicker-toggle>
-                    <mat-date-range-picker #picker></mat-date-range-picker>
-                </mat-form-field>
-
-            </ng-container>
+                        </mat-expansion-panel>
 
 
+                    </ng-container>
 
-        </form>
+                    <button *ngIf="false" mat-flat-button color="primary"
+                    class="w-100 mt-3 p-3"
+                    type="button"
+                    (click)="onFormSubmit()" >
+                        Filter
+                    </button>
+
+
+                </form>
+
+
+            </mat-expansion-panel>
+            <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        Sort
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+
+
+                <p>I'm visible because I am open</p>
+
+
+            </mat-expansion-panel>
+        </mat-accordion>
+
+
+
+
+
+
+
+
 
 
 
     </div>
-    <div class="col">
-        <mat-button-toggle-group name="operationsType"
-                                 #operationsTypeGroup="matButtonToggleGroup"
-                                 aria-label="operationsType"
-                                 (change)="onOperationsTypeChange($event)">
-            <mat-button-toggle value="all"
-                               checked>All</mat-button-toggle>
-            <mat-button-toggle value="income">Income</mat-button-toggle>
-            <mat-button-toggle value="expenses">Expenses</mat-button-toggle>
-        </mat-button-toggle-group>
-    </div>
-</div>
 
 
-<div class="row m-0 no-gutters">
     <div class="col">
 
         <ng-container *ngIf="(this.displayedOperations$ | async) as list; else loading">
@@ -129,7 +216,7 @@
             </mat-list>
         </ng-container>
 
-        
+
         <ng-template #loading>
             <app-loading-spinner></app-loading-spinner>
         </ng-template>
@@ -140,4 +227,5 @@
 
 
     </div>
+
 </div>

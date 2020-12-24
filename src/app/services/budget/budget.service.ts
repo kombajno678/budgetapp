@@ -21,7 +21,7 @@ import { UserService } from './user.service';
 })
 export class BudgetService {
 
-  verbose: boolean = true;//true//false;
+  verbose: boolean = false;//true//false;
 
 
 
@@ -525,8 +525,11 @@ export class BudgetService {
                 } else {
                   //console.log('operationsToAdd = ' + operationsToAdd.length);
                   let temp: BudgetOperation = new BudgetOperation(so.name, so.value, d, so.id);
-                  temp.scheduled_operation = so;
+                  //temp.scheduled_operation = so;
                   temp.scheduled_operation_id = so.id;
+                  if(so.category_id){
+                    temp.category_id = so.category_id;
+                  }
                   operationsToAdd.push(temp);
 
                 }
@@ -539,6 +542,7 @@ export class BudgetService {
 
           //gone through all days, now add operations
           if (this.verbose) console.log('execcuting operationsToAdd = ' + operationsToAdd.length);
+          
 
 
 

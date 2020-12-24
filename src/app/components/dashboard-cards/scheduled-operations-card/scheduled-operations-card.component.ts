@@ -36,16 +36,19 @@ export class ScheduledOperationsCardComponent implements OnInit {
     let nextMonth = new Date();
     nextMonth.setMonth(nextMonth.getMonth() + 1);
 
+    let nextWeek = new Date();
+    nextWeek.setDate(nextWeek.getDate() + 7);
 
 
 
-    this.budget.generatePredictionsBetweenDates(today, nextMonth).subscribe(fps => {
+
+    this.budget.generatePredictionsBetweenDates(today, nextWeek).subscribe(fps => {
       if (fps) {
         fps = fps.filter(fp => fp.operations && fp.operations.length > 0);
         fps.sort((a, b) => {
           return a.date.getTime() - b.date.getTime();
         });
-        console.log('FUTURE OPERATIONS : ', fps);
+        //console.log('FUTURE OPERATIONS : ', fps);
         fps.forEach(fp => {
           if(fp.operations.find(op => !op.scheduled_operation)){
             console.warn(fp)
