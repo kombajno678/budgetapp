@@ -15,6 +15,8 @@ $accent: red !default;
 
 */
 
+
+
 @mixin my-custom-component-theme($theme) {
   // Extract whichever individual palettes you need from the theme.
   $primary: map-get($theme, primary);
@@ -23,6 +25,30 @@ $accent: red !default;
   $foreground: map-get($theme, foreground);
   $background: map-get($theme, background);
   $warn: map-get($theme, warn);
+
+  
+  
+  
+
+  
+  
+  *:hover > ::-webkit-scrollbar-thumb, mat-sidenav-container > ::-webkit-scrollbar-thumb{
+    display:block;
+    background: mat-color($primary, 600) ;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: mat-color($primary, 200);
+  }
+
+
+  *:hover > ::-webkit-scrollbar-track, mat-sidenav-container > ::-webkit-scrollbar-track {
+    display:block;
+    background: mat-color($background, 'background', 1);
+  }
+
+
+  
+  
 
   .mat-bg-accent {
     background-color: mat-color($accent, 600) !important;

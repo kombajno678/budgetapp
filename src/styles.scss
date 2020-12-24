@@ -147,3 +147,11 @@ mat-card.small-card {
 
 
 
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+:not(mat-sidenav-content) > ::-webkit-scrollbar-thumb {
+  display: none;
+}
+

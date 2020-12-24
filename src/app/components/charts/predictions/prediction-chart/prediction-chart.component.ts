@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, Input, Output, EventEmitter, AfterViewInit } from '@angular/core';
 import { ChartDataSets, ChartOptions, ChartPoint, ChartType } from 'chart.js';
 import { Color, Label, BaseChartDirective } from 'ng2-charts';
 import { combineLatest, Observable, ReplaySubject, Subject } from 'rxjs';
@@ -9,9 +9,10 @@ import { PredictionPoint } from 'src/app/models/internal/PredictionPoint';
 import * as pluginAnnotations from 'chartjs-plugin-annotation';
 import * as pluginZoom from 'chartjs-plugin-zoom';
 import { PredictionChartCardConfig } from 'src/app/components/dashboard-cards/prediction-chart-card/prediction-chart-card.component';
+
+
 import Chart from 'chart.js';
 import moment, { Moment } from 'moment';
-
 
 
 
@@ -20,7 +21,7 @@ import moment, { Moment } from 'moment';
   templateUrl: './prediction-chart.component.html',
   styleUrls: ['./prediction-chart.component.scss']
 })
-export class PredictionChartComponent implements OnInit {
+export class PredictionChartComponent implements OnInit, AfterViewInit {
 
 
   todayAnnotation = {
@@ -57,6 +58,7 @@ export class PredictionChartComponent implements OnInit {
   height: number
 
   @ViewChild(BaseChartDirective) chartCanvas: BaseChartDirective;
+  chart: any;
 
 
   loading$: ReplaySubject<boolean>;
@@ -186,6 +188,7 @@ export class PredictionChartComponent implements OnInit {
 
     annotation: {
       annotations: [
+        /*
         {
           type: 'line',
           mode: 'vertical',
@@ -198,7 +201,9 @@ export class PredictionChartComponent implements OnInit {
             fontColor: 'orange',
             content: ''
           }
+          
         },
+        */
       ]
     },
 
@@ -294,8 +299,6 @@ export class PredictionChartComponent implements OnInit {
 
 
 
-
-
   };
   public lineChartColors: Color[] = [
     {
@@ -318,12 +321,10 @@ export class PredictionChartComponent implements OnInit {
   public lineChartType: ChartType = 'line';
   public lineChartPlugins = [pluginAnnotations, pluginZoom];
 
+
+
   constructor() {
     this.onDayClicked = new EventEmitter<Date>();
-
-
-
-
   }
 
   dateToStr(date: Date, y: boolean = this.displayYear, m: boolean = this.DisplayMonth, d: boolean = true) {
@@ -414,18 +415,14 @@ export class PredictionChartComponent implements OnInit {
 
 
   redrawChart() {
+    if (this.chart) {
 
-    this.chartCanvas?.chart.update();
-    this.chartCanvas?.chart.render();
-    this.lineChartData = this.lineChartData.slice();
+      this.chart?.update();
+      this.chart?.render();
+      this.lineChartData = this.lineChartData.slice();
 
-    if (this.chartCanvas && this.chartCanvas.chart) {
       try {
-
-        this.chartCanvas.chart.resetZoom();
-        //this.chartCanvas.chart.options.zoom.speed = this.lineChartData[0].data.length / 2;
-        //console.log('ZOOM SPEED : ', this.chartCanvas.chart.options.zoom.speed);
-
+        this.chart?.resetZoom();
       } catch (err) {
         console.error(err);
       }
@@ -433,6 +430,8 @@ export class PredictionChartComponent implements OnInit {
 
 
   }
+
+
 
 
 
@@ -583,50 +582,10 @@ export class PredictionChartComponent implements OnInit {
 
 
 
+  }
 
-    /*
-        this.loading$.next(true);
-        if (this.data$) {
-          this.data$.subscribe(r => {
-            if (r) {
-              
-              this.lineChartData[0].data = [];
-              this.lineChartData[1].data = [];
-    
-              this.lineChartLabels = [];
-    
-              let n = this.dateToStr(new Date());
-              r.forEach(p => {
-                let d = this.dateToStr(p.date);
-    
-                let value: number = Number(p.value.toFixed(2));
-    
-                if (d < n) {
-                  this.lineChartData[0].data.push(value);
-                  this.lineChartData[1].data.push(null);
-                } else if (d > n) {
-                  this.lineChartData[0].data.push(null);
-                  this.lineChartData[1].data.push(value);
-                } else {
-                  this.lineChartData[0].data.push(value);
-                  this.lineChartData[1].data.push(value);
-                }
-    
-                this.lineChartLabels.push(d);
-              })
-              this.loading$.next(false);
-    
-            } else {
-              console.warn('prediction chart received incorrent data');
-            }
-    
-          })
-        } else {
-          console.error('chart initialized with no data observable');
-          //this.loading$.next(false);
-        }
-        */
-
+  ngAfterViewInit() {
+    this.chart = this.chartCanvas.chart;
 
   }
 
