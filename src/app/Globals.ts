@@ -20,6 +20,15 @@ export class Globals {
         return (d1.getTime() - d2.getTime()) / (3600000 * 24);
     }
 
+    private static pad(x:number, n:number):string{
+        return `${'0'.repeat(n - (''+x).length)}${x}`
+
+    }
+
+    public static toStr(d:Date, del:string = '-'):string{
+        return `${d.getFullYear()}${del}${Globals.pad(d.getMonth(), 2)}${del}${Globals.pad(d.getDate(), 2)}`;
+    }
+
     static displayValue(p: PredictionPoint | number, digits: number = 2) {
 
         if (p instanceof PredictionPoint) {

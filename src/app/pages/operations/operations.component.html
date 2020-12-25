@@ -258,7 +258,7 @@
 
                     <ng-container *ngIf="isFirst || !compareDates(op.when, list[i-1].when)">
                         <mat-divider *ngIf="!isFirst"></mat-divider>
-                        <div mat-subheader>{{ op.when.toISOString().substr(0, 10)}}</div>
+                        <div mat-subheader>{{ toStr(op.when)}}</div>
 
                     </ng-container>
                     <app-operation-list-element [op]="op"

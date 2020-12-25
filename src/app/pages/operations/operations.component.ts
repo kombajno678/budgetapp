@@ -74,10 +74,12 @@ export class OperationsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   //howManyDays = 5;
 
-  public compareDates = Globals.compareDates;
-
-
+  
+  
   form: FormGroup;
+  
+  public toStr = Globals.toStr;
+  public compareDates = Globals.compareDates;
 
 
   constructor(

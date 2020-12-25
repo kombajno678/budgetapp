@@ -4,6 +4,7 @@ import { MatButtonToggleGroup } from '@angular/material/button-toggle';
 import { JAN } from '@angular/material/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import moment, { Moment } from 'moment';
+import { Globals } from 'src/app/Globals';
 import { BudgetOperation } from 'src/app/models/BudgetOperation';
 import { Category } from 'src/app/models/Category';
 import { CategoryService } from 'src/app/services/budget/category.service';
@@ -109,6 +110,8 @@ export class CreateNewOperationDialogComponent implements OnInit {
       this.acceptButtonTest = this.createButtonText;
       this.title = this.createTitle;
 
+      this.operationDateOption
+
 
     }
 
@@ -130,7 +133,17 @@ export class CreateNewOperationDialogComponent implements OnInit {
   }
 
   ngAfterViewInit() {
+    let yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
 
+    if(Globals.compareDates(new Date(), this.operation.when)){
+      this.operationDateOption.value = 'today';
+    }else if(Globals.compareDates(yesterday, this.operation.when)){
+      this.operationDateOption.value = 'yesterday';
+    }else{
+      this.operationDateOption.value = 'other';
+
+    }
   }
 
   onSave() {
