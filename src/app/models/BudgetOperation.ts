@@ -38,6 +38,7 @@ export class BudgetOperation extends AbstractResource {
         copy.value = original.value;
         copy.when = original.when;
         copy.scheduled_operation_id = original.scheduled_operation_id;
+        copy.category_id = original.category_id;
         copy.timestamp = original.timestamp;
         return copy;
     }

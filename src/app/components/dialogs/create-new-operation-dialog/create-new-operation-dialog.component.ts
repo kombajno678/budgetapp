@@ -118,6 +118,7 @@ export class CreateNewOperationDialogComponent implements OnInit {
       when: new FormControl(this.operation.when, [Validators.required]),
       scheduled: new FormControl(false, [Validators.required]),
       schedule_id: new FormControl(null, []),
+      category: new FormControl(this.possibleCategories.find(cat => cat.id === this.operation.category_id), []),
       category_id: new FormControl(this.operation.category_id, []),
     })
   }
@@ -144,6 +145,7 @@ export class CreateNewOperationDialogComponent implements OnInit {
     }
 
     this.operation.name = this.form.controls.name.value;
+    this.form.controls.category_id.setValue(this.form.controls.category.value.id);
     this.operation.category_id = this.form.controls.category_id.value;
 
 

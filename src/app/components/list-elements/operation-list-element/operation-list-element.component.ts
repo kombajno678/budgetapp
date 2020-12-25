@@ -34,6 +34,7 @@ export class OperationListElementComponent implements OnInit, OnDestroy {
   constructor(private dialog: MatDialog) { }
 
   ngOnInit(): void {
+
   }
 
 
