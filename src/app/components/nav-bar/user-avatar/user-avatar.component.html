@@ -3,7 +3,7 @@
 <ng-template #loaded>
 
     <ng-container *ngIf="(auth.user$ | async) as user; else notLoggedIn">
-        Hello
+        
     </ng-container>
 
     <ng-template #notLoggedIn>
