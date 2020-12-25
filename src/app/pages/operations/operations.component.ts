@@ -21,6 +21,21 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Category } from 'src/app/models/Category';
 import { MatSelectionList } from '@angular/material/list';
 
+export enum SortBy {
+  DATE,
+  VALUE
+}
+export enum SortOrder {
+  ASC,
+  DESC
+}
+export interface SortConfig {
+  by: SortBy,
+  order: SortOrder,
+}
+
+
+
 @Component({
   selector: 'app-operations',
   templateUrl: './operations.component.html',
@@ -43,11 +58,18 @@ export class OperationsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   dateRangeDynamic: boolean = false;
 
+
+  sortConfig: SortConfig = {
+    by : SortBy.DATE,
+    order: SortOrder.DESC
+  };
+
+
   @Input()
-  quiet:boolean = false;
+  quiet: boolean = false;
 
   @ViewChild(MatSelectionList)
-  categoriesSelectionList:MatSelectionList
+  categoriesSelectionList: MatSelectionList
 
 
   //howManyDays = 5;
@@ -65,11 +87,8 @@ export class OperationsComponent implements OnInit, AfterViewInit, OnDestroy {
     public budgetService: BudgetService,
     public dialog: MatDialog,
     public fb: FormBuilder,
-    public snack:MatSnackBar
+    public snack: MatSnackBar
   ) {
-
-
-
 
   }
 
@@ -85,6 +104,7 @@ export class OperationsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.form.controls.endDate.setValue(this.endDate);
     this.form.controls.startDate.setValue(this.startDate);
   }
+
   setDateRageMonth() {
     //console.log('setDateRageMonth');
 
@@ -130,6 +150,35 @@ export class OperationsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  onSortOrderChange(event: MatButtonToggleChange){
+    switch (event.value) {
+      case 'asc':
+        this.sortConfig.order = SortOrder.ASC;
+        this.updateDisplayedOperations();
+        break;
+      case 'desc':
+        this.sortConfig.order = SortOrder.DESC;
+        this.updateDisplayedOperations();
+        break;
+      default:
+        break;
+    }
+  }
+
+  onSortTypeChange(event: MatButtonToggleChange){
+    switch (event.value) {
+      case 'date':
+        this.sortConfig.by = SortBy.DATE;
+        this.updateDisplayedOperations();
+        break;
+      case 'value':
+        this.sortConfig.by = SortBy.VALUE;
+        this.updateDisplayedOperations();
+        break;
+      default:
+        break;
+    }
+  }
   onRangeTypeChange(event: MatButtonToggleChange) {
     switch (event.value) {
       case 'week':
@@ -160,7 +209,7 @@ export class OperationsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.form = this.fb.group({
       startDate: [moment(), { validators: [Validators.required], updateOn: 'blur' }],
       endDate: [moment(), { validators: [Validators.required], updateOn: 'blur' }],
-      categories : [[], {validators: [], updateOn:'blur'}]
+      categories: [[], { validators: [], updateOn: 'blur' }]
     })
 
     this.setDateRangeWeek();
@@ -179,7 +228,7 @@ export class OperationsComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
 
-    
+
 
   }
 
@@ -199,7 +248,7 @@ export class OperationsComponent implements OnInit, AfterViewInit, OnDestroy {
     ]).subscribe(r => {
       console.log('combineLatest : ', r);
       if (r[0] && r[1] && r[2]) {
-        this.allOperations = r[1].sort((a, b) => b.when.getTime() - a.when.getTime());
+        this.allOperations = r[1];
         this.allOperations.forEach(op => {
           if (op.scheduled_operation_id) {
             op.scheduled_operation = r[0].find(so => so.id === op.scheduled_operation_id);
@@ -207,15 +256,10 @@ export class OperationsComponent implements OnInit, AfterViewInit, OnDestroy {
           if (op.category_id) {
             op.category = r[2].find(so => so.id === op.category_id);
           }
-        })
-      }else{
+        });
+        if (!this.quiet && this.allOperations.length == 0) this.snack.open('You have no operations :(', 'close', { duration: 3000 });
+      } else {
         this.allOperations = [];
-        
-        
-      }
-      if(this.allOperations.length == 0){
-        if(!this.quiet)this.snack.open('You have no operations :(', 'close', {duration: 3000});
-
       }
       this.updateDisplayedOperations();
     })
@@ -225,14 +269,14 @@ export class OperationsComponent implements OnInit, AfterViewInit, OnDestroy {
     //this.operationService.refreshOperations();
   }
 
-
-
   onDateRangeSelectionchange() {
     this.onFormSubmit();
   }
-  categoriesListSelectionChange(){
+
+  categoriesListSelectionChange() {
     this.onFormSubmit();
   }
+
   onFormSubmit() {
     //console.log('onFormSubmit');
     this.startDate = new Date(this.form.controls.startDate.value);
@@ -241,11 +285,12 @@ export class OperationsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.updateDisplayedOperations();
 
   }
+
   updateDisplayedOperations() {
     let selectedCategories = this.form.controls.categories.value;
     console.log('selectedCategories = ', selectedCategories);
 
-    let x = this.allOperations?.filter(op => {
+    let filtered = this.allOperations?.filter(op => {
       let filter = true;
       if (this.filterShowIncome && this.filtershowExponses) filter = true;
       else if (!this.filterShowIncome && this.filtershowExponses) filter = op.value < 0;
@@ -258,11 +303,39 @@ export class OperationsComponent implements OnInit, AfterViewInit, OnDestroy {
       return filter && op.when >= this.startDate && op.when <= this.endDate;
     });
 
-    console.log('next : ', x);
-    this.displayedOperations$.next(x);
+    console.log('sorting ... ', this.sortConfig);
+    let sorted = filtered.sort((a, b) => {
+      let x:any, y:any;
+
+      switch (this.sortConfig.by) {
+        case SortBy.DATE:
+          x = a.when;
+          y = b.when;
+          break;
+        case SortBy.VALUE:
+          x = Math.abs(a.value);
+          y = Math.abs(b.value);
+          break;
+        default:
+          break;
+      }
+
+      switch (this.sortConfig.order) {
+        case SortOrder.ASC:
+          return x - y;
+        case SortOrder.DESC:
+          return y - x;
+        default:
+          return 0;
+      }
+
+    });
+
+
+    console.log('next : ', sorted);
+    this.displayedOperations$.next(sorted);
 
   }
-
 
   getDistinctDays(): Date[] {
     if (this.allOperations) {
@@ -279,6 +352,7 @@ export class OperationsComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
   }
+
   getOperationsByDate(d: Date) {
     if (this.allOperations) {
       return this.allOperations.filter(op => {
@@ -291,7 +365,6 @@ export class OperationsComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
   }
-
 
   generate() {
     this.budgetService.generateOperations();
@@ -328,15 +401,13 @@ export class OperationsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   }
 
-
-
-
   deleteOperation(operation: BudgetOperation) {
     console.log('receiver delete event, ', operation);
     this.operationService.delete(operation).subscribe(r => {
       console.log('deleteOperation result = ', r);
     })
   }
+
   modifyOperation(event: modifyEvent<BudgetOperation>) {
     console.log('receiver modify event, ', event.new);
     this.operationService.update(event.new).subscribe(r => {
