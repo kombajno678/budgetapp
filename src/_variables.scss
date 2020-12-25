@@ -15,8 +15,6 @@ $accent: red !default;
 
 */
 
-
-
 @mixin my-custom-component-theme($theme) {
   // Extract whichever individual palettes you need from the theme.
   $primary: map-get($theme, primary);
@@ -26,29 +24,37 @@ $accent: red !default;
   $background: map-get($theme, background);
   $warn: map-get($theme, warn);
 
+  *:not(.mat-sidenav-content)::-webkit-scrollbar {
+    width: 12px;
+  }
   
+  *:not(.mat-sidenav-content)::-webkit-scrollbar-thumb {
+    display: none;
+  }
   
-  
-
-  
-  
-  *:hover > ::-webkit-scrollbar-thumb, mat-sidenav-container > ::-webkit-scrollbar-thumb{
+  *:not(.mat-sidenav-content):hover::-webkit-scrollbar-thumb{
     display:block;
     background: mat-color($primary, 600) ;
   }
-  ::-webkit-scrollbar-thumb:hover {
+  *:not(.mat-sidenav-content)::-webkit-scrollbar-thumb:hover {
     background: mat-color($primary, 200);
   }
 
 
-  *:hover > ::-webkit-scrollbar-track, mat-sidenav-container > ::-webkit-scrollbar-track {
+  *:not(.mat-sidenav-content):hover::-webkit-scrollbar-track {
     display:block;
     background: mat-color($background, 'background', 1);
   }
+  
 
 
-  
-  
+  /* hide scrollbarbar on smaller screens */
+  @media only screen and (max-width: 600px) {
+    .mat-sidenav-content::-webkit-scrollbar {
+      display:none;
+    }
+  }
+
 
   .mat-bg-accent {
     background-color: mat-color($accent, 600) !important;
