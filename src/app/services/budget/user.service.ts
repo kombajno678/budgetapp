@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, combineLatest, Observable, of, ReplaySubject, Subject } from 'rxjs';
+import { BehaviorSubject, combineLatest, Observable, of, Subject } from 'rxjs';
 import { catchError, finalize, first, map, share, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 
@@ -12,7 +12,7 @@ import { AuthService } from '@auth0/auth0-angular';
 })
 export class UserService {
 
-  public user$: ReplaySubject<User> = new ReplaySubject<User>(1);
+  public user$: BehaviorSubject<User> = new BehaviorSubject<User>(null);
   public user: User = null;
 
 

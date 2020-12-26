@@ -21,7 +21,7 @@ import { UserService } from './user.service';
 })
 export class BudgetService {
 
-  verbose: boolean = false;//true//false;
+  verbose: boolean = true;//true//false;
 
 
 
@@ -76,7 +76,7 @@ export class BudgetService {
   private findValueRecursive(dateA: Date, step: number, directionForward: boolean, valueToFind:number): Observable<Date> {
     this.i++;
     if (this.verbose)console.log(this.i, ' > someF(',dateA, step, directionForward, valueToFind, ' )');
-    let result: ReplaySubject<Date> = new ReplaySubject<Date>(1);
+    let result: BehaviorSubject<Date> = new BehaviorSubject<Date>(null);
     //check value at today
     /*
     let dateA = new Date(startingDate);
@@ -175,7 +175,7 @@ export class BudgetService {
 
   findDateWithValue(valueToFind: number): Observable<Date> {
     this.i = 0;
-    let result = new ReplaySubject<Date>(1);
+    let result = new BehaviorSubject<Date>(null);
     let step = 32;
     let directionForward: boolean = true;
     let startingDate = new Date();
@@ -208,9 +208,12 @@ export class BudgetService {
     
     let ob: ReplaySubject<PredictionPoint> = new ReplaySubject<PredictionPoint>(1);
     this.generatePredictionsBetweenDates(date, date).subscribe(r => {
+      if(r){
+        if (this.verbose) console.log('GENERATOR: ', date.toISOString(), ' => ',r[r.length - 1]);
+        ob.next(r[r.length - 1]);
+
+      }
       //
-      if (this.verbose) console.log('GENERATOR: ', date.toISOString(), ' => ',r[r.length - 1]);
-      ob.next(r[r.length - 1]);
     })
     return ob.asObservable();
 
@@ -220,7 +223,7 @@ export class BudgetService {
   //predictions$: Subject<PredictionPoint[]>;
   generatePredictionsBetweenDates(start: Date, end: Date): Observable<PredictionPoint[]> {
     if (this.verbose) console.log('GENERATOR ionvoked ', start.toISOString(), end.toISOString());
-    let predictions$ = new ReplaySubject<PredictionPoint[]>(2);
+    let predictions$ = new BehaviorSubject<PredictionPoint[]>(null);
     /*
         if (!this.predictions$) {
           this.predictions$ = new Subject<PredictionPoint[]>();
@@ -230,13 +233,17 @@ export class BudgetService {
     let daysRange = Globals.getDaysInRange(start, end);
     if (this.verbose) console.log('GENERATOR got days range ', daysRange.length);
 
-    combineLatest([
+    let generated:boolean = false;
+
+    let sub = combineLatest([
       this.fixedPointsService.getAll(),
       this.operationsService.getAll(),
       this.scheduledOperations.getAll(),
 
-    ]).subscribe(r => {
-      if (r.every(x => x)) {
+    ]);
+    
+    sub.subscribe(r => {
+      if (!generated && r.every(x => x)) {
         if (this.verbose) console.log('GENERATOR START ');
 
         let predictions = daysRange.map(p => new PredictionPoint(p, 0));
@@ -343,11 +350,12 @@ export class BudgetService {
         }
         if (this.verbose) console.log('GENERATOR NEXT ', predictions.length);
         predictions$.next(predictions);
+        generated = true;
         //this.predictions$.complete();
       }
     })
 
-    if (this.verbose) console.log('GENERATOR RETURN ', predictions$);
+    //if (this.verbose) console.log('GENERATOR RETURN ', predictions$);
     //predictions$.complete();
     return predictions$.asObservable();
 
@@ -358,7 +366,7 @@ export class BudgetService {
   checkIfNeedToGenerateOperations(): Observable<number> {
     //check when was last time operations were generated
 
-    let subject = new ReplaySubject<number>();
+    let subject = new BehaviorSubject<number>(null);
 
     this.userService.user$.asObservable().subscribe(user => {
 
@@ -408,7 +416,7 @@ export class BudgetService {
 
 
     let operationsToAdd: BudgetOperation[] = [];
-    let subject = new ReplaySubject<BudgetOperation[]>();
+    let subject = new BehaviorSubject<BudgetOperation[]>(null);
 
 
 

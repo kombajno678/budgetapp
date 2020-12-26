@@ -59,6 +59,7 @@ import { PredictionChartCardComponent } from './components/dashboard-cards/predi
 import { UploadHelpDialogComponent } from './components/dialogs/upload-help-dialog/upload-help-dialog.component';
 import { WhenWillComponent } from './pages/when-will/when-will.component';
 import { HowMuchWillComponent } from './pages/how-much-will/how-much-will.component';
+import { FixedPointListElementComponent } from './components/list-elements/fixed-point-list-element/fixed-point-list-element.component';
 
 
 function tokenGetter(): string {
@@ -97,7 +98,8 @@ function tokenGetter(): string {
     PredictionChartCardComponent,
     UploadHelpDialogComponent,
     WhenWillComponent,
-    HowMuchWillComponent
+    HowMuchWillComponent,
+    FixedPointListElementComponent
 
   ],
   entryComponents: [],

@@ -5,36 +5,39 @@
     </mat-card-header>
 
     <ng-container *ngIf="(predictionsLoaded$ | async) as r; else loading">
+        <ng-container *ngIf="true || r">
+            <div class="text-center">
+                Today : <h1>{{ displayValue(r[0], 0) }}</h1>
+            </div>
 
-        <div class="text-center">
-            Today : <h1>{{ displayValue(r[0], 0) }}</h1>
-        </div>
+            <div class="text-center">
+                +1 month : <span class="predition-future">{{ displayValue(r[1], 0) }}</span> <span
+                      class="prediction-delta {{r[1].value - r[0].value > 0 ? 'prediction-plus' : 'prediction-minus'}}">{{
+                    r[1].value - r[0].value > 0 ? '+' : '' }}{{ displayValue(r[1].value - r[0].value, 0) }}</span>
+            </div>
 
-        <div class="text-center">
-            +1 month : <span class="predition-future">{{ displayValue(r[1], 0) }}</span> <span
-                  class="prediction-delta {{r[1].value - r[0].value > 0 ? 'prediction-plus' : 'prediction-minus'}}">{{
-                r[1].value - r[0].value > 0 ? '+' : '' }}{{ displayValue(r[1].value - r[0].value, 0) }}</span>
-        </div>
+            <div class="text-center">
+                +3 months : <span class="predition-future">{{ displayValue(r[2], 0) }}</span> <span
+                      class="prediction-delta {{r[2].value - r[0].value > 0 ? 'prediction-plus' : 'prediction-minus'}}">{{
+                    r[2].value - r[0].value > 0 ? '+' : '' }}{{ displayValue(r[2].value - r[0].value, 0) }}</span>
+            </div>
 
-        <div class="text-center">
-            +3 months : <span class="predition-future">{{ displayValue(r[2], 0) }}</span> <span
-                  class="prediction-delta {{r[2].value - r[0].value > 0 ? 'prediction-plus' : 'prediction-minus'}}">{{
-                r[2].value - r[0].value > 0 ? '+' : '' }}{{ displayValue(r[2].value - r[0].value, 0) }}</span>
-        </div>
+            <div class="text-center mt-3 mb-3 mat-caption">
 
-        <div class="text-center mt-3 mb-3 mat-caption">
+                Incorrect? Try inserting new <a href="/fixedpoints">fixed point</a><br>
 
-            Incorrect? Try inserting new <a href="/fixedpoints">fixed point</a><br>
-
-            <!--
-            <span *ngIf="latestFixedPoint$ | async as fp"
-                  class="mat-caption">
-                (last: {{ fp.when.toISOString().substr(0, 10) }})
-            </span>
-            -->
+                <!--
+                <span *ngIf="latestFixedPoint$ | async as fp"
+                      class="mat-caption">
+                    (last: {{ fp.when.toISOString().substr(0, 10) }})
+                </span>
+                -->
 
 
-        </div>
+            </div>
+        </ng-container>
+
+
 
 
 
@@ -44,7 +47,7 @@
 
         <app-loading-spinner></app-loading-spinner>
     </ng-template>
-    
+
 
 
     <mat-card-footer>

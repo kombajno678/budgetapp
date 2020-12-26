@@ -30,29 +30,31 @@ export class Globals {
     }
 
     static displayValue(p: PredictionPoint | number, digits: number = 2) {
-
-        if (p instanceof PredictionPoint) {
-            return p.value.toLocaleString(
-                undefined, // leave undefined to use the browser's locale,
-                // or use a string like 'en-US' to override it.
-                {
-                    maximumFractionDigits: digits,
-                    minimumFractionDigits: digits
-                }
-            );
-
-
-        } else {
-            return p.toLocaleString(
-                undefined, // leave undefined to use the browser's locale,
-                // or use a string like 'en-US' to override it.
-                {
-                    maximumFractionDigits: digits,
-                    minimumFractionDigits: digits
-                }
-            );;
-
+        if(p){
+            if (p instanceof PredictionPoint) {
+                return p.value.toLocaleString(
+                    undefined, // leave undefined to use the browser's locale,
+                    // or use a string like 'en-US' to override it.
+                    {
+                        maximumFractionDigits: digits,
+                        minimumFractionDigits: digits
+                    }
+                );
+    
+    
+            } else {
+                return p.toLocaleString(
+                    undefined, // leave undefined to use the browser's locale,
+                    // or use a string like 'en-US' to override it.
+                    {
+                        maximumFractionDigits: digits,
+                        minimumFractionDigits: digits
+                    }
+                );
+    
+            }
         }
+        
 
     }
 

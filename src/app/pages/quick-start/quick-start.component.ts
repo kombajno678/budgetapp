@@ -27,14 +27,19 @@ export class QuickStartComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.fixedPointsService.getLatest().subscribe(latest => this.createdFixedPoint = latest);
+    this.fixedPointsService.getLatest().subscribe(latest => {
+      if(latest)this.createdFixedPoint = latest;
+    });
 
   }
 
   check() {
     this.budget.checkIfNeedToGenerateOperations().subscribe(n => {
-      this.n = n;
-      console.log('need to generate ' + n + ' operations')
+      if(n){
+        this.n = n;
+        console.log('need to generate ' + n + ' operations')
+
+      }
     })
   }
 
@@ -51,7 +56,11 @@ export class QuickStartComponent implements OnInit {
     this.fixedPointsService.delete(fp).subscribe(r => {
       console.log('delete result = ', r);
     });
-    this.fixedPointsService.getLatest().subscribe(latest => this.createdFixedPoint = latest);
+    this.fixedPointsService.getLatest().subscribe(latest => {
+      if(latest){
+        this.createdFixedPoint = latest;
+      }
+    });
 
 
   }

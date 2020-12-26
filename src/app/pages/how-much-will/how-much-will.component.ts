@@ -39,7 +39,7 @@ export class HowMuchWillComponent implements OnInit {
 
   calculateAmountForDate(day:Date){
     this.budget.generatePredictionForDate(day).subscribe(r => {
-      this.predictedAmount.next(r.value);
+      if(r)this.predictedAmount.next(r.value);
     })
   }
 

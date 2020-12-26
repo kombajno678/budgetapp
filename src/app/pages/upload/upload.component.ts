@@ -2,7 +2,7 @@
 import { HttpErrorResponse, HttpEventType } from '@angular/common/http';
 import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { forkJoin, of, ReplaySubject, Subject } from 'rxjs';
+import { forkJoin, of, BehaviorSubject, Subject } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { modifyEvent } from 'src/app/models/internal/modifyEvent';
 import { BudgetOperation } from 'src/app/models/BudgetOperation';
@@ -48,7 +48,7 @@ export class UploadComponent implements OnInit, AfterViewInit {
   });
 
 
-  report$: ReplaySubject<ReportResult> = new ReplaySubject<ReportResult>(1);
+  report$: BehaviorSubject<ReportResult> = new BehaviorSubject<ReportResult>(null);
   report: ReportResult = null;
 
 

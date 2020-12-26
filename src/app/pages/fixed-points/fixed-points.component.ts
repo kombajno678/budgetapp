@@ -22,8 +22,8 @@ export class FixedPointsComponent implements OnInit {
   ngOnInit(): void {
     this.fixedPoints$ = this.fixedPointsService.getAll();
     this.fixedPoints$.subscribe(r => {
-      console.log('received fixed points = ', r);
       if (r) {
+        console.log('received fixed points = ', r);
         this.fixedPoints = r;
 
       }
@@ -47,36 +47,14 @@ export class FixedPointsComponent implements OnInit {
 
   modify(fp: FixedPoint) {
 
-    //open dialog
-
-    let dialogRef = this.dialog.open(CreateNewFixedPointDialogComponent, { width: '100%', data: FixedPoint.getCopy(fp) });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        let modified_fixedPoint: FixedPoint = result;
-
-        this.fixedPointsService.update(modified_fixedPoint).subscribe(r => {
-          console.log('result of modify = ', r);
-        })
-      }
-    })
-
 
   }
 
   delete(fp: FixedPoint) {
-    this.fixedPointsService.delete(fp).subscribe(r => {
-      console.log('delete result = ', r);
-    })
+    
   }
 
-  getDateString(when: string | Date) {
-    if (when instanceof Date) {
-      return when.toISOString().substr(0, 10);
-    } else {
-      return new Date(when).toISOString().substr(0, 10);
-    }
-  }
+  
 
 
 }

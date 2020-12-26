@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, ElementRef, Input, Output, EventEmitter, AfterViewInit } from '@angular/core';
 import { ChartDataSets, ChartOptions, ChartPoint, ChartType } from 'chart.js';
 import { Color, Label, BaseChartDirective } from 'ng2-charts';
-import { combineLatest, Observable, ReplaySubject, Subject } from 'rxjs';
+import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
 
 
 import { PredictionPoint } from 'src/app/models/internal/PredictionPoint';
@@ -61,7 +61,7 @@ export class PredictionChartComponent implements OnInit, AfterViewInit {
   chart: any;
 
 
-  loading$: ReplaySubject<boolean>;
+  loading$: BehaviorSubject<boolean>;
 
   @Output()
   onDayClicked: EventEmitter<Date>;
@@ -439,7 +439,7 @@ export class PredictionChartComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     //console.log('this.compact = ', this.compact);
-    this.loading$ = new ReplaySubject<boolean>(1);
+    this.loading$ = new BehaviorSubject<boolean>(null);
 
     this.lineChartOptions.tooltips.enabled = !this.compact;
     //this.lineChartOptions.scales.yAxes.forEach(y => y.ticks.display = !this.compact)

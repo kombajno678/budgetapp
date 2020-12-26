@@ -96,7 +96,7 @@ export class CurrentPredictionCardComponent implements OnInit, AfterViewInit {
   generate() {
 
     this.fixedPointService.getLatest().subscribe(r => {
-      this.latestFixedPoint$.next(r);
+      if(r)this.latestFixedPoint$.next(r);
     })
 
     this.predictionsLoaded$.next(null);
@@ -105,10 +105,14 @@ export class CurrentPredictionCardComponent implements OnInit, AfterViewInit {
       this.budgetService.generatePredictionForDate(this.nextMonth),
       this.budgetService.generatePredictionForDate(this.threeMonths)
     ]).subscribe(r => {
-      this.todaysPrediction$.next(r[0]);
-      this.nextMonthPrediction$.next(r[1]);
-      this.threeMonthsPrediction$.next(r[2]);
-      this.predictionsLoaded$.next(r);
+      console.log('combineLatest current prediction', r);
+      if(r[0])this.todaysPrediction$.next(r[0]);
+      if(r[1])this.nextMonthPrediction$.next(r[1]);
+      if(r[2])this.threeMonthsPrediction$.next(r[2]);
+      if(r.every(x => x)){
+        this.predictionsLoaded$.next(r);
+
+      }
     })
 
 

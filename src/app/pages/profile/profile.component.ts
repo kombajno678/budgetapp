@@ -32,7 +32,7 @@ export class ProfileComponent implements OnInit {
 
   deleteAll(){
     if(confirm("Are you absolutely sure that you want to dele all your data? (This means essentially starting from scratch, like on a new account)")){
-      console.log('brrr, deleting all', 'close');
+      this.snack.open('Deleted all your data', 'close', {duration: 3000});
 
       this.budgetOperationService.deleteAll().subscribe(r => {
         this.scheduledOperationsService.deleteAll().subscribe(r => {
@@ -40,13 +40,8 @@ export class ProfileComponent implements OnInit {
             this.categoryService.deleteAll().subscribe(r => {
               this.userService.user.last_generated_operations_at = null;
               this.userService.updateUser(this.userService.user).subscribe(u => {
-                console.log('deleting done');
-                this.snack.open('Deleted all your data');
+                this.snack.open('Deleted all your data', 'close', {duration: 3000});
               })
-
-              
-
-
             })
           })
         })
@@ -55,7 +50,7 @@ export class ProfileComponent implements OnInit {
 
 
     }else{
-      this.snack.open('Nothing has been deleted', 'close');
+      this.snack.open('Nothing has been deleted', 'close', {duration: 3000});
     }
   }
 

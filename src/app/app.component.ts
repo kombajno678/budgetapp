@@ -139,7 +139,7 @@ export class AppComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {
     //Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
     //Add 'implements AfterViewInit' to the class.
-    this.matDrawer.disableClose = true;
+    //this.matDrawer.disableClose = true;
     this.matDrawer.opened = true;
   }
 

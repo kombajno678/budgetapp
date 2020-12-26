@@ -55,9 +55,10 @@ export class ScheduledOperationsCardComponent implements OnInit {
           }
         })
         this.futurePredictionPoints$.next(fps);
-      }else{
-        this.futurePredictionPoints$.next(null);
       }
+      // }else{
+      //   this.futurePredictionPoints$.next(null);
+      // }
     })
 
 

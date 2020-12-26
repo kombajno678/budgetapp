@@ -12,7 +12,7 @@
   <div style="display: block;">
 
 
-    <ng-container *ngIf="displayChart">
+    <ng-container *ngIf="displayChart; else templatechart">
       <canvas baseChart
               #mychart
               [width]="width ? width : 400"
@@ -27,6 +27,12 @@
               (chartClick)="onChartClick($event)">
       </canvas>
     </ng-container>
+    <ng-template #templatechart>
+      <div style="width:400px; height:400px">
+        <app-loading-spinner></app-loading-spinner>
+
+      </div>
+    </ng-template>
 
   </div>
 

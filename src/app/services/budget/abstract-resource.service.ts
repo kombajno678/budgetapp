@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, forkJoin, merge, Observable, of, ReplaySubject } from 'rxjs';
+import { BehaviorSubject, forkJoin, merge, Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { AbstractResource } from 'src/app/models/AbstractResource';
 import { environment } from 'src/environments/environment';

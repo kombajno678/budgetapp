@@ -20,21 +20,7 @@ import { CategoryService } from 'src/app/services/budget/category.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Category } from 'src/app/models/Category';
 import { MatSelectionList } from '@angular/material/list';
-
-export enum SortBy {
-  DATE,
-  VALUE
-}
-export enum SortOrder {
-  ASC,
-  DESC
-}
-export interface SortConfig {
-  by: SortBy,
-  order: SortOrder,
-}
-
-
+import { SortBy, SortConfig, SortOrder } from 'src/app/models/internal/SortConfig';
 
 @Component({
   selector: 'app-operations',
@@ -203,7 +189,7 @@ export class OperationsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit(): void {
     this.categoriesService.getAll().subscribe(r => {
-      this.allCategories$.next(r);
+      if(r)this.allCategories$.next(r);
     })
 
 
@@ -249,7 +235,7 @@ export class OperationsComponent implements OnInit, AfterViewInit, OnDestroy {
       this.categoriesService.getAll(),
     ]).subscribe(r => {
       console.log('combineLatest : ', r);
-      if (r[0] && r[1] && r[2]) {
+      if (r.every(x => x)) {
         this.allOperations = r[1];
         this.allOperations.forEach(op => {
           if (op.scheduled_operation_id) {
@@ -260,10 +246,8 @@ export class OperationsComponent implements OnInit, AfterViewInit, OnDestroy {
           }
         });
         if (!this.quiet && this.allOperations.length == 0) this.snack.open('You have no operations :(', 'close', { duration: 3000 });
-      } else {
-        this.allOperations = [];
+        this.updateDisplayedOperations();
       }
-      this.updateDisplayedOperations();
     })
   }
 
@@ -390,7 +374,7 @@ export class OperationsComponent implements OnInit, AfterViewInit, OnDestroy {
     let dialogRef = this.dialog.open(CreateNewOperationDialogComponent, { width: '500px' });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        console.log(result);
+        //console.log(result);
         let new_operation: BudgetOperation = result;
         this.operationService.create(new_operation).subscribe(r => {
           console.log('result od add operation = ', r);
@@ -413,7 +397,7 @@ export class OperationsComponent implements OnInit, AfterViewInit, OnDestroy {
   modifyOperation(event: modifyEvent<BudgetOperation>) {
     console.log('receiver modify event, ', event.new);
     this.operationService.update(event.new).subscribe(r => {
-      console.log('result = ', r);
+      console.log('operationService.update = ', r);
       //this.budget.refreshOperations();
     })
 

@@ -3,7 +3,7 @@ import { BudgetOperation } from 'src/app/models/BudgetOperation';
 import { FixedPointsService } from 'src/app/services/budget/fixed-points.service';
 import { BudgetOperationService } from 'src/app/services/budget/budget-operation.service';
 import { PredictionPoint } from 'src/app/models/internal/PredictionPoint';
-import { BehaviorSubject, combineLatest, forkJoin, merge, Observable, of, ReplaySubject } from 'rxjs';
+import { BehaviorSubject, combineLatest, forkJoin, merge, Observable, of } from 'rxjs';
 import { Globals } from 'src/app/Globals';
 import { BudgetService } from 'src/app/services/budget/budget.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -25,7 +25,7 @@ export class PredictionsComponent implements OnInit, AfterViewInit {
 
   config$: BehaviorSubject<PredictionChartCardConfig>;
 
-  loading$: ReplaySubject<boolean>;
+  loading$: BehaviorSubject<boolean>;
   //todaysPrediction$: BehaviorSubject<PredictionPoint>;
 
   generatorSubscribtion: Observable<any>;
@@ -55,13 +55,13 @@ export class PredictionsComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    this.loading$ = new ReplaySubject<boolean>(1);
+    this.loading$ = new BehaviorSubject<boolean>(null);
     this.loading$.next(true);
 
     this.predictions$ = new BehaviorSubject<PredictionPoint[]>(null);
     this.config$ = new BehaviorSubject<PredictionChartCardConfig>(null);
     //this.todaysPrediction$ = new BehaviorSubject<PredictionPoint>(null);
-    this.config$.next({title: 'haha'});
+    this.config$.next({ title: 'haha' });
 
     this.form = this.fb.group({
       startDate: [moment(), { validators: [Validators.required], updateOn: 'blur' }],
@@ -95,7 +95,7 @@ export class PredictionsComponent implements OnInit, AfterViewInit {
     console.log('clicked day = ', day.toISOString().substr(0, 10));
 
     this.predictions$.subscribe(pps => {
-      console.log('pps = ', pps);
+      //console.log('pps = ', pps);
 
       this.selectedPP$.next(pps.find(pp => Globals.compareDates(pp.date, day)))
     })
@@ -177,10 +177,13 @@ export class PredictionsComponent implements OnInit, AfterViewInit {
     console.log('predictions > generating ... , ', this.startDate, this.endDate);
     this.budgetService.generatePredictionsBetweenDates(this.startDate, this.endDate).subscribe(
       (r) => {
-        console.log('RECEIVED  generatePredictionsBetweenDates prediction for ', r.length, ' days');
-        this.predictions = r;
-        this.predictions$.next(this.predictions);
-        this.loading$.next(false);
+        if (r) {
+          console.log('RECEIVED  generatePredictionsBetweenDates prediction for ', r.length, ' days');
+          this.predictions = r;
+          this.predictions$.next(this.predictions);
+          this.loading$.next(false);
+        }
+
       },
       (error) => {
         console.error('RECEIVED generatePredictionsBetweenDates error: ', error);

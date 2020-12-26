@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { Observable, ReplaySubject } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
 import { CategoryDialogComponent } from 'src/app/components/dialogs/category-dialog/category-dialog.component';
 import { Category } from 'src/app/models/Category';
 import { CategoryService } from 'src/app/services/budget/category.service';
@@ -12,14 +12,14 @@ import { CategoryService } from 'src/app/services/budget/category.service';
 })
 export class CategoriesComponent implements OnInit {
 
-  categories$: ReplaySubject<Category[]>;
+  categories$: BehaviorSubject<Category[]>;
   categories: Category[];
 
   constructor(
     private categoriesService: CategoryService,
     private dialog: MatDialog
   ) {
-    this.categories$ = new ReplaySubject<Category[]>(1);
+    this.categories$ = new BehaviorSubject<Category[]>(null);
     this.categories = null;
     this.categories$.next(this.categories);
   }
@@ -27,8 +27,11 @@ export class CategoriesComponent implements OnInit {
   ngOnInit(): void {
 
     this.categoriesService.getAll().subscribe(r => {
-      this.categories = r;
-      this.categories$.next(this.categories);
+      if(r){
+        this.categories = r;
+        this.categories$.next(this.categories);
+
+      }
 
     })
   }

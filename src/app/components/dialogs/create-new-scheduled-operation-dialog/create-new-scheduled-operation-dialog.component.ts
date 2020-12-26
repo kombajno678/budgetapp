@@ -114,8 +114,6 @@ export class CreateNewScheduledOperationDialogComponent implements OnInit, After
         if (this.operation.category_id && !this.operation.category) {
           this.operation.category = this.possibleCategories.find(c => c.id === this.operation.category_id);
         }
-      } else {
-        console.error('error while fetching categories');
       }
     })
 

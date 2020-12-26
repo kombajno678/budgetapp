@@ -37,46 +37,8 @@
 
                     <div *ngIf="createdFixedPoint as fp">
                         <mat-list>
-                            <mat-list-item>
-
-                                <mat-icon mat-list-icon>insights</mat-icon>
-                                <div mat-line>
-                                    {{fp.when.toISOString().substr(0, 10)}}
-                                </div>
-                                <div mat-line>
-                                    {{fp.exact_value}}
-                                </div>
-
-                                <button mat-icon-button
-                                        [matMenuTriggerFor]="menu"
-                                        aria-label="Example icon-button with a menu">
-                                    <mat-icon>more_vert</mat-icon>
-                                </button>
-
-
-                                <mat-menu #menu="matMenu">
-                                    <button mat-menu-item
-                                            color="warn"
-                                            (click)="deleteFixedPoint(fp)">
-                                        <mat-icon>delete</mat-icon>
-                                        <span>Delete</span>
-                                    </button>
-                                    <button mat-menu-item
-                                            color="accent"
-                                            (click)="modifyFixedPoint(fp)">
-                                        <mat-icon>edit</mat-icon>
-                                        <span>Modify</span>
-                                    </button>
-                                </mat-menu>
-
-                            </mat-list-item>
+                            <app-fixed-point-list-element [fp]="fp"></app-fixed-point-list-element>
                         </mat-list>
-
-
-
-
-
-
                     </div>
                 </div>
 

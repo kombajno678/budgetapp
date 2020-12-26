@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { PredictionChartCardConfig } from 'src/app/components/dashboard-cards/prediction-chart-card/prediction-chart-card.component';
 import { BudgetService } from 'src/app/services/budget/budget.service';
@@ -133,8 +133,13 @@ export class WhenWillComponent implements OnInit {
 
     this.whenWillIHaveX(x).pipe(tap(r => console.log('whenWillIHaveX => tap : ', r))).subscribe(r => {
       //console.log(r);
-      this.result$.next(r);
-      this.chartConfig$.next(r.chartConfig);
+      if(r){
+        this.result$.next(r);
+        this.chartConfig$.next(r.chartConfig);
+
+      }
+
+      
     });
 
 

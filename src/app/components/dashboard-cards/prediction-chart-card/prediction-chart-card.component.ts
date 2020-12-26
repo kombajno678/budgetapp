@@ -46,13 +46,6 @@ export class PredictionChartCardComponent implements OnInit {
 
     this.predictions$ = new BehaviorSubject<PredictionPoint[]>(null);
     this.selectedPP$ = new BehaviorSubject<PredictionPoint>(null);
-
-    
-
-
-
-    
-
   }
 
   redirect() {
@@ -78,6 +71,7 @@ export class PredictionChartCardComponent implements OnInit {
     this.budgetService.generatePredictionsBetweenDates(this.localConfig.startDate, this.localConfig.endDate).subscribe(
       (r) => {
         if (r) {
+          console.log('prediction chart card received new generatePredictionsBetweenDates ');
           this.predictions$.next(r);
 
         }
@@ -97,16 +91,12 @@ export class PredictionChartCardComponent implements OnInit {
 
     this.config$.subscribe(r => {
       if(r){
+        console.log('prediction chart card received new config ');
         this.localConfig = r;
         this.refresh();
       }
     })
     
-
-    
-
-
-
   }
 
 }

@@ -79,8 +79,6 @@ export class CreateNewOperationDialogComponent implements OnInit {
     this.categoryService.getAll().subscribe(r => {
       if (r) {
         this.possibleCategories = r;
-      } else {
-        console.error('error while fetching categories');
       }
     })
     if (data) {

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '@auth0/auth0-angular';
-import { ReplaySubject } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { PredictionChartCardConfig } from 'src/app/components/dashboard-cards/prediction-chart-card/prediction-chart-card.component';
 
 
@@ -14,8 +14,8 @@ import { PredictionChartCardConfig } from 'src/app/components/dashboard-cards/pr
 })
 export class HomeComponent implements OnInit {
 
-  config1: ReplaySubject<PredictionChartCardConfig> = new ReplaySubject<PredictionChartCardConfig>(1);
-  config2: ReplaySubject<PredictionChartCardConfig> = new ReplaySubject<PredictionChartCardConfig>(1);
+  config1: BehaviorSubject<PredictionChartCardConfig> = new BehaviorSubject<PredictionChartCardConfig>(null);
+  config2: BehaviorSubject<PredictionChartCardConfig> = new BehaviorSubject<PredictionChartCardConfig>(null);
 
 
   constructor(public auth: AuthService) {
