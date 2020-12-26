@@ -29,6 +29,8 @@ export class ScheduledOperationsComponent implements OnInit, OnDestroy {
 
   @Input()
   quiet: boolean = false;
+  @Input()
+  simple: boolean = false;
 
   allScheduledOperations: ScheduledBudgetOperation[];
   displayedScheduledOperations: ScheduledBudgetOperation[];

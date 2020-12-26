@@ -260,12 +260,12 @@ export class UploadComponent implements OnInit, AfterViewInit {
 
                     this.report.Operations.filter(op => op.scheduled_operation).forEach(op => {
                       try {
-                        console.log('searching for schedule of ', op.name);
+                        //console.log('searching for schedule of ', op.name);
                         let sop = createdSops.find(csop => csop.name === op.scheduled_operation.name);
-                        console.log('found sop : ', sop)
+                        //console.log('found sop : ', sop)
                         op.scheduled_operation_id = sop.id;
                       } catch (error) {
-                        console.error(error);
+                        console.error(op, error);
                         delete op.scheduled_operation_id;
 
                       } finally {
@@ -420,6 +420,7 @@ export class UploadComponent implements OnInit, AfterViewInit {
           this.uploadProgress = 100;
           this.uploadBarMode = 'indeterminate';
           this.report = event.body;
+          this.report.ScheduledOperations.forEach(sop => sop.active = true);
           this.report$.next(this.report);
           this.uploading = false;
 

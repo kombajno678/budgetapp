@@ -55,3 +55,19 @@ mat-spinner{
   cursor: pointer;
   position: absolute;
 }
+
+
+::ng-deep
+.mat-expansion-panel-body{
+  padding: 0 0.2rem 0.5rem !important;
+}
+/*
+::ng-deep
+.mat-form-field-wrapper{
+  padding-bottom:0 !important;
+}
+*/
+::ng-deep
+mat-panel-title{
+  width:100% !important;
+}

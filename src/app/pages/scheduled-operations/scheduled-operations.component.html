@@ -27,7 +27,7 @@
                     Add new
                 </button>
             </div>
-            <div class="col-auto p-0">
+            <div *ngIf="!simple" class="col-auto p-0">
                 <button mat-button
                         [matMenuTriggerFor]="menu">
                     <mat-icon>
@@ -62,7 +62,7 @@
 
 
 
-        <mat-accordion multi>
+        <mat-accordion *ngIf="!simple" multi>
             <mat-expansion-panel opened>
                 <mat-expansion-panel-header>
                     <mat-panel-title>
@@ -242,7 +242,7 @@
 
             </div>
 
-            <mat-list>
+            <mat-list dense>
 
                 <ng-container *ngFor="let type of getScheduleTypes()">
                     <ng-container *ngIf="this.getScheduledOperationsByType(type) as list ">
@@ -254,7 +254,8 @@
                             <app-scheduled-operation-list-element [so]="so"
                                                                   (onDelete)="deleteOperation($event)"
                                                                   (onModify)="modifyOperation($event)"
-                                                                  (onChangeActiveState)="chnageActiveState($event)">
+                                                                  (onChangeActiveState)="chnageActiveState($event)"
+                                                                  [compact]="simple">
                                 ...
                             </app-scheduled-operation-list-element>
 

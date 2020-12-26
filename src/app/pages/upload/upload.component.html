@@ -22,7 +22,7 @@
 
 
 
-  <div class="col-8 mb-0 pb-0 pr-0">
+  <div class="col-sm-12 col-md-8 mb-0 p-0">
     <form [formGroup]="myForm"
           class="w-100">
 
@@ -59,9 +59,9 @@
   </div>
 
 
-  <div class="col-4 text-center pb-3 pl-0">
+  <div class="col-sm-12 col-md-4 text-center p-0 pb-3">
     <button mat-flat-button
-            class="w-100 h-100"
+            class="w-100 h-100 p-2"
             color="primary"
             (click)="submit()"
             [disabled]="f.file.invalid">
@@ -115,131 +115,119 @@
 
     </div>
 
-    <div class="col-sm-12 col-md-12 col-lg-12 p-3">
-      <mat-expansion-panel>
-        <mat-expansion-panel-header>
-          <mat-panel-title>
-            new scheduled operaions ({{r.ScheduledOperations.length}})
-          </mat-panel-title>
-          <mat-panel-description>
-            Click to expand
-          </mat-panel-description>
-        </mat-expansion-panel-header>
+    <div class="col-sm-12 col-md-12 col-lg-12 p-1">
 
-        <ng-template matExpansionPanelContent>
+      <mat-accordion>
 
-          <cdk-virtual-scroll-viewport itemSize="48"
-                                       minBufferPx="200"
-                                       maxBufferPx="400"
-                                       class="operations-viewport">
-            <mat-list dense
-                      class="w-100">
-              <ng-container *cdkVirtualFor="let so of r.ScheduledOperations">
-                <app-scheduled-operation-list-element [so]="so"
-                                                      [compact]="true">
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              new scheduled operaions
+            </mat-panel-title>
+            <mat-panel-description class="text-right">
+              {{r.ScheduledOperations.length}}
+            </mat-panel-description>
+          </mat-expansion-panel-header>
 
-                </app-scheduled-operation-list-element>
+          <ng-template matExpansionPanelContent>
+
+            <cdk-virtual-scroll-viewport itemSize="48"
+                                         minBufferPx="200"
+                                         maxBufferPx="400"
+                                         class="operations-viewport">
+              <mat-list dense
+                        class="w-100">
+                <ng-container *cdkVirtualFor="let so of r.ScheduledOperations">
+                  <app-scheduled-operation-list-element [so]="so"
+                                                        [compact]="true">
+
+                  </app-scheduled-operation-list-element>
 
 
-              </ng-container>
-            </mat-list>
-          </cdk-virtual-scroll-viewport>
+                </ng-container>
+              </mat-list>
+            </cdk-virtual-scroll-viewport>
 
-        </ng-template>
+          </ng-template>
 
-        <mat-action-row>
-          <button mat-flat-button
-                  (click)="saveScheduledOperations()">
-            Save
-          </button>
-        </mat-action-row>
-      </mat-expansion-panel>
-    </div>
+          
+        </mat-expansion-panel>
 
-    <div class="col-sm-12 col-md-12 col-lg-12 p-3">
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              new categories
+            </mat-panel-title>
+            <mat-panel-description  class="text-right">
+              {{r.Categories.length}}
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+          <ng-template matExpansionPanelContent>
 
-      <mat-expansion-panel>
-        <mat-expansion-panel-header>
-          <mat-panel-title>
-            new categories ({{r.Categories.length}})
-          </mat-panel-title>
-          <mat-panel-description>
-            Click to expand
-          </mat-panel-description>
-        </mat-expansion-panel-header>
-        <ng-template matExpansionPanelContent>
-
-          <cdk-virtual-scroll-viewport itemSize="48"
-                                       minBufferPx="200"
-                                       maxBufferPx="400"
-                                       class="operations-viewport">
-            <mat-list dense
-                      class="w-100">
-              <ng-container *cdkVirtualFor="let cat of r.Categories">
-                <app-category-list-element [cat]="cat"
-                                           [compact]="false"
-                                           (onDelete)="deleteCategory($event)"
-                                           (onModify)="modifyCategory($event)">
-                  ...
-                </app-category-list-element>
-              </ng-container>
-            </mat-list>
-          </cdk-virtual-scroll-viewport>
+            <cdk-virtual-scroll-viewport itemSize="48"
+                                         minBufferPx="200"
+                                         maxBufferPx="400"
+                                         class="operations-viewport">
+              <mat-list dense
+                        class="w-100">
+                <ng-container *cdkVirtualFor="let cat of r.Categories">
+                  <app-category-list-element [cat]="cat"
+                                             [compact]="false"
+                                             (onDelete)="deleteCategory($event)"
+                                             (onModify)="modifyCategory($event)">
+                    ...
+                  </app-category-list-element>
+                </ng-container>
+              </mat-list>
+            </cdk-virtual-scroll-viewport>
 
 
 
 
-        </ng-template>
-      </mat-expansion-panel>
+          </ng-template>
+        </mat-expansion-panel>
 
-    </div>
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              new operations
+            </mat-panel-title>
+            <mat-panel-description  class="text-right">
+              {{r.Operations.length}}
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+          <ng-template matExpansionPanelContent>
+            <cdk-virtual-scroll-viewport itemSize="48"
+                                         minBufferPx="200"
+                                         maxBufferPx="400"
+                                         class="operations-viewport">
 
-    <div class="col-sm-12 col-md-12 col-lg-12 p-3">
-      <mat-expansion-panel>
-        <mat-expansion-panel-header>
-          <mat-panel-title>
-            new operations ({{r.Operations.length}})
-          </mat-panel-title>
-          <mat-panel-description>
-            Click to expand
-          </mat-panel-description>
-        </mat-expansion-panel-header>
-        <ng-template matExpansionPanelContent>
-          <cdk-virtual-scroll-viewport itemSize="48"
-                                       minBufferPx="200"
-                                       maxBufferPx="400"
-                                       class="operations-viewport">
+              <mat-list dense
+                        class="w-100">
 
-            <mat-list dense
-                      class="w-100">
+                <ng-container *cdkVirtualFor="let op of r.Operations;templateCacheSize: 20">
 
-              <ng-container *cdkVirtualFor="let op of r.Operations;templateCacheSize: 20">
+                  <app-operation-list-element [op]="op"
+                                              [compact]="true"
+                                              (onDelete)="deleteOperation($event)"
+                                              (onModify)="modifyOperation($event)"
+                                              class="w-100">
 
-                <app-operation-list-element [op]="op"
-                                            [compact]="true"
-                                            (onDelete)="deleteOperation($event)"
-                                            (onModify)="modifyOperation($event)"
-                                            class="w-100">
-
-                </app-operation-list-element>
+                  </app-operation-list-element>
 
 
-              </ng-container>
+                </ng-container>
 
-            </mat-list>
+              </mat-list>
 
-          </cdk-virtual-scroll-viewport>
-        </ng-template>
-        <mat-action-row>
-          <button mat-flat-button
-                  (click)="saveOperations()">
-            Save
-          </button>
-        </mat-action-row>
+            </cdk-virtual-scroll-viewport>
+          </ng-template>
+          
 
-      </mat-expansion-panel>
+        </mat-expansion-panel>
 
 
+      </mat-accordion>
     </div>
 
 
