@@ -61,7 +61,7 @@ export class PredictionsComponent implements OnInit, AfterViewInit {
     this.predictions$ = new BehaviorSubject<PredictionPoint[]>(null);
     this.config$ = new BehaviorSubject<PredictionChartCardConfig>(null);
     //this.todaysPrediction$ = new BehaviorSubject<PredictionPoint>(null);
-    this.config$.next({ title: 'haha' });
+    //this.config$.next({ title: 'haha' });
 
     this.form = this.fb.group({
       startDate: [moment(), { validators: [Validators.required], updateOn: 'blur' }],

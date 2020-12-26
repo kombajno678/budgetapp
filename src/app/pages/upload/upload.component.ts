@@ -19,6 +19,7 @@ import { Category } from 'src/app/models/Category';
 import { ChangeDetectionStrategy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { UploadHelpDialogComponent } from 'src/app/components/dialogs/upload-help-dialog/upload-help-dialog.component';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 
 
@@ -42,7 +43,7 @@ export class UploadComponent implements OnInit, AfterViewInit {
   exampleFilePath = '/assets/example/budgetapp-example.csv';
 
   myForm = new FormGroup({
-    fileAttr : new FormControl('Choose file ...', []),
+    fileAttr: new FormControl('Choose file ...', []),
     file: new FormControl('', [Validators.required]),
     fileSource: new FormControl('', [Validators.required])
   });
@@ -60,7 +61,7 @@ export class UploadComponent implements OnInit, AfterViewInit {
   uploading: boolean = false;
 
   @Input()
-  displayGoToHomeButton:boolean = true;
+  displayGoToHomeButton: boolean = true;
 
 
   @ViewChild('fileInput') fileInput: ElementRef;
@@ -75,7 +76,8 @@ export class UploadComponent implements OnInit, AfterViewInit {
     private scheduledOpsService: ScheduledOperationsService,
     private fixedPointsService: FixedPointsService,
     private categoriesService: CategoryService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private snack: MatSnackBar,
   ) {
 
   }
@@ -101,9 +103,9 @@ export class UploadComponent implements OnInit, AfterViewInit {
 
     console.log(imgFile);
 
-    
-    
-    
+
+
+
   }
 
 
@@ -160,6 +162,8 @@ export class UploadComponent implements OnInit, AfterViewInit {
     this.report = null;
     this.report$.next(this.report);
     this.success = true;
+    this.snack.open('Uploaded operations from csv', 'close', {duration: 3000});
+
 
   }
   onSave() {
@@ -229,6 +233,7 @@ export class UploadComponent implements OnInit, AfterViewInit {
 
             this.categoriesService.createMany(this.report.Categories).subscribe(createdCategories => {
               if (createdCategories && createdCategories.length == this.report.Categories.length) {
+                console.log('createdCategories = ', createdCategories);
 
 
                 //assing category id to sops and ops
@@ -247,8 +252,8 @@ export class UploadComponent implements OnInit, AfterViewInit {
 
                 this.scheduledOpsService.createMany(this.report.ScheduledOperations).subscribe(createdSops => {
                   // if success
-                  console.log('scheduledOpsService.createMany = ', createdSops);
-                  if (createdSops) {
+                  console.log('createdSops = ', createdSops);
+                  if (createdSops && createdSops.length == this.report.ScheduledOperations.length) {
 
                     //assign scheduled op id
                     /*
@@ -257,6 +262,7 @@ export class UploadComponent implements OnInit, AfterViewInit {
                     })
                     */
 
+                    let allAssigned:boolean = true;
 
                     this.report.Operations.filter(op => op.scheduled_operation).forEach(op => {
                       try {
@@ -265,7 +271,7 @@ export class UploadComponent implements OnInit, AfterViewInit {
                         //console.log('found sop : ', sop)
                         op.scheduled_operation_id = sop.id;
                       } catch (error) {
-                        console.error(op, error);
+                        console.error('error while assigning sop id to op', op);
                         delete op.scheduled_operation_id;
 
                       } finally {
@@ -274,7 +280,7 @@ export class UploadComponent implements OnInit, AfterViewInit {
                       }
                     })
 
-                    this.operationsService.createMany(this.report.Operations).subscribe(createdOps => {
+                    this.operationsService.createMany(this.report.Operations, false).subscribe(createdOps => {
                       console.log('operationsService.createMany = ', createdOps);
 
                       if (createdOps) {
@@ -290,39 +296,49 @@ export class UploadComponent implements OnInit, AfterViewInit {
 
 
                       } else {
-                        console.error('error while creating Operations')
-                        this.fixedPointsService.delete(createdNewFp).subscribe(r => {
-                          console.log('reverting changes fixedPointsService.delete(createdNewFp)');
-                        })
+                        console.error('error while creating Operations');
+                        this.snack.open('Error occured while creating operations', 'close', { duration: 5000 });
+
+
+                        this.scheduledOpsService.deleteMany(createdSops).subscribe(deleted => {
+                          console.log('reverting changes scheduledOpsService.deleteMany(createdSops)');
+                        });
 
                         this.categoriesService.deleteMany(createdCategories).subscribe(deleted => {
                           console.log('reverting changes categoriesService.deleteMany(createdCategories)');
                         })
-                        //delete scheduled
-                        this.scheduledOpsService.deleteMany(createdSops).subscribe(deleted => {
-                          console.log('reverting changes scheduledOpsService.deleteMany(createdSops)');
-                        });
+
+                        this.fixedPointsService.delete(createdNewFp).subscribe(r => {
+                          console.log('reverting changes fixedPointsService.delete(createdNewFp)');
+                        })
 
                         this.report$.next(this.report);
                       }
                     })
                   } else {
-                    console.error('error while creating ScheduledOperations')
-                    this.fixedPointsService.delete(createdNewFp).subscribe(r => {
-                      console.log('reverting changes fixedPointsService.delete(createdNewFp)');
-                    })
+                    console.error('error while creating ScheduledOperations');
+                    this.snack.open('Error occured while creating scheduled operations', 'close', { duration: 5000 });
+
+
                     this.categoriesService.deleteMany(createdCategories).subscribe(deleted => {
                       console.log('reverting changes categoriesService.deleteMany(createdCategories)');
+                    })
+
+                    this.fixedPointsService.delete(createdNewFp).subscribe(r => {
+                      console.log('reverting changes fixedPointsService.delete(createdNewFp)');
                     })
 
                     this.report$.next(this.report);
                   }
                 })
               } else {
+                console.error('error while creating categories');
+                this.snack.open('Error occured while creating categories', 'close', { duration: 5000 });
+
+
                 this.fixedPointsService.delete(createdNewFp).subscribe(r => {
                   console.log('reverting changes fixedPointsService.delete(createdNewFp)');
                 })
-                console.error('error while creating categories');
 
                 this.report$.next(this.report);
               }
@@ -359,10 +375,10 @@ export class UploadComponent implements OnInit, AfterViewInit {
 
     if (event.target.files && event.target.files[0]) {
       let temp = '';
-      
+
       Array.from(event.target.files).forEach((file: File, index, array) => {
         temp += file.name;
-        if(index < array.length-1){
+        if (index < array.length - 1) {
           temp += ', ';
         }
       });
@@ -389,7 +405,7 @@ export class UploadComponent implements OnInit, AfterViewInit {
     this.uploadProgress = 0;
     this.uploadBarMode = 'determinate';
 
-    
+
     this.report$.next(null);
 
     this.uploading = true;

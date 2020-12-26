@@ -27,14 +27,13 @@
               (chartClick)="onChartClick($event)">
       </canvas>
     </ng-container>
-    <ng-template #templatechart>
-      <div style="width:400px; height:400px">
-        <app-loading-spinner></app-loading-spinner>
-
-      </div>
-    </ng-template>
+    
 
   </div>
 
 
+</ng-template>
+
+<ng-template #templatechart>
+    <app-loading-spinner></app-loading-spinner>
 </ng-template>

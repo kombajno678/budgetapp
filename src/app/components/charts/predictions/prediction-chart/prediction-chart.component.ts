@@ -57,6 +57,10 @@ export class PredictionChartComponent implements OnInit, AfterViewInit {
   @Input()
   height: number
 
+
+  @Input()
+  delayOnUpdate:boolean = false;
+
   @ViewChild(BaseChartDirective) chartCanvas: BaseChartDirective;
   chart: any;
 
@@ -535,6 +539,12 @@ export class PredictionChartComponent implements OnInit, AfterViewInit {
 
         if (config) {
 
+          this.delayOnUpdate = config.delayOnUpdate;
+          if(config.disableControls){
+            this.lineChartOptions.zoom.enabled = false;
+            this.lineChartOptions.pan.enabled = false;
+          }
+
 
           if (config.marks) {
             this.lineChartOptions.annotation.annotations = [];
@@ -565,17 +575,16 @@ export class PredictionChartComponent implements OnInit, AfterViewInit {
 
 
         this.loading$.next(false);
+
         if (data && config) {
-          setTimeout(() => {
+          if(this.delayOnUpdate){
+            setTimeout(() => {
+              this.displayChart = true;
+            }, 1000)
+          }else{
             this.displayChart = true;
-          }, 300)
+          }
         }
-
-
-
-
-
-
       }
     });
 

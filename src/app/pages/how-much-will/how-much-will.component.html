@@ -17,21 +17,33 @@
 
 
 <div class="row m-0 ">
-    <div class="col text-center">
 
-        <span *ngIf="(predictedAmount | async) as amount" class="mat-display-1">
-
-            {{amount.toLocaleString()}}
-
-        </span>
-
-    </div>
     <div class="col">
 
+        <button mat-raised-button
+                class="w-100 p-3"
+                color="primary"
+                (click)="picker.open()">
+            <span class="">
+                <ng-container class=""
+                      *ngIf="(predictedAmount | async); else initialButtonText">
+                    Pick another day
+
+                </ng-container>
+                <ng-template #initialButtonText>
+
+                    Pick a day
+
+
+                </ng-template>
+            </span>
+
+
+        </button>
+
         <form [formGroup]="form">
-            <mat-form-field class="example-full-width"
+            <mat-form-field class=" date-form-field"
                             appearance="fill">
-                <mat-label>Choose a date</mat-label>
                 <input matInput
                        (dateChange)="dateChange($event)"
                        [matDatepicker]="picker"
@@ -40,17 +52,49 @@
 
 
             </mat-form-field>
-            <button mat-raised-button
-                    (click)="picker.open()">
-                <span class="">
-                    Pick a day
-
-                </span>
-            </button>
 
         </form>
 
 
+    </div>
+
+    <div class="col text-center">
+
+
+
+
+        <ng-container *ngIf="(predictedAmount | async) as amount">
+            <p class="">
+
+                Predicted amount:
+
+            </p>
+            <span class="mat-display-2">
+
+                {{amount.toLocaleString()}}
+
+            </span>
+        </ng-container>
+
+
 
     </div>
+
+
+
+    <div class="col-12">
+        <ng-container *ngIf="(chartConfig$ | async)">
+
+            <app-prediction-chart-card [config$]="chartConfig$.asObservable()">
+            </app-prediction-chart-card>
+
+
+
+
+
+
+        </ng-container>
+    </div>
+
+
 </div>

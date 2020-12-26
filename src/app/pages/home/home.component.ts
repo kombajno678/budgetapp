@@ -26,7 +26,9 @@ export class HomeComponent implements OnInit {
     this.config1.next({
       startDate: new Date(),
       endDate: new Date(endDate),
-      title: 'Next 3 months'
+      title: 'Next 3 months',
+      delayOnUpdate:false,
+      disableControls : true
     })
 
     let startDate = new Date();
@@ -34,7 +36,9 @@ export class HomeComponent implements OnInit {
     this.config2.next({
       startDate: new Date(startDate),
       endDate: new Date(),
-      title: 'Last month'
+      title: 'Last month',
+      delayOnUpdate:false,
+      disableControls : true
     })
 
 

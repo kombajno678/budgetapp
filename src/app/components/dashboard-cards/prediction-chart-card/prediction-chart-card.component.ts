@@ -11,6 +11,8 @@ export interface PredictionChartCardConfig {
   endDate?: Date,
   title: string,
   marks?: any[],
+  delayOnUpdate?:boolean,
+  disableControls:boolean
 }
 
 
