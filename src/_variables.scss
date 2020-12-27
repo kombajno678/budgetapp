@@ -24,60 +24,140 @@ $accent: red !default;
   $background: map-get($theme, background);
   $warn: map-get($theme, warn);
 
+  $default: 500;
+
+  
+
+
+
+  .badge-primary,
+  .badge-accent,
+  .badge-warn {
+    border-radius: 3px;
+    padding:2px;
+    margin:2px;
+    /*font-weight: bold;*/
+  }
+
+  .badge-primary {
+    background: mat-color($primary, $default);
+    color: mat-contrast($primary, $default);
+  }
+  .badge-accent {
+    background: mat-color($accent, $default);
+    color: mat-contrast($accent, $default);
+  }
+  .badge-warn {
+    background: mat-color($warn, $default);
+    color: mat-contrast($warn, $default);
+  }
+
+  
+
+  
+
+
+  .card-primary, .card-accent, .gradient-1, .gradient-2 , .gradient-3 , .gradient-4  {
+    border-radius: 10px;
+  }
+
+  .card-primary{
+    background-color: mat-color($primary, $default) !important;
+    color:mat-contrast($primary, $default) !important;
+  }
+  .card-accent{
+    background-color: mat-color($accent, $default) !important;
+    color:mat-contrast($accent, $default) !important;
+  }
+
+
+  .card-gradient-1 {
+    background: mat-color($background, 'background', 0);
+    background: linear-gradient(
+      234deg,
+      mat-color($background, 'background', 0) 0%,
+      mat-color($accent, $default) 100%
+    );
+    color:mat-contrast($accent, $default);
+  }
+  .card-gradient-2 {
+    background: mat-color($background, 'background', 0);
+    background: linear-gradient(
+      234deg,
+      mat-color($background, 'background', 0) 0%,
+      mat-color($primary, $default) 100%
+    );
+    color:mat-contrast($primary, $default);
+  }
+  .card-gradient-3 {
+    background: mat-color($primary, $default);
+    background: linear-gradient(
+      234deg,
+      mat-color($primary, $default) 0%,
+      mat-color($accent, $default) 100%
+    );
+    color:mat-contrast($primary, $default);
+  }
+  .card-gradient-4 {
+    background: mat-color($accent, $default);
+    background: linear-gradient(
+      234deg,
+      mat-color($accent, $default) 0%,
+      mat-color($primary, $default) 100%
+    );
+    color: mat-contrast($accent, $default);
+  }
+
   *:not(.mat-sidenav-content)::-webkit-scrollbar {
     width: 12px;
   }
-  
+
   *:not(.mat-sidenav-content)::-webkit-scrollbar-thumb {
     display: none;
   }
-  
-  *:not(.mat-sidenav-content):hover::-webkit-scrollbar-thumb{
-    display:block;
-    background: mat-color($primary, 600) ;
+
+  *:not(.mat-sidenav-content):hover::-webkit-scrollbar-thumb {
+    display: block;
+    background: mat-color($primary, $default);
   }
   *:not(.mat-sidenav-content)::-webkit-scrollbar-thumb:hover {
     background: mat-color($primary, 200);
   }
 
-
   *:not(.mat-sidenav-content):hover::-webkit-scrollbar-track {
-    display:block;
+    display: block;
     background: mat-color($background, 'background', 1);
   }
-  
-
 
   /* hide scrollbarbar on smaller screens */
   @media only screen and (max-width: 600px) {
     .mat-sidenav-content::-webkit-scrollbar {
-      display:none;
+      display: none;
     }
   }
 
-
   .mat-bg-accent {
-    background-color: mat-color($accent, 600) !important;
+    background-color: mat-color($accent, $default) !important;
   }
   .mat-bg-primary {
-    background-color: mat-color($primary, 600) !important;
+    background-color: mat-color($primary, $default) !important;
   }
   .mat-bg-background {
     background: mat-color($background, card) !important;
   }
 
   .mat-color-accent {
-    color: mat-color($accent, 600) !important;
+    color: mat-color($accent, $default) !important;
   }
   .mat-color-primary {
-    color: mat-color($primary, 600) !important;
+    color: mat-color($primary, $default) !important;
   }
 
   .mat-border-accent {
-    border-color: mat-color($accent, 600) !important;
+    border-color: mat-color($accent, $default) !important;
   }
   .mat-border-primary {
-    border-color: mat-color($primary, 600) !important;
+    border-color: mat-color($primary, $default) !important;
   }
 
   .mat-bg-accent-50 {
@@ -99,7 +179,7 @@ $accent: red !default;
     background-color: mat-color($accent, 500) !important;
   }
   .mat-bg-accent-600 {
-    background-color: mat-color($accent, 600) !important;
+    background-color: mat-color($accent, $default) !important;
   }
   .mat-bg-accent-700 {
     background-color: mat-color($accent, 700) !important;
@@ -130,7 +210,7 @@ $accent: red !default;
     background-color: mat-color($primary, 500) !important;
   }
   .mat-bg-primary-600 {
-    background-color: mat-color($primary, 600) !important;
+    background-color: mat-color($primary, $default) !important;
   }
   .mat-bg-primary-700 {
     background-color: mat-color($primary, 700) !important;

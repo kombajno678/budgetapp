@@ -23,11 +23,13 @@ export class CurrentPredictionCardComponent implements OnInit, AfterViewInit {
 
 
   today: Date;
+  prevMonth:Date;
   nextMonth: Date;
   threeMonths: Date;
 
   predictionsLoaded$: BehaviorSubject<PredictionPoint[]>;
   todaysPrediction$: BehaviorSubject<PredictionPoint>;
+  prevMonthPrediction$: BehaviorSubject<PredictionPoint>;
   nextMonthPrediction$: BehaviorSubject<PredictionPoint>;
   threeMonthsPrediction$: BehaviorSubject<PredictionPoint>;
 
@@ -54,6 +56,7 @@ export class CurrentPredictionCardComponent implements OnInit, AfterViewInit {
     this.predictionsLoaded$ = new BehaviorSubject<PredictionPoint[]>(null);
 
     this.todaysPrediction$ = new BehaviorSubject<PredictionPoint>(null);
+    this.prevMonthPrediction$ = new BehaviorSubject<PredictionPoint>(null);
     this.nextMonthPrediction$ = new BehaviorSubject<PredictionPoint>(null);
     this.threeMonthsPrediction$ = new BehaviorSubject<PredictionPoint>(null);
 
@@ -61,6 +64,9 @@ export class CurrentPredictionCardComponent implements OnInit, AfterViewInit {
 
 
     this.today = new Date();
+
+    this.prevMonth = new Date();
+    this.prevMonth.setMonth(this.prevMonth.getMonth() - 1);
 
     this.nextMonth = new Date();
     this.nextMonth.setMonth(this.nextMonth.getMonth() + 1);
@@ -102,16 +108,17 @@ export class CurrentPredictionCardComponent implements OnInit, AfterViewInit {
     this.predictionsLoaded$.next(null);
     combineLatest([
       this.budgetService.generatePredictionForDate(this.today),
+      this.budgetService.generatePredictionForDate(this.prevMonth),
       this.budgetService.generatePredictionForDate(this.nextMonth),
       this.budgetService.generatePredictionForDate(this.threeMonths)
     ]).subscribe(r => {
-      console.log('combineLatest current prediction', r);
+      //console.log('combineLatest current prediction', r);
       if(r[0])this.todaysPrediction$.next(r[0]);
-      if(r[1])this.nextMonthPrediction$.next(r[1]);
-      if(r[2])this.threeMonthsPrediction$.next(r[2]);
+      if(r[1])this.prevMonthPrediction$.next(r[1]);
+      if(r[2])this.nextMonthPrediction$.next(r[2]);
+      if(r[3])this.threeMonthsPrediction$.next(r[3]);
       if(r.every(x => x)){
         this.predictionsLoaded$.next(r);
-
       }
     })
 

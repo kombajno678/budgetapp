@@ -1,4 +1,4 @@
-<mat-card class="small-card">
+<mat-card class="small-card  mat-elevation-z4">
   <mat-card-header>
 
     <a mat-button
@@ -17,7 +17,7 @@
   
           <ng-container *ngIf="isFirst || !compareDates(pp.date, (futurePredictionPoints$ | async)[i-1].date)">
             <mat-divider *ngIf="!isFirst"></mat-divider>
-            <div mat-subheader>{{ pp.date.toISOString().substr(0, 10)}}</div>
+            <div mat-subheader>{{ pp.date.toLocaleDateString()}}</div>
           </ng-container>
   
   

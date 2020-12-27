@@ -31,9 +31,19 @@ body {
 }
 
 mat-card.small-card {
-  overflow-y: auto;
-  max-height: 400px;
+  /*overflow-y: auto;*/
+  /*max-height: 400px;*/
 }
+
+
+/* dotn crop cards on smaller screens */
+@media only screen and (max-width: 600px) {
+  mat-card.small-card {
+    //overflow-y: auto;
+    max-height: unset;
+  }
+}
+
 
 .animated-loading-bg {
   background: linear-gradient(228deg, #1a1a1a, #780085);

@@ -1,4 +1,4 @@
-<mat-card class="small-card">
+<mat-card class="small-card  mat-elevation-z4">
     <mat-card-header>
 
 
@@ -25,7 +25,7 @@
 
                     <ng-container *ngIf="isFirst || !compareDates(op.when, list[i-1].when)">
                         <mat-divider *ngIf="!isFirst"></mat-divider>
-                        <div mat-subheader>{{ op.when.toISOString().substr(0, 10)}}</div>
+                        <div mat-subheader>{{ op.when.toLocaleDateString()}}</div>
 
                     </ng-container>
                     <app-operation-list-element [op]="op"
