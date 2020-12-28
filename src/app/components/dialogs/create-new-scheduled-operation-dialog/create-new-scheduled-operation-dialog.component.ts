@@ -108,15 +108,6 @@ export class CreateNewScheduledOperationDialogComponent implements OnInit, After
 
 
     }
-    this.categoryService.getAll().subscribe(r => {
-      if (r) {
-        this.possibleCategories = r;
-        if (this.operation.category_id && !this.operation.category) {
-          this.operation.category = this.possibleCategories.find(c => c.id === this.operation.category_id);
-        }
-      }
-    })
-
     this.form = new FormGroup({
       value: new FormControl(this.operation.value, [Validators.required, Validators.min(0.01)]),
       name: new FormControl(this.operation.name, [Validators.maxLength(50)]),
@@ -127,8 +118,22 @@ export class CreateNewScheduledOperationDialogComponent implements OnInit, After
       formDaysOfWeek: new FormControl(this.operation.day_of_week, []),
       formDaysOfMonths: new FormControl(this.operation.day_of_month, []),
       formMonths: new FormControl(this.operation.month, []),
+      category: new FormControl(null, []),
       category_id: new FormControl(this.operation.category_id, []),
     })
+
+
+
+    this.categoryService.getAll().subscribe(r => {
+      if (r) {
+        this.possibleCategories = r;
+        if (this.operation.category_id && !this.operation.category) {
+          this.operation.category = this.possibleCategories.find(c => c.id === this.operation.category_id);
+          this.form.controls.category.setValue(this.operation.category);
+        }
+      }
+    })
+
 
     this.form.controls.formScheduleType.valueChanges.subscribe(newValue => {
       if (this.form.controls.formScheduleType.valid) {
@@ -170,8 +175,13 @@ export class CreateNewScheduledOperationDialogComponent implements OnInit, After
 
 
 
-    this.operation.category_id = this.form.controls.category_id.value;
-    delete this.operation.category;
+    if(this.form.controls.category.value){
+      this.operation.category_id = this.form.controls.category.value.id;
+
+    }else{
+      this.operation.category_id = null
+    }
+    //delete this.operation.category;
 
 
     //let schedule = new OperationSchedule();

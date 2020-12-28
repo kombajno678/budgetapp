@@ -13,6 +13,8 @@ import { CreateNewOperationDialogComponent } from '../../dialogs/create-new-oper
 export class OperationListElementComponent implements OnInit, OnDestroy {
 
 
+  highlighted:boolean;
+
   @Input()
   op: BudgetOperation;
 
@@ -60,6 +62,10 @@ export class OperationListElementComponent implements OnInit, OnDestroy {
           new: result
         }
         this.onModify.emit(x);
+        
+        this.op = result;
+        this.highlighted = true;
+        setTimeout(()=> this.highlighted = false, 2000);
       }
     })
   }

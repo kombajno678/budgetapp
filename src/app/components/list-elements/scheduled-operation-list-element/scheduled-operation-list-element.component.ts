@@ -41,6 +41,8 @@ export class ScheduledOperationListElementComponent implements OnInit, OnDestroy
 
   displayValue = Globals.displayValue;
 
+  highlighted:boolean;
+
 
 
 
@@ -108,6 +110,10 @@ export class ScheduledOperationListElementComponent implements OnInit, OnDestroy
           new: result
         }
         this.onModify.emit(x);
+        this.so = result;
+        
+        this.highlighted = true;
+        setTimeout(()=> this.highlighted = false, 2000);
       }
     })
 

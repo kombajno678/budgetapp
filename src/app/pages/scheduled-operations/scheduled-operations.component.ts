@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { CreateNewScheduledOperationDialogComponent } from 'src/app/components/dialogs/create-new-scheduled-operation-dialog/create-new-scheduled-operation-dialog.component';
 import { ScheduledBudgetOperation } from 'src/app/models/ScheduledBudgetOperation';
@@ -12,6 +12,7 @@ import { SortBy, SortConfig, SortOrder } from 'src/app/models/internal/SortConfi
 import { FilterConfig, OperationType } from 'src/app/models/internal/FilterConfig';
 import { MatButtonToggleChange } from '@angular/material/button-toggle';
 import { Category } from 'src/app/models/Category';
+import { MatSelectionList } from '@angular/material/list';
 
 @Component({
   selector: 'app-scheduled-operations',
@@ -38,6 +39,15 @@ export class ScheduledOperationsComponent implements OnInit, OnDestroy {
   //operationSchedules: OperationSchedule[];
 
   allCategories$: BehaviorSubject<Category[]> = new BehaviorSubject(null);
+
+
+  @ViewChild(MatSelectionList)
+  categoriesSelectionList: MatSelectionList
+
+  sortConfig: SortConfig = {
+    by : SortBy.VALUE,
+    order: SortOrder.DESC
+  };
 
   public filterConfig: FilterConfig = {
     operationType: OperationType.ANY,
@@ -74,10 +84,14 @@ export class ScheduledOperationsComponent implements OnInit, OnDestroy {
   }
 
   updateOperations() {
-    console.log('updateOperations, ', this.filterConfig);
+    let selectedCategories = [];
+    if(this.categoriesSelectionList){
+      selectedCategories = this.categoriesSelectionList.selectedOptions.selected.map(s => s.value)
+    }
+    //console.log('updateOperations, ', this.filterConfig);
     
     //filter n sort
-    this.displayedScheduledOperations = this.allScheduledOperations.filter(sop => {
+    let filtered = this.allScheduledOperations.filter(sop => {
       let f = true;
       if(this.filterConfig.operationType === OperationType.INCOME){
         f = f && (sop.value >= 0);
@@ -86,14 +100,45 @@ export class ScheduledOperationsComponent implements OnInit, OnDestroy {
         f = f && (sop.value <= 0);
       }
 
+      if (selectedCategories.length != 0) f = f && selectedCategories.find(cat => cat.id === sop.category_id);
+
+
       f = f && this.filterConfig.scheduleType.includes(sop.scheduleType);
 
       //console.log(sop.value,'match => ',  f)
       return f;
     });
-    this.displayedScheduledOperations$.next(this.displayedScheduledOperations);
 
-    
+
+    let sorted = filtered.sort((a, b) => {
+      let x = 0, y = 0;
+
+      switch (this.sortConfig.by) {
+        case SortBy.DATE:
+          x = a.day_of_month.length + a.day_of_week.length + a.month.length;
+          y = b.day_of_month.length + b.day_of_week.length + b.month.length;
+          break;
+        case SortBy.VALUE:
+          x = Math.abs(a.value);
+          y = Math.abs(b.value);
+          break;
+        default:
+          break;
+      }
+
+      switch (this.sortConfig.order) {
+        case SortOrder.ASC:
+          return x - y;
+        case SortOrder.DESC:
+          return y - x;
+        default:
+          return 0;
+      }
+
+    });
+    console.log('updateOperations, ', sorted);
+    this.displayedScheduledOperations = sorted.slice();
+    this.displayedScheduledOperations$.next(this.displayedScheduledOperations);
   }
 
   refresh() {
@@ -161,6 +206,40 @@ export class ScheduledOperationsComponent implements OnInit, OnDestroy {
 
 
 
+  onSortOrderChange(event: MatButtonToggleChange){
+    switch (event.value) {
+      case 'asc':
+        this.sortConfig.order = SortOrder.ASC;
+        this.updateOperations();
+        break;
+      case 'desc':
+        this.sortConfig.order = SortOrder.DESC;
+        this.updateOperations();
+        break;
+      default:
+        break;
+    }
+  }
+  
+  onSortTypeChange(event: MatButtonToggleChange){
+    switch (event.value) {
+      case 'date':
+        this.sortConfig.by = SortBy.DATE;
+        this.updateOperations();
+        break;
+      case 'value':
+        this.sortConfig.by = SortBy.VALUE;
+        this.updateOperations();
+        break;
+      default:
+        break;
+    }
+  }
+
+
+
+
+
   deleteAll() {
 
     if (confirm(`Are you sure that you want to delete all ${this.allScheduledOperations.length} scheduled operations?`)) {
@@ -204,10 +283,10 @@ export class ScheduledOperationsComponent implements OnInit, OnDestroy {
   modifyOperation(modifyEvent: modifyEvent<ScheduledBudgetOperation>) {
     modifyEvent.new.id = modifyEvent.old.id;
     console.log('receiver modify event, ', modifyEvent);
-    this.scheduledOperationsService.update(modifyEvent.new).subscribe(r => {
+    this.scheduledOperationsService.update(modifyEvent.new, false).subscribe(r => {
       if (r) {
         console.log('result od scheduledOperationsService.update = ', r);
-        this.refresh();
+        //this.refresh();
       }
     })
 

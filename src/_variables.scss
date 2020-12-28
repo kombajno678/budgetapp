@@ -26,7 +26,12 @@ $accent: red !default;
 
   $default: 500;
 
-  
+  .highlighted{
+    background-color: mat-color($primary, $default) !important;
+    color: mat-contrast($primary, $default);
+    transition: background-color 0.5s
+
+  }
 
 
 

@@ -1,25 +1,9 @@
 import { Component, OnInit, ViewChild, ElementRef, Input, Output, EventEmitter, AfterViewInit } from '@angular/core';
-import { ChartDataSets, ChartOptions, ChartPoint, ChartType } from 'chart.js';
-import { Color, Label, BaseChartDirective } from 'ng2-charts';
 import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
-
-
 import { PredictionPoint } from 'src/app/models/internal/PredictionPoint';
-
-import * as pluginAnnotations from 'chartjs-plugin-annotation';
-import * as pluginZoom from 'chartjs-plugin-zoom';
 import { PredictionChartCardConfig } from 'src/app/components/dashboard-cards/prediction-chart-card/prediction-chart-card.component';
-
-
-import Chart from 'chart.js';
 import moment, { Moment } from 'moment';
-
-
 import * as Highcharts from 'highcharts';
-Highcharts.setOptions({
-  
-});
-
 
 @Component({
   selector: 'app-prediction-chart',
@@ -37,6 +21,44 @@ export class PredictionChartComponent implements OnInit, AfterViewInit {
   }
 
   categoriesMap:Map<string, Date> = new Map<string, Date> ();
+
+
+  displayChart: boolean = true;
+
+
+  @Input()
+  config$: Observable<PredictionChartCardConfig>;// = false;
+
+
+  @Input()
+  compact: boolean;// = false;
+  @Input()
+  data$: Observable<PredictionPoint[]>;
+
+  @Input()
+  width: number
+  @Input()
+  height: number
+
+
+  @Input()
+  delayOnUpdate: boolean = false;
+
+
+  loading$: BehaviorSubject<boolean>;
+
+  @Output()
+  onDayClicked: EventEmitter<Date>;
+
+
+  displayYear: boolean = true;
+  DisplayMonth: boolean = true;
+
+
+
+
+
+
 
 
 
@@ -105,39 +127,9 @@ export class PredictionChartComponent implements OnInit, AfterViewInit {
 
 
 
-  displayChart: boolean = true;
 
 
-  @Input()
-  config$: Observable<PredictionChartCardConfig>;// = false;
 
-
-  @Input()
-  compact: boolean;// = false;
-  @Input()
-  data$: Observable<PredictionPoint[]>;
-
-  @Input()
-  width: number
-  @Input()
-  height: number
-
-
-  @Input()
-  delayOnUpdate: boolean = false;
-
-  @ViewChild(BaseChartDirective) chartCanvas: BaseChartDirective;
-  chart: any;
-
-
-  loading$: BehaviorSubject<boolean>;
-
-  @Output()
-  onDayClicked: EventEmitter<Date>;
-
-
-  displayYear: boolean = true;
-  DisplayMonth: boolean = true
 
 
 
@@ -156,7 +148,6 @@ export class PredictionChartComponent implements OnInit, AfterViewInit {
   ngOnInit() {
     //console.log('this.compact = ', this.compact);
     this.loading$ = new BehaviorSubject<boolean>(null);
-
 
     this.loading$.next(true);
 
@@ -291,7 +282,7 @@ export class PredictionChartComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.chart = this.chartCanvas.chart;
+    
 
   }
 

@@ -1,4 +1,4 @@
-<mat-list-item *ngIf="so" class="{{so.active ? '' : 'sop-disabled'}}">
+<mat-list-item *ngIf="so" class="{{so.active ? '' : 'sop-disabled'}}{{highlighted ? 'highlighted' : ''}}">
     <mat-icon mat-list-icon>
         {{ so.value >= 0 ? 'add' : 'remove'}}
     </mat-icon>
@@ -24,7 +24,12 @@
          *ngIf="!compact"
          class="">
         <span class="mat-subheading-2">{{so.name}}</span>
-        <span class="schedule-desc">{{ this.getScheduleTypeDescription(so.scheduleType) }}</span>
+        <span class="schedule-desc">
+            {{ this.getScheduleTypeDescription(so.scheduleType) }}
+        </span>
+        <span class="schedule-desc">
+            {{ so.category?.name}}
+        </span>
 
 
     </div>

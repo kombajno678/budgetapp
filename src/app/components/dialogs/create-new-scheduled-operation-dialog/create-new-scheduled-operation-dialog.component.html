@@ -188,12 +188,18 @@
                         Operation category
                     </mat-label>
 
-                    <mat-select formControlName="category_id">
+                    <mat-select formControlName="category">
+                        <mat-select-trigger *ngIf="form.controls.category.value as selectedCat">
+                            <mat-icon [style.color]="selectedCat.color">
+                                {{selectedCat.icon ? selectedCat.icon : 'category'}}
+                            </mat-icon>
+                            {{selectedCat.name}}
+                        </mat-select-trigger>
                         <mat-option [value]="null">
                             - none -
                         </mat-option>
                         <mat-option *ngFor="let cat of this.possibleCategories"
-                                    [value]="cat.id">
+                                    [value]="cat">
 
                             <mat-icon [style.color]="cat.color">
                                 {{cat.icon ? cat.icon : 'category'}}

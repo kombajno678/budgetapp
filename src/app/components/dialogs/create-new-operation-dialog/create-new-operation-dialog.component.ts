@@ -156,8 +156,13 @@ export class CreateNewOperationDialogComponent implements OnInit {
     }
 
     this.operation.name = this.form.controls.name.value;
-    this.form.controls.category_id.setValue(this.form.controls.category.value.id);
+    if(this.form.controls.category.value){
+      this.form.controls.category_id.setValue(this.form.controls.category.value.id);
+
+    }else{}
+    this.form.controls.category_id.setValue(null);
     this.operation.category_id = this.form.controls.category_id.value;
+    //delete this.operation.category;
 
 
     if (this.operationDateOption.value == 'today') {
