@@ -61,6 +61,8 @@ import { WhenWillComponent } from './pages/when-will/when-will.component';
 import { HowMuchWillComponent } from './pages/how-much-will/how-much-will.component';
 import { FixedPointListElementComponent } from './components/list-elements/fixed-point-list-element/fixed-point-list-element.component';
 
+import { HighchartsChartModule } from 'highcharts-angular';
+
 
 function tokenGetter(): string {
   return localStorage.getItem('budgetapp-token')
@@ -113,6 +115,7 @@ function tokenGetter(): string {
     MaterialModule,
     //GoogleChartsModule,
     ChartsModule,
+    HighchartsChartModule,
     AuthModule.forRoot({
       ...env.auth,
       httpInterceptor: {

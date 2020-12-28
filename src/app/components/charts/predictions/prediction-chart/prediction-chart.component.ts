@@ -15,6 +15,9 @@ import Chart from 'chart.js';
 import moment, { Moment } from 'moment';
 
 
+import * as Highcharts from 'highcharts';
+
+
 
 @Component({
   selector: 'app-prediction-chart',
@@ -22,6 +25,51 @@ import moment, { Moment } from 'moment';
   styleUrls: ['./prediction-chart.component.scss']
 })
 export class PredictionChartComponent implements OnInit, AfterViewInit {
+
+
+
+  Highcharts: typeof Highcharts = Highcharts; // required
+  isHighcharts = typeof Highcharts === 'object';
+  chartConstructor: string = 'chart'; // optional string, defaults to 'chart'
+  chartOptions: Highcharts.Options = {
+    series: [
+      {
+      data: [],
+      type: 'line',
+      name: 'fixed points'
+    },
+    {
+      data: [],
+      type: 'line',
+      name: 'history'
+    },
+    {
+      data: [],
+      type: 'line',
+      name: 'future'
+    }
+  ],
+
+
+    xAxis: {
+      categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+    },
+    yAxis: {
+      title: {
+        text: 'Temperature (\xB0C)'
+      }
+    },
+
+
+
+  }; // required
+  chartCallback: Highcharts.ChartCallbackFunction = null//function (chart) { ... } // optional function, defaults to null
+  updateFlag: boolean = false; // optional boolean
+  oneToOneFlag: boolean = true; // optional boolean, defaults to false
+  runOutsideAngular: boolean = false; // optional boolean, defaults to false
+
+
 
 
   todayAnnotation = {
@@ -139,10 +187,10 @@ export class PredictionChartComponent implements OnInit, AfterViewInit {
 
               let x = Number(value);
               let i = 0;
-              while ((x / Math.pow(1000,i)) > 1000) {
+              while ((x / Math.pow(1000, i)) > 1000) {
                 i++
               }
-              return ((x / Math.pow(1000,i))).toLocaleString() + 'k'.repeat(i);
+              return ((x / Math.pow(1000, i))).toLocaleString() + 'k'.repeat(i);
               //return value.toLocaleString(null, { maximumSignificantDigits: 3 });
             },
             display: true,
@@ -163,8 +211,8 @@ export class PredictionChartComponent implements OnInit, AfterViewInit {
       xAxes: [
         {
           id: 'days',
-          
-          
+
+
           type: "time",
           distribution: 'linear',
           time: {
@@ -180,7 +228,7 @@ export class PredictionChartComponent implements OnInit, AfterViewInit {
               minute: 'DD.MM.YYYY',
             },
           },
-          
+
           ticks: {
             //sampleSize: 10,
             autoSkipPadding: 14,
@@ -196,7 +244,7 @@ export class PredictionChartComponent implements OnInit, AfterViewInit {
               }
             },
             */
-            
+
           }
         }
       ]
@@ -298,7 +346,7 @@ export class PredictionChartComponent implements OnInit, AfterViewInit {
         x: null,
         y: null
       },
-      
+
 
       // Speed of zoom via mouse wheel
       // (percentage of zoom on a wheel event)
@@ -468,8 +516,8 @@ export class PredictionChartComponent implements OnInit, AfterViewInit {
 
 
 
-    this.todayAnnotation.value = this.dateToStr(new Date()),
-      this.lineChartOptions.annotation.annotations = [];
+    this.todayAnnotation.value = this.dateToStr(new Date());
+    this.lineChartOptions.annotation.annotations = [];
     this.lineChartOptions.annotation.annotations.push(this.todayAnnotation);
     console.log('this.todayAnnotation : ', this.todayAnnotation);
 
@@ -497,6 +545,20 @@ export class PredictionChartComponent implements OnInit, AfterViewInit {
           this.lineChartData[1].data = [];//history
           this.lineChartData[2].data = [];//futur
 
+          //highcharts:
+          this.chartOptions.series = [];
+          this.chartOptions.xAxis.categories = [];
+
+          let high_fps = [];
+          let high_history = [];
+          let high_futur = [];
+          /*
+          series: [{
+              data: [1, 2, 3],
+              type: 'line'
+            }]
+            */
+
           let fps = []
           let history = []
           let futur = []
@@ -523,25 +585,52 @@ export class PredictionChartComponent implements OnInit, AfterViewInit {
             if (d < n) {
               history.push(point);
               futur.push(emptyPoint);
+
+              high_history.push(point.y);
+              high_futur.push(null);
+
             } else if (d > n) {
               history.push(emptyPoint);
               futur.push(point);
+
+              high_history.push(null);
+              high_futur.push(point.y);
             } else {
               history.push(point);
               futur.push(point);
+
+              high_history.push(point.y);
+              high_futur.push(point.y);
             }
 
             if (p.fixedPoint) {
               fps.push({
-                x: m, y: p.fixedPoint.exact_value
+                x: m, 
+                y: p.fixedPoint.exact_value
               });
+              high_fps.push(p.fixedPoint.exact_value);
             } else {
               fps.push(emptyPoint);
+              high_fps.push(null);
 
+            }
+
+            this.chartOptions.series[0] = {
+              data : high_fps,
+              type: 'line'
+            };
+            this.chartOptions.series[1] = {
+              type: 'line',
+              data: high_history,
+            }
+            this.chartOptions.series[2] = {
+              type: 'line',
+              data: high_futur,
             }
 
 
             this.lineChartLabels.push(m);
+            this.chartOptions.xAxis.categories.push(m.toLocaleString());
           });
 
 
@@ -553,7 +642,7 @@ export class PredictionChartComponent implements OnInit, AfterViewInit {
         if (config) {
 
           this.delayOnUpdate = config.delayOnUpdate;
-          if(config.disableControls){
+          if (config.disableControls) {
             this.lineChartOptions.zoom.enabled = false;
             this.lineChartOptions.pan.enabled = false;
           }
@@ -593,9 +682,11 @@ export class PredictionChartComponent implements OnInit, AfterViewInit {
           if (this.delayOnUpdate) {
             setTimeout(() => {
               this.displayChart = true;
+              this.updateFlag = true;
             }, 1000)
           } else {
             this.displayChart = true;
+            this.updateFlag = true;
           }
         }
       }
