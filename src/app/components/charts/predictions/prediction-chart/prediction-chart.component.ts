@@ -59,7 +59,7 @@ export class PredictionChartComponent implements OnInit, AfterViewInit {
 
 
   @Input()
-  delayOnUpdate:boolean = false;
+  delayOnUpdate: boolean = false;
 
   @ViewChild(BaseChartDirective) chartCanvas: BaseChartDirective;
   chart: any;
@@ -112,8 +112,10 @@ export class PredictionChartComponent implements OnInit, AfterViewInit {
     },
 
   ];
+
+
   public lineChartLabels/*: Label[]*/ = [];
-  public lineChartOptions: (ChartOptions & { annotation: any } & { pan: any } & { zoom: any }) = {
+  public lineChartOptions: (ChartOptions & { annotation?: any } & { pan?: any } & { zoom?: any }) = {
     responsive: true,
     tooltips: {
       bodyFontSize: 16,
@@ -134,7 +136,14 @@ export class PredictionChartComponent implements OnInit, AfterViewInit {
           position: 'left',
           ticks: {
             callback: (value, index, values) => {
-              return value.toLocaleString();
+
+              let x = Number(value);
+              let i = 0;
+              while ((x / Math.pow(1000,i)) > 1000) {
+                i++
+              }
+              return ((x / Math.pow(1000,i))).toLocaleString() + 'k'.repeat(i);
+              //return value.toLocaleString(null, { maximumSignificantDigits: 3 });
             },
             display: true,
           }
@@ -154,21 +163,24 @@ export class PredictionChartComponent implements OnInit, AfterViewInit {
       xAxes: [
         {
           id: 'days',
+          
+          
           type: "time",
           distribution: 'linear',
           time: {
             minUnit: 'day',
             unit: 'day',
             round: 'day',
-            stepSize: 7,
+            stepSize: 14,
             displayFormats: {
               month: 'MM.YYYY',
               week: 'DD.MM.YYYY',
               day: 'DD.MM.YYYY',
-              hour: 'DD.MM.YYYY hh:00',
-              minute: 'DD.MM.YYYY hh:mm',
+              hour: 'DD.MM.YYYY',
+              minute: 'DD.MM.YYYY',
             },
           },
+          
           ticks: {
             //sampleSize: 10,
             autoSkipPadding: 14,
@@ -184,6 +196,7 @@ export class PredictionChartComponent implements OnInit, AfterViewInit {
               }
             },
             */
+            
           }
         }
       ]
@@ -237,8 +250,9 @@ export class PredictionChartComponent implements OnInit, AfterViewInit {
         y: null
       },
 
+
       // On category scale, factor of pan velocity
-      speed: 10,
+      speed: 2,
 
       // Minimal pan distance required before actually applying pan
       threshold: 0,
@@ -259,7 +273,7 @@ export class PredictionChartComponent implements OnInit, AfterViewInit {
 
       // Drag-to-zoom effect can be customized
       // drag: {
-      // 	 borderColor: 'rgba(225,225,225,0.3)'
+      // 	 borderColor: 'rgba(225,225,225,0.3)',
       // 	 borderWidth: 5,
       // 	 backgroundColor: 'rgb(225,225,225)',
       // 	 animationDuration: 0
@@ -284,6 +298,7 @@ export class PredictionChartComponent implements OnInit, AfterViewInit {
         x: null,
         y: null
       },
+      
 
       // Speed of zoom via mouse wheel
       // (percentage of zoom on a wheel event)
@@ -293,7 +308,7 @@ export class PredictionChartComponent implements OnInit, AfterViewInit {
       threshold: 0,
 
       // On category scale, minimal zoom level before actually applying zoom
-      sensitivity: 0.0,
+      sensitivity: 1,
 
       // Function called while the user is zooming
       //onZoom: function ({ chart }) { console.log(`I'm zooming!!!`); },
@@ -533,8 +548,6 @@ export class PredictionChartComponent implements OnInit, AfterViewInit {
           this.lineChartData[0].data = fps
           this.lineChartData[1].data = history;
           this.lineChartData[2].data = futur;
-
-
         }
 
         if (config) {
@@ -577,11 +590,11 @@ export class PredictionChartComponent implements OnInit, AfterViewInit {
         this.loading$.next(false);
 
         if (data && config) {
-          if(this.delayOnUpdate){
+          if (this.delayOnUpdate) {
             setTimeout(() => {
               this.displayChart = true;
             }, 1000)
-          }else{
+          } else {
             this.displayChart = true;
           }
         }

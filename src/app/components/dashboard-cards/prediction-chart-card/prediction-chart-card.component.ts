@@ -12,7 +12,8 @@ export interface PredictionChartCardConfig {
   title: string,
   marks?: any[],
   delayOnUpdate?:boolean,
-  disableControls:boolean
+  disableControls:boolean,
+  compact?:boolean,
 }
 
 

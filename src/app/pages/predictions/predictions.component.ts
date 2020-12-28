@@ -181,6 +181,15 @@ export class PredictionsComponent implements OnInit, AfterViewInit {
           console.log('RECEIVED  generatePredictionsBetweenDates prediction for ', r.length, ' days');
           this.predictions = r;
           this.predictions$.next(this.predictions);
+
+          let config:PredictionChartCardConfig = {
+            title: 'Predictions',
+            delayOnUpdate:false,
+            disableControls:false
+          };
+
+          this.config$.next(config);
+
           this.loading$.next(false);
         }
 
