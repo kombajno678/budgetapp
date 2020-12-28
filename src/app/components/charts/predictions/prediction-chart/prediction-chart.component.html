@@ -13,6 +13,7 @@
 
 
     <ng-container *ngIf="displayChart; else templatechart">
+      <!--
       <canvas baseChart
               #mychart
               [width]="width ? width : 400"
@@ -26,6 +27,17 @@
               [plugins]="lineChartPlugins"
               (chartClick)="onChartClick($event)">
       </canvas>
+      -->
+      <highcharts-chart *ngIf="isHighcharts"
+                        [Highcharts]="Highcharts"
+                        [constructorType]="chartConstructor"
+                        [options]="chartOptions"
+                        [callbackFunction]="chartCallback"
+                        [(update)]="updateFlag"
+                        [oneToOne]="oneToOneFlag"
+                        
+                        style="width: 100%; height: 400px; display: block;">
+      </highcharts-chart>
 
 
 
@@ -40,15 +52,7 @@
 
 
 </ng-template>
-<highcharts-chart *ngIf="isHighcharts"
-                  [Highcharts]="Highcharts"
-                  [constructorType]="chartConstructor"
-                  [options]="chartOptions"
-                  [callbackFunction]="chartCallback"
-                  [(update)]="updateFlag"
-                  [oneToOne]="oneToOneFlag"
-                  style="width: 100%; height: 400px; display: block;">
-</highcharts-chart>
+
 <ng-template #templatechart>
   <app-loading-spinner></app-loading-spinner>
 </ng-template>

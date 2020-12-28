@@ -16,7 +16,9 @@ import moment, { Moment } from 'moment';
 
 
 import * as Highcharts from 'highcharts';
-
+Highcharts.setOptions({
+  
+});
 
 
 @Component({
@@ -27,46 +29,73 @@ import * as Highcharts from 'highcharts';
 export class PredictionChartComponent implements OnInit, AfterViewInit {
 
 
+  highchartSeriesClicked = (event) => {
+
+    
+    //console.log('clicked at ', this.categoriesMap.get(event.point.category));
+    this.onDayClicked.emit(this.categoriesMap.get(event.point.category));
+  }
+
+  categoriesMap:Map<string, Date> = new Map<string, Date> ();
+
+
 
   Highcharts: typeof Highcharts = Highcharts; // required
   isHighcharts = typeof Highcharts === 'object';
   chartConstructor: string = 'chart'; // optional string, defaults to 'chart'
   chartOptions: Highcharts.Options = {
+    
     series: [
       {
       data: [],
       type: 'line',
-      name: 'fixed points'
+      name: 'fixed points',
+      events:{
+        click: this.highchartSeriesClicked
+      }
     },
     {
       data: [],
       type: 'line',
-      name: 'history'
+      name: 'history',
+      events:{
+        click: this.highchartSeriesClicked
+      }
     },
     {
       data: [],
       type: 'line',
-      name: 'future'
-    }
+      name: 'future',
+      events:{
+        click: this.highchartSeriesClicked
+      }
+    },
+
+    
+
+    
   ],
 
 
     xAxis: {
-      categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+      categories: []
     },
     yAxis: {
+      
       title: {
-        text: 'Temperature (\xB0C)'
+        text: ''
       }
+      
     },
 
 
 
   }; // required
-  chartCallback: Highcharts.ChartCallbackFunction = null//function (chart) { ... } // optional function, defaults to null
+  chartCallback: Highcharts.ChartCallbackFunction = function (chart) {
+    chart.setTitle({text:''});
+  } // optional function, defaults to null
   updateFlag: boolean = false; // optional boolean
-  oneToOneFlag: boolean = true; // optional boolean, defaults to false
+  oneToOneFlag: boolean = false; // optional boolean, defaults to false
   runOutsideAngular: boolean = false; // optional boolean, defaults to false
 
 
@@ -546,12 +575,13 @@ export class PredictionChartComponent implements OnInit, AfterViewInit {
           this.lineChartData[2].data = [];//futur
 
           //highcharts:
-          this.chartOptions.series = [];
-          this.chartOptions.xAxis.categories = [];
 
           let high_fps = [];
           let high_history = [];
           let high_futur = [];
+          let categories = [];
+
+          this.categoriesMap.clear();
           /*
           series: [{
               data: [1, 2, 3],
@@ -615,23 +645,31 @@ export class PredictionChartComponent implements OnInit, AfterViewInit {
 
             }
 
-            this.chartOptions.series[0] = {
-              data : high_fps,
-              type: 'line'
-            };
-            this.chartOptions.series[1] = {
-              type: 'line',
-              data: high_history,
-            }
-            this.chartOptions.series[2] = {
-              type: 'line',
-              data: high_futur,
-            }
+            
 
 
             this.lineChartLabels.push(m);
-            this.chartOptions.xAxis.categories.push(m.toLocaleString());
+            categories.push(m.format('DD-MM-YYYY'));
+            this.categoriesMap.set(m.format('DD-MM-YYYY'), m.toDate())
           });
+
+
+          this.chartOptions.series[0] = {
+            data : high_fps,
+            type: 'line'
+          };
+          this.chartOptions.series[1] = {
+            type: 'line',
+            data: high_history,
+          }
+          this.chartOptions.series[2] = {
+            type: 'line',
+            data: high_futur,
+          }
+          this.chartOptions.xAxis = {
+            categories : categories
+          }
+
 
 
           this.lineChartData[0].data = fps
