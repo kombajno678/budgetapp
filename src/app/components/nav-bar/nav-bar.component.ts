@@ -51,6 +51,12 @@ export class NavBarComponent implements OnInit {
     this.toggleMenu.emit();
   }
 
+  redirectToHome(){
+
+    this.router.navigateByUrl('/');
+
+  }
+
 
 
 }

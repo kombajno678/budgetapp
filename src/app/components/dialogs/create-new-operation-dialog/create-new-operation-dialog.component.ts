@@ -116,7 +116,7 @@ export class CreateNewOperationDialogComponent implements OnInit {
     this.form = new FormGroup({
       value: new FormControl(this.operation.value, [Validators.required, Validators.min(0.01)]),
       name: new FormControl(this.operation.name, [Validators.maxLength(50)]),
-      when: new FormControl(this.operation.when, [Validators.required]),
+      when: new FormControl(moment(this.operation.when), [Validators.required]),
       scheduled: new FormControl(false, [Validators.required]),
       schedule_id: new FormControl(null, []),
       category: new FormControl(this.possibleCategories.find(cat => cat.id === this.operation.category_id), []),

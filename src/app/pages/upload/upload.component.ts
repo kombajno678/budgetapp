@@ -221,6 +221,7 @@ export class UploadComponent implements OnInit, AfterViewInit {
         let newFp = new FixedPoint();
         console.log('diff = ', diff);
         newFp.exact_value = fp.exact_value -= diff;
+        newFp.exact_value = Math.round((newFp.exact_value + Number.EPSILON) * 100) / 100;//to round to nearest 0.01
         newFp.when = firstDay;
         this.fixedPointsService.create(newFp).subscribe(createdNewFp => {
           console.log('createdNewFp = ', createdNewFp);
