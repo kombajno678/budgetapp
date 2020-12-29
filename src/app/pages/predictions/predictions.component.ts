@@ -10,7 +10,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import moment, { Moment } from 'moment';
 import { MatButtonToggleChange } from '@angular/material/button-toggle';
 import { tap } from 'rxjs/operators';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { PredictionChartCardConfig } from 'src/app/components/dashboard-cards/prediction-chart-card/prediction-chart-card.component';
 
 
@@ -66,7 +66,8 @@ export class PredictionsComponent implements OnInit, AfterViewInit {
     private fixedPointService: FixedPointsService,
     private operationsService: BudgetOperationService,
     private fb: FormBuilder,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private router:Router
   ) {
     this.selectedPP$ = new BehaviorSubject<PredictionPoint>(null)
 
@@ -122,6 +123,18 @@ export class PredictionsComponent implements OnInit, AfterViewInit {
 
 
   }
+
+  redirectToOperations(g:PredictionsGroup){
+    this.router.navigate(['/operations'], {
+      queryParams: {
+        start: g.predictions[0].date.toISOString().substr(0, 10),
+        end: g.predictions[g.predictions.length-1].date.toISOString().substr(0, 10)
+      }
+    });
+
+  }
+
+
 
 
   onFormSubmit() {

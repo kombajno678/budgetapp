@@ -12,7 +12,7 @@ import { CreateNewScheduledOperationDialogComponent } from 'src/app/components/d
 import { getLocaleTimeFormat } from '@angular/common';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import moment from 'moment';
-import { MatButtonToggleChange } from '@angular/material/button-toggle';
+import { MatButtonToggleChange, MatButtonToggleGroup } from '@angular/material/button-toggle';
 import { BehaviorSubject, combineLatest } from 'rxjs';
 import { ScheduledOperationsService } from 'src/app/services/budget/scheduled-operations.service';
 import { modifyEvent } from 'src/app/models/internal/modifyEvent';
@@ -21,6 +21,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Category } from 'src/app/models/Category';
 import { MatSelectionList } from '@angular/material/list';
 import { SortBy, SortConfig, SortOrder } from 'src/app/models/internal/SortConfig';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-operations',
@@ -60,6 +61,9 @@ export class OperationsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   //howManyDays = 5;
 
+  @ViewChild(MatButtonToggleGroup)
+  rangeTypeGroup;
+
   
   
   form: FormGroup;
@@ -75,7 +79,8 @@ export class OperationsComponent implements OnInit, AfterViewInit, OnDestroy {
     public budgetService: BudgetService,
     public dialog: MatDialog,
     public fb: FormBuilder,
-    public snack: MatSnackBar
+    public snack: MatSnackBar,
+    private route: ActivatedRoute
   ) {
 
   }
@@ -192,20 +197,11 @@ export class OperationsComponent implements OnInit, AfterViewInit, OnDestroy {
       if(r)this.allCategories$.next(r);
     })
 
-
-
     this.form = this.fb.group({
       startDate: [moment(), { validators: [Validators.required], updateOn: 'blur' }],
       endDate: [moment(), { validators: [Validators.required], updateOn: 'blur' }],
       categories: [[], { validators: [], updateOn: 'blur' }]
     })
-
-    this.setDateRangeWeek();
-
-
-    this.refresh();
-
-    //TODO get only those that fit selected daterange
 
 
     this.form.controls.startDate.valueChanges.subscribe(r => {
@@ -214,6 +210,29 @@ export class OperationsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.form.controls.endDate.valueChanges.subscribe(r => {
       if (this.dateRangeDynamic) this.onDateRangeSelectionchange();
     });
+
+
+    this.route.queryParams.subscribe(params => {
+      if (params['start'] && params['end']) {
+        this.dateRangeDynamic = false;
+
+        this.startDate = new Date(params['start']);
+        this.endDate = new Date(params['end']);
+
+        this.form.controls.startDate.setValue(params['start']);
+        this.form.controls.endDate.setValue(params['end']);
+
+        this.dateRangeDynamic = true;
+
+      } else {
+        this.setDateRangeWeek();
+      }
+
+
+      this.refresh();
+    });
+
+
 
 
 
@@ -253,6 +272,11 @@ export class OperationsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngAfterViewInit() {
     //this.operationService.refreshOperations();
+
+    
+
+
+
   }
 
   onDateRangeSelectionchange() {
@@ -275,6 +299,9 @@ export class OperationsComponent implements OnInit, AfterViewInit, OnDestroy {
   updateDisplayedOperations() {
     let selectedCategories = this.form.controls.categories.value;
     console.log('selectedCategories = ', selectedCategories);
+    console.log('this.startDate, this.endDate = ', this.startDate, this.endDate);
+
+    
 
     let filtered = this.allOperations?.filter(op => {
       let filter = true;

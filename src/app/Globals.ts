@@ -26,7 +26,7 @@ export class Globals {
     }
 
     public static toStr(d:Date, del:string = '-'):string{
-        return `${d.getFullYear()}${del}${Globals.pad(d.getMonth(), 2)}${del}${Globals.pad(d.getDate(), 2)}`;
+        return `${d.getFullYear()}${del}${Globals.pad(d.getMonth()+1, 2)}${del}${Globals.pad(d.getDate(), 2)}`;
     }
 
     static displayValue(p: PredictionPoint | number, digits: number = 2) {
