@@ -1,19 +1,17 @@
 <div>
 
 
-    <div class="top-section  mat-bg-accent">
+    <button mat-button class="top-section w-100" (click)="redirectToProfile()">
         <ng-container *ngIf="auth.user$ | async as user">
-            <div class="user-avatar-container mat-border-primary mat-bg-background">
+            <div class="user-avatar-container mat-border-primary mat-bg-accent">
                 <img [src]="user.picture"
                      class="user-avatar " />
             </div>
-            <span class="text-center">
-                <h3>
+            <div class="text-center w-100 ">
                     {{ user.name }}
-                </h3>
-            </span>
+            </div>
         </ng-container>
-    </div>
+    </button>
 
     <mat-nav-list>
 

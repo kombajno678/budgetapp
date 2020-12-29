@@ -68,7 +68,8 @@
       <mat-expansion-panel opened>
         <mat-expansion-panel-header>
           <mat-panel-title>
-            <mat-icon class="mr-3">filter_list</mat-icon>Filter
+            <mat-icon class="mr-3">filter_list</mat-icon>
+            Filter
           </mat-panel-title>
 
         </mat-expansion-panel-header>
@@ -129,7 +130,7 @@
             </mat-button-toggle-group>
 
           </div>
-          <div class="">
+          <div class="mb-3">
             Category:
             <ng-container *ngIf="(allCategories$ | async) as categoriesList">
 
@@ -168,6 +169,11 @@
 
 
             </ng-container>
+
+          </div>
+          <div class="mb-3">
+            
+            <mat-slide-toggle [(ngModel)]="filterConfig.showHidden" (change)="updateOperations()" >Show deleted operations</mat-slide-toggle>
 
           </div>
 
@@ -256,6 +262,7 @@
 
               <app-scheduled-operation-list-element [so]="so"
                                                     (onDelete)="deleteOperation($event)"
+                                                    (onRestore)="restoreOperation($event)"
                                                     (onModify)="modifyOperation($event)"
                                                     (onChangeActiveState)="chnageActiveState($event)"
                                                     [compact]="simple">
@@ -265,8 +272,6 @@
 
             </ng-container>
 
-
-         
 
 
       </mat-list>

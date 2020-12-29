@@ -155,8 +155,10 @@ export class AppComponent implements OnInit, AfterViewInit {
 
   animatedBg: boolean = false;
 
-  @ViewChild(MatDrawer)
+  @ViewChild(MatSidenav)
   matDrawer;
+
+  sidenavMode:string = 'side'
 
 
 
@@ -213,10 +215,13 @@ export class AppComponent implements OnInit, AfterViewInit {
     ]).subscribe(result => {
       if (result.matches) {
         console.log('ACTIVATING HANDSET LAYOUT');
-        this.activateHandsetLayout();
+        this.matDrawer?.close();
+        this.sidenavMode = 'over';
       } else {
         //desktop layout
         console.log('ACTIVATING DESKTOP LAYOUT');
+        this.matDrawer?.open();
+        this.sidenavMode = 'side';
 
       }
     });
@@ -273,7 +278,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     //Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
     //Add 'implements AfterViewInit' to the class.
     //this.matDrawer.disableClose = true;
-    this.matDrawer.opened = true;
+    
   }
 
 

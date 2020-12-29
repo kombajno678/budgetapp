@@ -9,5 +9,6 @@ export enum OperationType{
 export interface FilterConfig{
     operationType:OperationType,
     scheduleType?:ScheduleType[],
+    showHidden?:boolean;
 
 }

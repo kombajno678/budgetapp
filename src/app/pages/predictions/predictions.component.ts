@@ -7,12 +7,26 @@ import { BehaviorSubject, combineLatest, forkJoin, merge, Observable, of } from 
 import { Globals } from 'src/app/Globals';
 import { BudgetService } from 'src/app/services/budget/budget.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import moment from 'moment';
+import moment, { Moment } from 'moment';
 import { MatButtonToggleChange } from '@angular/material/button-toggle';
 import { tap } from 'rxjs/operators';
 import { ActivatedRoute } from '@angular/router';
 import { PredictionChartCardConfig } from 'src/app/components/dashboard-cards/prediction-chart-card/prediction-chart-card.component';
 
+
+export interface PredictionsGroup {
+  predictions: PredictionPoint[],
+  name: string,
+  expensesSum: number,
+  incomeSum: number,
+
+  expensesSumMax: boolean,
+  incomeSumMax: boolean,
+
+  operations: number,
+
+
+}
 @Component({
   templateUrl: './predictions.component.html',
   styleUrls: ['./predictions.component.scss']
@@ -22,6 +36,8 @@ export class PredictionsComponent implements OnInit, AfterViewInit {
 
   predictions: PredictionPoint[] = [];
   predictions$: BehaviorSubject<PredictionPoint[]>;
+
+  groupedPredictions: PredictionsGroup[] = [];
 
   config$: BehaviorSubject<PredictionChartCardConfig>;
 
@@ -39,6 +55,9 @@ export class PredictionsComponent implements OnInit, AfterViewInit {
   endDate: Date;
 
   dateRangeDynamic: boolean = false;
+
+  summaryRangeType: string = 'month';
+
 
 
 
@@ -106,13 +125,23 @@ export class PredictionsComponent implements OnInit, AfterViewInit {
 
 
   onFormSubmit() {
-    this.startDate = this.form.controls.startDate.value.toDate();
-    this.endDate = this.form.controls.endDate.value.toDate();
+    let s: Moment = moment(this.form.controls.startDate.value);
+    s.add(12, 'h');
+    let e: Moment = moment(this.form.controls.endDate.value);
+    e.add(24, 'h');
+    this.startDate = s.toDate();
+    this.endDate = e.toDate();
     this.generate();
   }
 
 
 
+  onSummaryTypeChange(event: MatButtonToggleChange) {
+    this.summaryRangeType = event.value;
+    this.initGrouppedSummary();
+
+
+  }
   onRangeTypeChange(event: MatButtonToggleChange) {
     switch (event.value) {
       case 'month':
@@ -168,26 +197,127 @@ export class PredictionsComponent implements OnInit, AfterViewInit {
 
 
   displayValue(number: number) {
-    return number.toFixed(2);
+    return Number(number.toFixed(2)).toLocaleString();
+  }
+
+
+  initGrouppedSummary() {
+
+
+    //group predictions
+    this.groupedPredictions = [];
+    //find distinct months in predictions
+    this.predictions.forEach(pp => {
+      let m = moment(pp.date);
+      let name: string = '';
+
+      switch (this.summaryRangeType) {
+        case 'year':
+          name = '' + m.year()
+          break;
+        case 'quarter':
+          name = '' + m.year() + '-' + m.quarter()
+          break;
+        case 'month':
+          name = '' + (pp.date.toISOString().substr(0, 7));
+
+          break;
+        case 'week':
+
+          name = '' + m.year() + '-' + m.week();
+          break;
+        case 'day':
+          name = '' + m.year() + '-' + m.month() + '-' + m.date();
+
+          break;
+        default:
+          break;
+      }
+
+
+
+
+      //console.log(name);
+
+      let group = this.groupedPredictions.find(g => g.name === name);
+      if (!group) {
+
+        this.groupedPredictions.push({
+          name: name,
+          predictions: [pp],
+          expensesSum: 0,
+          incomeSum: 0,
+          expensesSumMax: false,
+          incomeSumMax: false,
+          operations: 0
+
+        });
+        //console.log('pushed new group');
+      } else {
+        group.predictions.push(pp);
+        //console.log('pushed pp to ', group);
+      }
+    });
+    let expensesSumMax = 0;
+    let incomeSumMax = 0;
+    this.groupedPredictions.forEach(g => {
+      g.expensesSum = 0;
+      g.incomeSum = 0;
+      g.predictions.forEach(pp => {
+        pp.operations.forEach(op => {
+          if (op.value >= 0) {
+            g.incomeSum += op.value;
+          } else {
+            g.expensesSum += op.value;
+          }
+          g.operations++
+        })
+      });
+
+      if (g.incomeSum > incomeSumMax) {
+        incomeSumMax = g.incomeSum;
+      }
+      if (g.expensesSum < expensesSumMax) {
+        expensesSumMax = g.expensesSum;
+      }
+
+
+    });
+    this.groupedPredictions.forEach(g => {
+      if (g.expensesSum <= expensesSumMax) {
+        g.expensesSumMax = true;
+      }
+      if (g.incomeSum >= incomeSumMax) {
+        g.incomeSumMax = true;
+      }
+    })
+
 
 
   }
+
   generate() {
     this.loading$.next(true);
+    console.log('predictions > generating ... , ', this.form.controls.startDate.value, this.form.controls.endDate.value);
     console.log('predictions > generating ... , ', this.startDate, this.endDate);
+    //this.startDate.setUTCHours(12, 0, 0, 0);
+    //this.endDate.setUTCHours(12, 0, 0, 0);
+    //console.log('predictions > generating ... , ', this.startDate, this.endDate);
     this.budgetService.generatePredictionsBetweenDates(this.startDate, this.endDate).subscribe(
       (r) => {
         if (r) {
           console.log('RECEIVED  generatePredictionsBetweenDates prediction for ', r.length, ' days');
           this.predictions = r;
-          this.predictions$.next(this.predictions);
 
-          let config:PredictionChartCardConfig = {
+          let config: PredictionChartCardConfig = {
             title: 'Predictions',
-            delayOnUpdate:false,
-            disableControls:false
+            delayOnUpdate: false,
+            disableControls: false
           };
 
+          this.initGrouppedSummary();
+
+          this.predictions$.next(this.predictions);
           this.config$.next(config);
 
           this.loading$.next(false);

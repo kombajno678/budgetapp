@@ -1,12 +1,12 @@
 <div class="row m-0">
-  <div class="col pr-0 pl-0">
+  <div class="col-12 pr-0 pl-0">
     <app-prediction-chart [data$]="predictions$.asObservable()"
                           [config$]="config$.asObservable()"
                           (onDayClicked)="onDayClicked($event)"> ... </app-prediction-chart>
   </div>
 </div>
 <div class="row m-0">
-  <div class="col">
+  <div class="col p-1">
     <mat-button-toggle-group name="rangeType"
                              #rangeTypeGroup="matButtonToggleGroup"
                              aria-label="rangeType"
@@ -16,9 +16,8 @@
                          checked>+/- 3 months</mat-button-toggle>
       <mat-button-toggle value="custom">Custom</mat-button-toggle>
     </mat-button-toggle-group>
-
-
-
+  </div>
+  <div class="col p-1">
     <form [formGroup]="form"
           (submit)="onFormSubmit()">
       <ng-container *ngIf="rangeTypeGroup.value == 'custom'">
@@ -47,39 +46,47 @@
 
 
     </form>
-
   </div>
+
+
+
+
+
 </div>
 
 
 <div class="row m-0">
 
-  <div class="col">
+  <div class="col-12 col-md-6 p-1">
     <ng-container *ngIf="selectedPP$ | async as pp; else clickhelp">
       <mat-expansion-panel expanded>
         <mat-expansion-panel-header>
           <mat-panel-title>
-            {{pp.date.toISOString().substr(0, 10)}} : {{displayValue(pp.value)}}
+            selected day: {{pp.date.toLocaleDateString()}}
           </mat-panel-title>
           <mat-panel-description>
-            change : {{ displayValue(pp.delta) }}
+            {{displayValue(pp.value)}}
           </mat-panel-description>
         </mat-expansion-panel-header>
 
+        <div class="w-100 text-center mat-caption">
+          change : {{ displayValue(pp.delta) }}
 
-        <div *ngIf="pp.fixedPoint">
+        </div>
+
+        <div class="w-100 text-center mat-caption"
+             *ngIf="pp.fixedPoint">
           fixed point : {{ pp.fixedPoint.exact_value }}
         </div>
 
 
-        <mat-list>
-          <div mat-subheader>operations</div>
-          <mat-list-item *ngFor="let op of pp.operations">
+        <mat-list dense>
+          <ng-container *ngFor="let op of pp.operations">
             <app-operation-list-element [op]="op"
                                         [compact]="true"
-                                        [displayButton]="true">...
+                                        [displayButton]="false">
             </app-operation-list-element>
-          </mat-list-item>
+          </ng-container>
         </mat-list>
 
       </mat-expansion-panel>
@@ -102,8 +109,177 @@
 
 
   </div>
+  <div class="col-12 col-md-6 p-1">
+    <h2>
+      Summary
+
+    </h2>
+
+
+    <mat-button-toggle-group name="summaryType"
+                             class="w-100"
+                             #summaryTypeGroup="matButtonToggleGroup"
+                             aria-label="summaryType"
+                             (change)="onSummaryTypeChange($event)">
+      <mat-button-toggle class="w-100"
+                         value="year">year</mat-button-toggle>
+      <mat-button-toggle class="w-100"
+                         value="quarter">quarter</mat-button-toggle>
+      <mat-button-toggle class="w-100"
+                         value="month"
+                         checked>month</mat-button-toggle>
+      <mat-button-toggle class="w-100"
+                         value="week">week</mat-button-toggle>
+      <mat-button-toggle class="w-100"
+                         value="day">day</mat-button-toggle>
+    </mat-button-toggle-group>
+
+
+
+
+    <mat-accordion class="example-headers-align">
+
+      <ng-container *ngFor="let g of groupedPredictions">
+
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+
+              {{g.name}}
+
+
+            </mat-panel-title>
+            <mat-panel-description>
+              <div class="row m-0 p-0 w-100">
+                <div class="col">
+                  expenses
+                </div>
+                <div class="col">
+
+                  <span class="{{ g.expensesSumMax ? 'badge-warn' : '' }} m-0 p-0">
+                    {{this.displayValue(g.expensesSum)}}
+                  </span>
+
+                </div>
+                <div class="col">
+                  income
+
+                </div>
+                <div class="col">
+                  <span class="{{ g.incomeSumMax ? 'badge-primary' : '' }} m-0 p-0">
+                    {{this.displayValue(g.incomeSum)}}
+                  </span>
+
+                </div>
+              </div>
+
+
+
+
+
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+
+          <div class="p-2">
+
+
+
+            <mat-list role="list">
+
+
+              <mat-list-item>
+                <div matLine>
+                  expenses:
+                </div>
+                <span class="{{ g.expensesSumMax ? 'badge-warn' : '' }} m-0 p-0">
+                  {{this.displayValue(g.expensesSum)}}
+                </span>
+
+              </mat-list-item>
+
+
+              <mat-list-item role="listitem">
+                <div matLine>income:</div>
+                <span class="{{ g.incomeSumMax ? 'badge-primary' : '' }} m-0 p-0">
+                  {{this.displayValue(g.incomeSum)}}
+                </span>
+
+              </mat-list-item>
+
+              <mat-divider></mat-divider>
+
+
+              <mat-list-item role="listitem">
+                <div matLine>difference:</div>
+                <span class="">
+                  {{this.displayValue(g.expensesSum + g.incomeSum)}}
+                </span>
+
+              </mat-list-item>
+
+              <mat-divider></mat-divider>
+
+
+              <mat-list-item role="listitem">
+                <div matLine>balance:</div>
+                <span class="">
+                  {{this.displayValue(g.predictions[g.predictions.length-1].value)}}
+                </span>
+
+              </mat-list-item>
+
+
+              <mat-divider></mat-divider>
+
+
+              <mat-list-item role="listitem">
+                <div matLine>operations:</div>
+                <span class="">
+                  {{g.operations}}
+                </span>
+
+              </mat-list-item>
+
+            </mat-list>
+
+
+
+
+
+
+          </div>
+
+        </mat-expansion-panel>
+
+
+
+
+
+
+
+
+      </ng-container>
+    </mat-accordion>
+  </div>
+
 </div>
 
+<div class="row m-0">
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<!--
 <div class="row m-0"
      *ngIf="false">
   <div class="col">
@@ -181,3 +357,4 @@
 
   </div>
 </div>
+-->

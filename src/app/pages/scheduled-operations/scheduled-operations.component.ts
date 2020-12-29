@@ -45,7 +45,7 @@ export class ScheduledOperationsComponent implements OnInit, OnDestroy {
   categoriesSelectionList: MatSelectionList
 
   sortConfig: SortConfig = {
-    by : SortBy.VALUE,
+    by: SortBy.VALUE,
     order: SortOrder.DESC
   };
 
@@ -56,7 +56,8 @@ export class ScheduledOperationsComponent implements OnInit, OnDestroy {
       ScheduleType.weekly,
       ScheduleType.monthly,
       ScheduleType.annually,
-      null]
+      null],
+    showHidden: false
   };
 
 
@@ -69,7 +70,7 @@ export class ScheduledOperationsComponent implements OnInit, OnDestroy {
   ) {
 
     this.categoriesService.getAll().subscribe(r => {
-      if(r){
+      if (r) {
         this.allCategories$.next(r);
 
       }
@@ -85,18 +86,26 @@ export class ScheduledOperationsComponent implements OnInit, OnDestroy {
 
   updateOperations() {
     let selectedCategories = [];
-    if(this.categoriesSelectionList){
+    if (this.categoriesSelectionList) {
       selectedCategories = this.categoriesSelectionList.selectedOptions.selected.map(s => s.value)
     }
     //console.log('updateOperations, ', this.filterConfig);
-    
+
     //filter n sort
     let filtered = this.allScheduledOperations.filter(sop => {
       let f = true;
-      if(this.filterConfig.operationType === OperationType.INCOME){
+
+      if (sop.hidden && !this.filterConfig.showHidden) {
+        f = false;
+      }
+      if (!sop.hidden && this.filterConfig.showHidden) {
+        f = false;
+      }
+
+      if (f && this.filterConfig.operationType === OperationType.INCOME) {
         f = f && (sop.value >= 0);
 
-      }else if(this.filterConfig.operationType === OperationType.EXPENSE){
+      } else if (f && this.filterConfig.operationType === OperationType.EXPENSE) {
         f = f && (sop.value <= 0);
       }
 
@@ -157,7 +166,7 @@ export class ScheduledOperationsComponent implements OnInit, OnDestroy {
               sop.category = r[1].find(c => c.id === sop.category_id);
             }
           })
-          
+
 
           this.allScheduledOperations = r[0];
           this.allScheduledOperations.forEach(sop => {
@@ -165,7 +174,7 @@ export class ScheduledOperationsComponent implements OnInit, OnDestroy {
           });
           //filter n sort
           this.updateOperations();
-          
+
 
 
 
@@ -206,7 +215,7 @@ export class ScheduledOperationsComponent implements OnInit, OnDestroy {
 
 
 
-  onSortOrderChange(event: MatButtonToggleChange){
+  onSortOrderChange(event: MatButtonToggleChange) {
     switch (event.value) {
       case 'asc':
         this.sortConfig.order = SortOrder.ASC;
@@ -220,8 +229,8 @@ export class ScheduledOperationsComponent implements OnInit, OnDestroy {
         break;
     }
   }
-  
-  onSortTypeChange(event: MatButtonToggleChange){
+
+  onSortTypeChange(event: MatButtonToggleChange) {
     switch (event.value) {
       case 'date':
         this.sortConfig.by = SortBy.DATE;
@@ -270,14 +279,54 @@ export class ScheduledOperationsComponent implements OnInit, OnDestroy {
   }
 
 
+  restoreOperation(operation: ScheduledBudgetOperation){
 
+    // mark as not hidden 
+    operation.hidden = false;
+    operation.active = true;
+    this.scheduledOperationsService.update(operation).subscribe(r => {
+      console.log('update result = ', r);
+      if (r) {
+        this.snack.open('Scheduled operation restored', 'close', { duration: 3000 });
+        this.updateOperations();
+
+      } else {
+        this.snack.open('Error: could not restore operation', 'close', { duration: 3000 });
+      }
+    });
+
+
+  }
 
   deleteOperation(operation: ScheduledBudgetOperation) {
     console.log('receiver delete event, ', operation);
 
+
     this.scheduledOperationsService.delete(operation).subscribe(r => {
       console.log('deleteOperation result = ', r);
+      if (r) {
+        //deleted successfully
+        this.snack.open('Scheduled operation deleted', 'close', { duration: 3000 });
+        this.updateOperations();
+      } else {
+        // there are operations linked to this scheduled operation
+        //mark this scheduled op as hidden
+        operation.hidden = true;
+        operation.active = false;
+        this.scheduledOperationsService.update(operation).subscribe(r => {
+          console.log('update result = ', r);
+          if (r) {
+            this.snack.open('Scheduled operation deleted', 'close', { duration: 3000 });
+            this.updateOperations();
+
+          } else {
+            this.snack.open('Error: could not delete operation', 'close', { duration: 3000 });
+          }
+        });
+
+      }
     })
+
 
   }
   modifyOperation(modifyEvent: modifyEvent<ScheduledBudgetOperation>) {

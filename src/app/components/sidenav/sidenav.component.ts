@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatSidenav } from '@angular/material/sidenav';
+import { Router } from '@angular/router';
 import { AuthService } from '@auth0/auth0-angular';
 import { BudgetService } from 'src/app/services/budget/budget.service';
 import { UserService } from 'src/app/services/budget/user.service';
@@ -122,7 +123,7 @@ export class SidenavComponent implements OnInit {
     },
   ];
 
-  constructor(public auth: AuthService, public userService: UserService) { }
+  constructor(public auth: AuthService, public userService: UserService, private router:Router) { }
 
   ngOnInit(): void {
   }
@@ -137,6 +138,10 @@ export class SidenavComponent implements OnInit {
   logout() {
     this.userService.onLogout();
     this.auth.logout({ returnTo: '' });
+  }
+
+  redirectToProfile(){
+    this.router.navigateByUrl('/profile');
   }
 
 

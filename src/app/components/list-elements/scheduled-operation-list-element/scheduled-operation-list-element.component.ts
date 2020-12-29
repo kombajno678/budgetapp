@@ -29,6 +29,9 @@ export class ScheduledOperationListElementComponent implements OnInit, OnDestroy
   onDelete: EventEmitter<ScheduledBudgetOperation> = new EventEmitter<ScheduledBudgetOperation>();
 
   @Output()
+  onRestore: EventEmitter<ScheduledBudgetOperation> = new EventEmitter<ScheduledBudgetOperation>();
+
+  @Output()
   onModify: EventEmitter<modifyEvent<ScheduledBudgetOperation>> = new EventEmitter<modifyEvent<ScheduledBudgetOperation>>();
 
   @Output()

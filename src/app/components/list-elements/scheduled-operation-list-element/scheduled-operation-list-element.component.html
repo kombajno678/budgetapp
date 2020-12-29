@@ -19,6 +19,7 @@
                 </span>
 
                 {{ so.active ? '' : '(Disabled)' }}
+                {{ !so.hidden ? '' : '(Deleted)' }}
     </div>
     <div mat-line
          *ngIf="!compact"
@@ -70,6 +71,7 @@
             <button mat-menu-item
                     type="button"
                     color="accent"
+                    [disabled]="so.hidden"
                     (click)="modify()">
                 <mat-icon>edit</mat-icon>
                 <span>Modify</span>
@@ -78,11 +80,12 @@
             <button mat-menu-item
                     type="button"
                     color="warn"
+                    [disabled]="so.hidden"
                     (click)="changeActiveState()">
                 <mat-icon>{{ so.active ? 'pause' : 'play_arrow' }}</mat-icon>
                 <span> {{ so.active ? 'Disable' : 'Activate' }}</span>
             </button>
-
+<!--
             <button mat-menu-item
                     type="button"
                     color="warn"
@@ -90,15 +93,24 @@
                 <mat-icon>delete</mat-icon>
                 <span>Delete all operations from this schedules</span>
             </button>
+-->
 
 
-
-            <button mat-menu-item
+            <button *ngIf="!so.hidden" mat-menu-item
                     type="button"
                     color="warn"
                     (click)="onDelete.emit(so)">
                 <mat-icon>delete</mat-icon>
                 <span>Delete</span>
+            </button>
+
+
+            <button *ngIf="so.hidden" mat-menu-item
+                    type="button"
+                    color="warn"
+                    (click)="onRestore.emit(so)">
+                <mat-icon>restore_from_trash</mat-icon>
+                <span>Restore</span>
             </button>
 
         </mat-menu>

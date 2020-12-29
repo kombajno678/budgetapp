@@ -16,49 +16,51 @@
        [class.dark-theme]="isDarkTheme"
        [class.light-theme]="!isDarkTheme">
 
+    <app-nav-bar (toggleMenu)="mainSidenav.toggle()">
+
+    </app-nav-bar>
+
 
     <mat-sidenav-container class="h-100 "
                            [class.animated-logo-bg]="this.animatedBg">
 
 
       <mat-sidenav #mainSidenav
-                   mode="{{ isHandsetLayout? 'over' : 'side'  }}">
+                   [mode]="sidenavMode">
         <app-sidenav (changeTheme)="changeTheme()"
                      [sidenav]="mainSidenav"></app-sidenav>
       </mat-sidenav>
 
 
-        <mat-sidenav-content>
-
-          <app-nav-bar (toggleMenu)="mainSidenav.toggle()">
-
-          </app-nav-bar>
+      <mat-sidenav-content>
 
 
 
-          <div *ngIf="(auth.isLoading$ | async); else router"
-               class="center h-100 mat-bg-background">
-            <mat-spinner></mat-spinner>
+
+
+        <div *ngIf="(auth.isLoading$ | async); else router"
+             class="center h-100 mat-bg-background">
+          <mat-spinner></mat-spinner>
+        </div>
+
+
+        <ng-template #router>
+
+
+
+
+          <div class="main-container container flex-grow-1 flex-shrink-1 p-0 content">
+            <router-outlet></router-outlet>
           </div>
 
 
-          <ng-template #router>
 
 
 
 
-            <div class="main-container container flex-grow-1 flex-shrink-1 p-0 content">
-              <router-outlet></router-outlet>
-            </div>
+        </ng-template>
 
-
-
-
-
-
-          </ng-template>
-
-        </mat-sidenav-content>
+      </mat-sidenav-content>
 
 
     </mat-sidenav-container>

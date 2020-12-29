@@ -143,12 +143,19 @@ $accent: red !default;
 
   .mat-bg-accent {
     background-color: mat-color($accent, $default) !important;
+    color: mat-contrast($accent, $default);
   }
   .mat-bg-primary {
     background-color: mat-color($primary, $default) !important;
+    color: mat-contrast($primary, $default);
   }
   .mat-bg-background {
     background: mat-color($background, card) !important;
+    //color: mat-contrast($background, $default);
+  }
+  .mat-bg-warn {
+    background: mat-color($warn, $default) !important;
+    color: mat-contrast($warn, $default);
   }
 
   .mat-color-accent {
