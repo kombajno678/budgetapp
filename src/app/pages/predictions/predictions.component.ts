@@ -226,21 +226,21 @@ export class PredictionsComponent implements OnInit, AfterViewInit {
 
       switch (this.summaryRangeType) {
         case 'year':
-          name = '' + m.year()
+          name = m.format('YYYY');
           break;
         case 'quarter':
-          name = '' + m.year() + '-' + m.quarter()
+          name = m.format('YYYY-Q');
           break;
         case 'month':
-          name = '' + (pp.date.toISOString().substr(0, 7));
+          name = m.format('YYYY-MM');
 
           break;
         case 'week':
 
-          name = '' + m.year() + '-' + m.week();
+          name = m.format('YYYY-W');
           break;
         case 'day':
-          name = '' + m.year() + '-' + m.month() + '-' + m.date();
+          name = m.format('YYYY-MM-DD')
 
           break;
         default:
