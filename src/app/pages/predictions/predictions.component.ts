@@ -14,19 +14,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { PredictionChartCardConfig } from 'src/app/components/dashboard-cards/prediction-chart-card/prediction-chart-card.component';
 
 
-export interface PredictionsGroup {
-  predictions: PredictionPoint[],
-  name: string,
-  expensesSum: number,
-  incomeSum: number,
 
-  expensesSumMax: boolean,
-  incomeSumMax: boolean,
-
-  operations: number,
-
-
-}
 @Component({
   templateUrl: './predictions.component.html',
   styleUrls: ['./predictions.component.scss']
@@ -37,7 +25,7 @@ export class PredictionsComponent implements OnInit, AfterViewInit {
   predictions: PredictionPoint[] = [];
   predictions$: BehaviorSubject<PredictionPoint[]>;
 
-  groupedPredictions: PredictionsGroup[] = [];
+  
 
   config$: BehaviorSubject<PredictionChartCardConfig>;
 
@@ -56,7 +44,7 @@ export class PredictionsComponent implements OnInit, AfterViewInit {
 
   dateRangeDynamic: boolean = false;
 
-  summaryRangeType: string = 'month';
+  
 
 
 
@@ -67,7 +55,7 @@ export class PredictionsComponent implements OnInit, AfterViewInit {
     private operationsService: BudgetOperationService,
     private fb: FormBuilder,
     private route: ActivatedRoute,
-    private router:Router
+    
   ) {
     this.selectedPP$ = new BehaviorSubject<PredictionPoint>(null)
 
@@ -124,15 +112,7 @@ export class PredictionsComponent implements OnInit, AfterViewInit {
 
   }
 
-  redirectToOperations(g:PredictionsGroup){
-    this.router.navigate(['/operations'], {
-      queryParams: {
-        start: g.predictions[0].date.toISOString().substr(0, 10),
-        end: g.predictions[g.predictions.length-1].date.toISOString().substr(0, 10)
-      }
-    });
-
-  }
+  
 
 
 
@@ -149,12 +129,6 @@ export class PredictionsComponent implements OnInit, AfterViewInit {
 
 
 
-  onSummaryTypeChange(event: MatButtonToggleChange) {
-    this.summaryRangeType = event.value;
-    this.initGrouppedSummary();
-
-
-  }
   onRangeTypeChange(event: MatButtonToggleChange) {
     switch (event.value) {
       case 'month':
@@ -213,7 +187,7 @@ export class PredictionsComponent implements OnInit, AfterViewInit {
     return Number(number.toFixed(2)).toLocaleString();
   }
 
-
+/*
   initGrouppedSummary() {
 
 
@@ -237,7 +211,7 @@ export class PredictionsComponent implements OnInit, AfterViewInit {
           break;
         case 'week':
 
-          name = m.format('YYYY-W');
+          name = m.format('YYYY-WW');
           break;
         case 'day':
           name = m.format('YYYY-MM-DD')
@@ -262,7 +236,8 @@ export class PredictionsComponent implements OnInit, AfterViewInit {
           incomeSum: 0,
           expensesSumMax: false,
           incomeSumMax: false,
-          operations: 0
+          numberOfOperations: 0,
+          operations: []
 
         });
         //console.log('pushed new group');
@@ -283,7 +258,8 @@ export class PredictionsComponent implements OnInit, AfterViewInit {
           } else {
             g.expensesSum += op.value;
           }
-          g.operations++
+          g.numberOfOperations++;
+          g.operations.push(op);
         })
       });
 
@@ -308,7 +284,7 @@ export class PredictionsComponent implements OnInit, AfterViewInit {
 
 
   }
-
+*/
   generate() {
     this.loading$.next(true);
     console.log('predictions > generating ... , ', this.form.controls.startDate.value, this.form.controls.endDate.value);
@@ -328,7 +304,7 @@ export class PredictionsComponent implements OnInit, AfterViewInit {
             disableControls: false
           };
 
-          this.initGrouppedSummary();
+          //this.initGrouppedSummary();
 
           this.predictions$.next(this.predictions);
           this.config$.next(config);

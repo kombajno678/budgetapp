@@ -62,6 +62,8 @@ import { HowMuchWillComponent } from './pages/how-much-will/how-much-will.compon
 import { FixedPointListElementComponent } from './components/list-elements/fixed-point-list-element/fixed-point-list-element.component';
 
 import { HighchartsChartModule } from 'highcharts-angular';
+import { SummaryComponent } from './components/summary/summary.component';
+import { SummaryCardComponent } from './components/dashboard-cards/summary-card/summary-card.component';
 
 
 function tokenGetter(): string {
@@ -101,7 +103,9 @@ function tokenGetter(): string {
     UploadHelpDialogComponent,
     WhenWillComponent,
     HowMuchWillComponent,
-    FixedPointListElementComponent
+    FixedPointListElementComponent,
+    SummaryComponent,
+    SummaryCardComponent
 
   ],
   entryComponents: [],

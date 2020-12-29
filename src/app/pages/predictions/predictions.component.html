@@ -8,44 +8,59 @@
 <div class="row m-0">
   <div class="col p-1">
     <mat-button-toggle-group name="rangeType"
+                             class="w-100"
                              #rangeTypeGroup="matButtonToggleGroup"
                              aria-label="rangeType"
                              (change)="onRangeTypeChange($event)">
-      <mat-button-toggle value="month">+/- month</mat-button-toggle>
-      <mat-button-toggle value="months"
+      <mat-button-toggle class="w-100"
+                         value="month">+/- month</mat-button-toggle>
+      <mat-button-toggle class="w-100"
+                         value="months"
                          checked>+/- 3 months</mat-button-toggle>
-      <mat-button-toggle value="custom">Custom</mat-button-toggle>
+      <mat-button-toggle class="w-100"
+                         value="custom">Custom</mat-button-toggle>
     </mat-button-toggle-group>
   </div>
   <div class="col p-1">
+
     <form [formGroup]="form"
           (submit)="onFormSubmit()">
+
       <ng-container *ngIf="rangeTypeGroup.value == 'custom'">
-        <mat-form-field appearance="fill">
-          <mat-label>Enter a date range</mat-label>
-          <mat-date-range-input [rangePicker]="picker">
-            <input matStartDate
-                   formControlName="startDate"
-                   placeholder="Start date">
-            <input matEndDate
-                   formControlName="endDate"
-                   placeholder="End date">
-          </mat-date-range-input>
-          <mat-datepicker-toggle matSuffix
-                                 [for]="picker"></mat-datepicker-toggle>
-          <mat-date-range-picker #picker></mat-date-range-picker>
-        </mat-form-field>
 
-        <button mat-button>
-          Select
-        </button>
 
+        <div class="row m-0">
+          <div class="col">
+
+            <mat-form-field appearance="fill">
+              <mat-label>Enter a date range</mat-label>
+              <mat-date-range-input [rangePicker]="picker">
+                <input matStartDate
+                       formControlName="startDate"
+                       placeholder="Start date">
+                <input matEndDate
+                       formControlName="endDate"
+                       placeholder="End date">
+              </mat-date-range-input>
+              <mat-datepicker-toggle matSuffix
+                                     [for]="picker"></mat-datepicker-toggle>
+              <mat-date-range-picker #picker></mat-date-range-picker>
+            </mat-form-field>
+
+          </div>
+          <div class="col">
+
+            <button mat-flat-button
+                    color="accent"
+                    class="w-100 select-date-button">
+              Select
+            </button>
+          </div>
+        </div>
       </ng-container>
 
-
-
-
     </form>
+
   </div>
 
 
@@ -110,163 +125,9 @@
 
   </div>
   <div class="col-12 col-md-6 p-1">
-    <h2>
-      Summary
+   <app-summary [predictions$]="this.predictions$">
 
-    </h2>
-
-
-    <mat-button-toggle-group name="summaryType"
-                             class="w-100"
-                             #summaryTypeGroup="matButtonToggleGroup"
-                             aria-label="summaryType"
-                             (change)="onSummaryTypeChange($event)">
-      <mat-button-toggle class="w-100"
-                         value="year">year</mat-button-toggle>
-      <mat-button-toggle class="w-100"
-                         value="quarter">quarter</mat-button-toggle>
-      <mat-button-toggle class="w-100"
-                         value="month"
-                         checked>month</mat-button-toggle>
-      <mat-button-toggle class="w-100"
-                         value="week">week</mat-button-toggle>
-      <mat-button-toggle class="w-100"
-                         value="day">day</mat-button-toggle>
-    </mat-button-toggle-group>
-
-
-
-
-    <mat-accordion class="example-headers-align">
-
-      <ng-container *ngFor="let g of groupedPredictions">
-
-        <mat-expansion-panel>
-          <mat-expansion-panel-header>
-            <mat-panel-title>
-
-              {{g.name}}
-
-
-            </mat-panel-title>
-            <mat-panel-description>
-              <div class="row m-0 p-0 w-100">
-                <div class="col">
-                  expenses
-                </div>
-                <div class="col">
-
-                  <span class="{{ g.expensesSumMax ? 'badge-warn' : '' }} m-0 p-0">
-                    {{this.displayValue(g.expensesSum)}}
-                  </span>
-
-                </div>
-                <div class="col">
-                  income
-
-                </div>
-                <div class="col">
-                  <span class="{{ g.incomeSumMax ? 'badge-primary' : '' }} m-0 p-0">
-                    {{this.displayValue(g.incomeSum)}}
-                  </span>
-
-                </div>
-              </div>
-
-
-
-
-
-            </mat-panel-description>
-          </mat-expansion-panel-header>
-
-          <div class="p-2">
-
-
-
-            <mat-list role="list">
-
-
-              <mat-list-item>
-                <div matLine>
-                  expenses:
-                </div>
-                <span class="{{ g.expensesSumMax ? 'badge-warn' : '' }} m-0 p-0">
-                  {{this.displayValue(g.expensesSum)}}
-                </span>
-
-              </mat-list-item>
-
-
-              <mat-list-item role="listitem">
-                <div matLine>income:</div>
-                <span class="{{ g.incomeSumMax ? 'badge-primary' : '' }} m-0 p-0">
-                  {{this.displayValue(g.incomeSum)}}
-                </span>
-
-              </mat-list-item>
-
-              <mat-divider></mat-divider>
-
-
-              <mat-list-item role="listitem">
-                <div matLine>difference:</div>
-                <span class="">
-                  {{this.displayValue(g.expensesSum + g.incomeSum)}}
-                </span>
-
-              </mat-list-item>
-
-              <mat-divider></mat-divider>
-
-
-              <mat-list-item role="listitem">
-                <div matLine>balance:</div>
-                <span class="">
-                  {{this.displayValue(g.predictions[g.predictions.length-1].value)}}
-                </span>
-
-              </mat-list-item>
-
-
-              <mat-divider></mat-divider>
-
-
-              <mat-list-item role="listitem">
-                <div matLine>operations:</div>
-                <span class="">
-                  {{g.operations}}
-                </span>
-
-              </mat-list-item>
-              
-              <mat-list-item role="listitem">
-                <button mat-flat-button color="primary" (click)="redirectToOperations(g)">
-                  See operations from this range
-                </button>
-
-              </mat-list-item>
-
-            </mat-list>
-
-
-
-
-
-
-          </div>
-
-        </mat-expansion-panel>
-
-
-
-
-
-
-
-
-      </ng-container>
-    </mat-accordion>
+   </app-summary>
   </div>
 
 </div>
