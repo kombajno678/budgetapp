@@ -249,7 +249,7 @@ export class BudgetService {
         let predictions = daysRange.map(p => new PredictionPoint(p, 0));
         let fixedPoints = r[0];
         let operations = r[1];
-        let scheduledOps = r[2];
+        let scheduledOps = r[2].filter(so => so.active && !so.hidden);
 
         fixedPoints = fixedPoints.filter(fp => fp.when <= end);
         operations = operations.filter(op => /*op.when >= start && */op.when <= end);
@@ -279,7 +279,7 @@ export class BudgetService {
 
           daysRange.filter(d => d > today).forEach(d => {
             scheduledOps.forEach(so => {
-              if (so.active && !so.hidden &&ScheduledBudgetOperation.matchSceduleWithDate(so, d)) {
+              if (ScheduledBudgetOperation.matchSceduleWithDate(so, d)) {
                 let newOp = new BudgetOperation(so.name, so.value, d, so.id);
                 newOp.scheduled_operation = so;
                 newOp.scheduled_operation_id = so.id;
