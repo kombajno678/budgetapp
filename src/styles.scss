@@ -20,6 +20,25 @@ body {
   flex: 1 1 auto;
 }
 
+.opacity-0 {
+  opacity: 0;
+}
+.opacity-1 {
+  opacity: 0.2;
+}
+.opacity-2 {
+  opacity: 0.4;
+}
+.opacity-3 {
+  opacity: 0.6;
+}
+.opacity-4 {
+  opacity: 0.8;
+}
+.opacity-5 {
+  opacity: 1;
+}
+
 .clickable {
   cursor: pointer;
 }
@@ -35,7 +54,6 @@ mat-card.small-card {
   /*max-height: 400px;*/
 }
 
-
 /* dotn crop cards on smaller screens */
 @media only screen and (max-width: 600px) {
   mat-card.small-card {
@@ -43,7 +61,6 @@ mat-card.small-card {
     max-height: unset;
   }
 }
-
 
 .animated-loading-bg {
   background: linear-gradient(228deg, #1a1a1a, #780085);
@@ -154,8 +171,3 @@ mat-card.small-card {
     background-position: 0% 92%;
   }
 }
-
-
-
-
-

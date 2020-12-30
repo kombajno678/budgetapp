@@ -17,6 +17,16 @@ export class SummaryCardComponent implements OnInit {
   }
 
 
+  summaryConfig = {
+    top : 4,
+    summaryRangeType : 'week',
+    compact: true,
+
+  }
+
+
+
+
 
   predictions: PredictionPoint[] = [];
   predictions$: BehaviorSubject<PredictionPoint[]> = new BehaviorSubject<PredictionPoint[]>(null);

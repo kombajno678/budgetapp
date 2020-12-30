@@ -26,32 +26,32 @@
     </ng-container>
 
 
-    <mat-accordion class="example-headers-align">
+    <mat-accordion class="example-headers-align mat-elevation-z0">
 
         <ng-container *ngFor="let g of groupedPredictions">
 
-            <mat-expansion-panel>
+            <mat-expansion-panel class="mat-elevation-z0">
                 <mat-expansion-panel-header>
                     <mat-panel-title>
-                        {{g.name}}
-                    </mat-panel-title>
-                    <mat-panel-description>
                         <div class="row m-0 p-0 w-100">
-                            <div class="col">
+                            <div class="col p-1">
+                                {{g.name}}
+                            </div>
+                            <div class="col p-1 opacity-3">
                                 expenses
                             </div>
-                            <div class="col">
+                            <div class="col p-1 opacity-3">
 
                                 <span class="{{ g.expensesSumMax ? 'badge-warn' : '' }} m-0 p-0">
                                     {{this.displayValue(g.expensesSum)}}
                                 </span>
 
                             </div>
-                            <div class="col">
+                            <div class="col p-1 opacity-3">
                                 income
 
                             </div>
-                            <div class="col">
+                            <div class="col p-1 opacity-3">
                                 <span class="{{ g.incomeSumMax ? 'badge-primary' : '' }} m-0 p-0">
                                     {{this.displayValue(g.incomeSum)}}
                                 </span>
@@ -60,7 +60,11 @@
                         </div>
 
 
+                    </mat-panel-title>
+                    <!--
+                    <mat-panel-description>
                     </mat-panel-description>
+                    -->
                 </mat-expansion-panel-header>
 
 
