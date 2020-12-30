@@ -279,7 +279,7 @@ export class BudgetService {
 
           daysRange.filter(d => d > today).forEach(d => {
             scheduledOps.forEach(so => {
-              if (ScheduledBudgetOperation.matchSceduleWithDate(so, d)) {
+              if (so.active && !so.hidden &&ScheduledBudgetOperation.matchSceduleWithDate(so, d)) {
                 let newOp = new BudgetOperation(so.name, so.value, d, so.id);
                 newOp.scheduled_operation = so;
                 newOp.scheduled_operation_id = so.id;
