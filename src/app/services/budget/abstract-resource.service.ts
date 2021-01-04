@@ -59,7 +59,7 @@ export abstract class AbstractResourceService<T extends AbstractResource> implem
 
 
   getAll(): Observable<T[]> {
-    if(!this.resource){
+    if(!this.resource || this.resource.length == 0){
       this.refreshResource(); 
     }
 

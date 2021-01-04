@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { AfterViewInit, Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Globals } from 'src/app/Globals';
@@ -22,7 +22,7 @@ export interface PredictionChartCardConfig {
   templateUrl: './prediction-chart-card.component.html',
   styleUrls: ['./prediction-chart-card.component.scss']
 })
-export class PredictionChartCardComponent implements OnInit {
+export class PredictionChartCardComponent implements OnInit, AfterViewInit {
 
 
 
@@ -92,6 +92,11 @@ export class PredictionChartCardComponent implements OnInit {
 
   ngOnInit(): void {
 
+    
+    
+  }
+
+  ngAfterViewInit(){
     this.config$.subscribe(r => {
       if(r){
         console.log('prediction chart card received new config ');
@@ -99,7 +104,6 @@ export class PredictionChartCardComponent implements OnInit {
         this.refresh();
       }
     })
-    
   }
 
 }

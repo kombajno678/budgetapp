@@ -212,25 +212,7 @@ export class OperationsComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
 
-    this.route.queryParams.subscribe(params => {
-      if (params['start'] && params['end']) {
-        this.dateRangeDynamic = false;
-
-        this.startDate = new Date(params['start']);
-        this.endDate = new Date(params['end']);
-
-        this.form.controls.startDate.setValue(params['start']);
-        this.form.controls.endDate.setValue(params['end']);
-
-        this.dateRangeDynamic = true;
-
-      } else {
-        this.setDateRangeWeek();
-      }
-
-
-      this.refresh();
-    });
+    
 
 
 
@@ -273,7 +255,25 @@ export class OperationsComponent implements OnInit, AfterViewInit, OnDestroy {
   ngAfterViewInit() {
     //this.operationService.refreshOperations();
 
-    
+    this.route.queryParams.subscribe(params => {
+      if (params['start'] && params['end']) {
+        this.dateRangeDynamic = false;
+
+        this.startDate = new Date(params['start']);
+        this.endDate = new Date(params['end']);
+
+        this.form.controls.startDate.setValue(params['start']);
+        this.form.controls.endDate.setValue(params['end']);
+
+        this.dateRangeDynamic = true;
+
+      } else {
+        this.setDateRangeWeek();
+      }
+
+
+      this.refresh();
+    });
 
 
 

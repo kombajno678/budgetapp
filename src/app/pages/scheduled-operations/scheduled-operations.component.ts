@@ -124,8 +124,8 @@ export class ScheduledOperationsComponent implements OnInit, OnDestroy {
 
       switch (this.sortConfig.by) {
         case SortBy.DATE:
-          x = a.day_of_month.length + a.day_of_week.length + a.month.length;
-          y = b.day_of_month.length + b.day_of_week.length + b.month.length;
+          x = a.day_of_month.length*10 + a.day_of_week.length + a.month.length*100;
+          y = b.day_of_month.length*10 + b.day_of_week.length + b.month.length*100;
           break;
         case SortBy.VALUE:
           x = Math.abs(a.value);
@@ -332,7 +332,7 @@ export class ScheduledOperationsComponent implements OnInit, OnDestroy {
   modifyOperation(modifyEvent: modifyEvent<ScheduledBudgetOperation>) {
     modifyEvent.new.id = modifyEvent.old.id;
     console.log('receiver modify event, ', modifyEvent);
-    this.scheduledOperationsService.update(modifyEvent.new, false).subscribe(r => {
+    this.scheduledOperationsService.update(modifyEvent.new, true).subscribe(r => {
       if (r) {
         console.log('result od scheduledOperationsService.update = ', r);
         //this.refresh();

@@ -243,12 +243,15 @@ export class BudgetService {
     ]);
     
     sub.subscribe(r => {
-      if (!generated && r.every(x => x)) {
+      if (!generated && r.every(x => x) && r[1].length > 0) {
         if (this.verbose) console.log('GENERATOR START ');
 
         let predictions = daysRange.map(p => new PredictionPoint(p, 0));
         let fixedPoints = r[0];
         let operations = r[1];
+        if(operations.length == 0){
+          console.warn('generatePredictionsBetweenDates > operations.length == 0');
+        }
         let scheduledOps = r[2].filter(so => so.active && !so.hidden);
 
         fixedPoints = fixedPoints.filter(fp => fp.when <= end);
