@@ -22,6 +22,8 @@ export interface WhenWillResult {
 })
 export class WhenWillComponent implements OnInit {
 
+  neverFlag:boolean = false;
+
 
 
   @Input()
@@ -58,6 +60,7 @@ export class WhenWillComponent implements OnInit {
 
 
   whenWillIHaveX(x: number): Observable<WhenWillResult> {
+    this.neverFlag = false;
 
     let result = new BehaviorSubject<WhenWillResult>(null);
 
@@ -119,6 +122,10 @@ export class WhenWillComponent implements OnInit {
 
 
 
+      }else{
+        result.next(null);
+        console.warn('never xd');
+        this.neverFlag = true;
       }
     });
 

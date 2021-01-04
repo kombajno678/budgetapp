@@ -21,7 +21,7 @@ import { UserService } from './user.service';
 })
 export class BudgetService {
 
-  verbose: boolean = true;//true//false;
+  verbose: boolean = false;//true//false;
 
 
 
@@ -105,8 +105,10 @@ export class BudgetService {
         let valueA = r[0];
         let valueB = r[1];
 
-        if (this.verbose)console.log(this.i + ' > checking value at ' + dateA.toISOString() + '  : ' + valueA.value);
-        if (this.verbose)console.log(this.i + ' > checking value at ' + dateB.toISOString() + '  : ' + valueB.value);
+        
+        console.log(this.i + ' > checking value at ' + dateA.toISOString() + '  : ' + valueA.value);
+        console.log(this.i + ' > checking value at ' + dateB.toISOString() + '  : ' + valueB.value);
+        console.log('valueB.value - valueA.value', valueB.value - valueA.value);
         //console.log(this.i + ' > ', (valueB.value - valueA.value > 0) ? 'rising' : 'decreasing');
 
 
@@ -119,8 +121,9 @@ export class BudgetService {
 
         // if money is decreasing and x > both values, return lower date
         if(valueB.value - valueA.value < 0 && (valueToFind > valueB.value && valueToFind > valueA.value)){
-          result.next(dateA < dateB ? dateA : dateB );
-          if (this.verbose)console.log(this.i + ' > money is decreasing and x > both values, return lower date');
+          //result.next(dateA < dateB ? dateA : dateB );
+          result.next(null);
+          console.log(this.i + ' > money is decreasing and x > both values, return lower date');
 
           return;
         }
@@ -253,6 +256,7 @@ export class BudgetService {
           console.warn('generatePredictionsBetweenDates > operations.length == 0');
         }
         let scheduledOps = r[2].filter(so => so.active && !so.hidden);
+        //console.log('scheduledOps = ', scheduledOps.map(sop => sop.value));
 
         fixedPoints = fixedPoints.filter(fp => fp.when <= end);
         operations = operations.filter(op => /*op.when >= start && */op.when <= end);
@@ -287,6 +291,7 @@ export class BudgetService {
                 newOp.scheduled_operation = so;
                 newOp.scheduled_operation_id = so.id;
                 futureOperations.push(newOp);
+                //console.log('adding new op from scheduiled of value : ', newOp.value);
               }
             })
           });
@@ -318,7 +323,7 @@ export class BudgetService {
               //in range (today, start)
               let range = Globals.getDaysInRange(today, start);
               range.forEach(d => {
-                r[2].forEach(so => {
+                scheduledOps.forEach(so => {
                   if (ScheduledBudgetOperation.matchSceduleWithDate(so, d)) {
                     //futureOperations.push(new BudgetOperation(so.name, so.value, d, so.id));
                     firstDayValue += (so.value);
