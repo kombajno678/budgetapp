@@ -28,16 +28,11 @@ export class CategoriesComponent implements OnInit {
 
     this.categoriesService.getAll().subscribe(r => {
       if(r){
-        this.categories = r;
+        this.categories = r.sort((a, b) => a.name.localeCompare(b.name));
         this.categories$.next(this.categories);
-
       }
-
     })
   }
-
-
-
 
   onNewClick() {
     let dialogRef = this.dialog.open(CategoryDialogComponent, { width: '500px' });
@@ -51,7 +46,6 @@ export class CategoriesComponent implements OnInit {
     })
   }
 
-
   deleteCategory(category: Category) {
     console.log('receiver delete event, ', category);
     this.categoriesService.delete(category).subscribe(r => {
@@ -61,8 +55,9 @@ export class CategoriesComponent implements OnInit {
 
   modifyCategory(event) {
     console.log('receiver modify event, ', event);
-    this.categoriesService.update(event.new).subscribe(r => {
-      console.log('result = ', r);
+    this.categoriesService.update(event.new, true).subscribe(r => {
+      //console.log('result = ', r);
+      //cat = event.new;
     })
   }
 

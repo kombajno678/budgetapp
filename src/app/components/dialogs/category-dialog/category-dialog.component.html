@@ -21,16 +21,17 @@
             </div>
         </div>
         <div class="row">
-            <div class="col">
+            <div class="col col-md-6">
 
                 <mat-form-field appearance="fill"
-                                class="w-100">
+                                class="w-100 color-input">
                     <mat-label>
                         Color
                     </mat-label>
 
 
                     <input matInput
+                    
                            type="color"
                            id="favcolor"
                            name="favcolor"
@@ -43,10 +44,7 @@
 
 
             </div>
-        </div>
-        <div class="row">
-            <div class="col">
-
+            <div class="col col-md-6">
                 <mat-form-field appearance="fill"
                                 class="w-100">
                     <mat-label>
@@ -56,17 +54,27 @@
                            type="text"
                            placeholder="icon"
                            formControlName="icon">
-                    <mat-icon matSuffix>category</mat-icon>
-
+                    <mat-icon matSuffix>{{form.controls.icon.value}}</mat-icon>
                 </mat-form-field>
+            </div>
+            <div class="col-12">
+                <div class="text-center icon-choice">
+                    <ng-container *ngFor="let icon of exampleIcons">
+
+                        <button mat-flat-button color="{{icon == form.controls.icon.value ? 'primary' : '' }}"
+                                (click)="onExampleIconClick(icon)">
+                            <mat-icon>{{icon}}</mat-icon>
+                        </button>
+
+                    </ng-container>
+                </div>
                 <p>
                     <a href="https://material.io/resources/icons"
                        target="_blank"
                        rel="noopener noreferrer">List</a> of all available icons
                 </p>
-
-
             </div>
+
         </div>
 
 
@@ -74,8 +82,7 @@
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
-    <button mat-button
-            (click)="test()">test</button>
+
     <button mat-button
             mat-dialog-close>Cancel</button>
     <button mat-button

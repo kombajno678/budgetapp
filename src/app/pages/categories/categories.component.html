@@ -9,10 +9,14 @@
 <div class="row m-0 p-2">
     <div class="col">
 
-        <button mat-button
+        <button mat-flat-button
                 type="button"
+                color="primary"
                 (click)="onNewClick()">
             Add new
+            <mat-icon>
+                add
+            </mat-icon>
         </button>
 
 
@@ -26,7 +30,7 @@
     <div class="col">
 
         <ng-container *ngIf="(this.categories$ | async) as list; else loading">
-            <div class="mat-caption">
+            <div class="mat-caption text-center">
                 Displaying {{ list.length }} {{ list.length == 1 ? 'category' : 'categories'}}
             </div>
             <mat-list dense>

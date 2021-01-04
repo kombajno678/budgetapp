@@ -14,6 +14,61 @@ export class CategoryDialogComponent implements OnInit {
 
   category: Category;
 
+  exampleIcons:string[] = [
+    'category',
+    'account_balance_wallet',
+    'add_shopping_cart',
+    'account_balance',
+    'build',
+    'card_giftcard',
+    'card_travel',
+    'commute',
+    'payment',
+    'eco',
+    'event',
+    'favorite',
+    'flight',
+    'grade',
+    'home',
+    'work',
+    'radio',
+    'videocam',
+    'phone',
+    'folder_open',
+    'computer',
+    'headset',
+    'videogame_asset',
+    'atm',
+    'directions_bike',
+    'directions_bus',
+    'directions_car',
+    'home_repair_service',
+    'hotel',
+    'local_bar',
+    'local_cafe',
+    'local_gas_station',
+    'local_florist',
+    'local_grocery_store',
+    'local_mall',
+    'local_library',
+    'local_pizza',
+    'local_pharmacy',
+    'local_shipping',
+    'money',
+    'ac_unit',
+    'apartment',
+    'house',
+    'checkroom',
+    'child_friendly',
+    'fitness_center',
+    'smoking_rooms',
+    'sports',
+    'star',
+    'star_half',
+    'star_outline',
+
+  ];
+
   createTitle: string = 'New category';
   updateTitle: string = 'Modify category';
   createButtonText: string = 'Add';
@@ -46,7 +101,7 @@ export class CategoryDialogComponent implements OnInit {
     this.form = new FormGroup({
       name: new FormControl(this.category.name, [Validators.required, Validators.maxLength(40)]),
       color: new FormControl(this.category.color, [Validators.maxLength(9), Validators.pattern(this.colorRegExp)]),
-      icon: new FormControl(this.category.icon ? this.category.icon : 'category', [Validators.maxLength(20), Validators.pattern(this.iconRegExp)]),
+      icon: new FormControl(this.category.icon ? this.category.icon : 'category', [Validators.maxLength(30), Validators.pattern(this.iconRegExp)]),
     })
   }
 
@@ -55,6 +110,13 @@ export class CategoryDialogComponent implements OnInit {
 
   test() {
     console.log(this.form)
+  }
+
+  onExampleIconClick(icon:string){
+    
+
+    this.form.controls.icon.setValue(icon);
+
   }
 
   onSave() {

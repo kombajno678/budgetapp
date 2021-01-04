@@ -14,6 +14,8 @@ import { modifyEvent } from 'src/app/models/internal/modifyEvent';
 export class CategoryListElementComponent implements OnInit, OnDestroy {
 
 
+  highlighted:boolean;
+  
   @Input()
   cat: Category;
 
@@ -50,6 +52,12 @@ export class CategoryListElementComponent implements OnInit, OnDestroy {
           new: result
         }
         this.onModify.emit(x);
+
+        this.cat = result;
+        this.highlighted = true;
+        setTimeout(()=> this.highlighted = false, 2000);
+
+
       }
     })
 

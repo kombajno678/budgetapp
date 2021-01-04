@@ -423,7 +423,7 @@ export class OperationsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   modifyOperation(event: modifyEvent<BudgetOperation>) {
     console.log('receiver modify event, ', event.new);
-    this.operationService.update(event.new, false).subscribe(r => {
+    this.operationService.update(event.new, true).subscribe(r => {
       console.log('operationService.update = ', r);
       //this.budget.refreshOperations();
     })
