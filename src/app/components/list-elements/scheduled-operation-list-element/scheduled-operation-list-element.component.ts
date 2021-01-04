@@ -57,6 +57,9 @@ export class ScheduledOperationListElementComponent implements OnInit, OnDestroy
 
   ngOnInit(): void {
   }
+  debug(){
+    console.log(this.so);
+  }
 
   ngOnDestroy(): void {
     this.so = null;

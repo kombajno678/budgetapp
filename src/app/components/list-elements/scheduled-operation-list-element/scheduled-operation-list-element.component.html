@@ -1,5 +1,5 @@
 <mat-list-item *ngIf="so" class="{{so.active ? '' : 'sop-disabled'}}{{highlighted ? 'highlighted' : ''}}">
-    <mat-icon mat-list-icon>
+    <mat-icon mat-list-icon (click)="debug()">
         {{ so.value >= 0 ? 'add' : 'remove'}}
     </mat-icon>
 

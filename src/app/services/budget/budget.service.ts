@@ -106,9 +106,9 @@ export class BudgetService {
         let valueB = r[1];
 
         
-        console.log(this.i + ' > checking value at ' + dateA.toISOString() + '  : ' + valueA.value);
-        console.log(this.i + ' > checking value at ' + dateB.toISOString() + '  : ' + valueB.value);
-        console.log('valueB.value - valueA.value', valueB.value - valueA.value);
+        //console.log(this.i + ' > checking value at ' + dateA.toISOString() + '  : ' + valueA.value);
+        //console.log(this.i + ' > checking value at ' + dateB.toISOString() + '  : ' + valueB.value);
+        //console.log('valueB.value - valueA.value', valueB.value - valueA.value);
         //console.log(this.i + ' > ', (valueB.value - valueA.value > 0) ? 'rising' : 'decreasing');
 
 
