@@ -1,0 +1,149 @@
+<h1 mat-dialog-title>{{title}}</h1>
+<mat-dialog-content>
+    <form [formGroup]="form">
+
+        <div class="row">
+            <div class="col">
+
+                <mat-button-toggle-group name="operation-type"
+                                         class="w-100"
+                                         #operationTypeOption="matButtonToggleGroup"
+                                         aria-label="Operation type">
+                    <mat-button-toggle value="expense"
+                                       class="w-100"
+                                       [checked]="this.operationValueSign < 0">Expense</mat-button-toggle>
+                    <mat-button-toggle value="income"
+                                       class="w-100"
+                                       [checked]="this.operationValueSign >= 0">Income</mat-button-toggle>
+                </mat-button-toggle-group>
+
+
+            </div>
+        </div>
+
+
+
+        <div class="row">
+            <div class="col">
+
+                <mat-form-field appearance="fill"
+                                class="w-100">
+                    <mat-label>
+                        Value
+                    </mat-label>
+                    <input matInput
+                           type="number"
+                           placeholder="0.00"
+                           formControlName="value">
+                    <mat-icon matSuffix>money</mat-icon>
+                    <span matPrefix>{{ operationTypeOption.value == 'income' ?' + ' : ' - ' }}</span>
+
+                </mat-form-field>
+
+
+            </div>
+        </div>
+
+
+        <div class="row">
+            <div class="col">
+                <mat-form-field appearance="fill"
+                                class="w-100">
+                    <mat-label>
+                        Operation title
+                    </mat-label>
+                    <input matInput
+                           formControlName="name">
+                </mat-form-field>
+
+            </div>
+        </div>
+
+
+
+
+
+
+        <div class="row">
+            <div class="col">
+
+                <mat-button-toggle-group name="operation-date"
+                                         class="w-100 mb-3"
+                                         #operationDateOption="matButtonToggleGroup"
+                                         aria-label="Operation date">
+                    <mat-button-toggle value="yesterday"
+                                       class="w-100">Yesterday</mat-button-toggle>
+                    <mat-button-toggle value="today"
+                                       class="w-100"
+                                       checked>Today</mat-button-toggle>
+                    <mat-button-toggle value="other"
+                                       class="w-100">Other ...</mat-button-toggle>
+                </mat-button-toggle-group>
+
+
+                <ng-container *ngIf="operationDateOption.value == 'other'">
+                    <mat-form-field appearance="fill"
+                                    class="w-100">
+                        <mat-label>
+                            Date
+                        </mat-label>
+                        <input matInput
+                               [matDatepicker]="picker2"
+                               formControlName="when">
+                        <mat-datepicker-toggle matSuffix
+                                               [for]="picker2"></mat-datepicker-toggle>
+                        <mat-datepicker #picker2></mat-datepicker>
+                    </mat-form-field>
+                </ng-container>
+
+
+
+
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <mat-form-field appearance="fill"
+                                class="w-100">
+                    <mat-label>
+                        Operation category
+                    </mat-label>
+
+                    <mat-select formControlName="category">
+                        <mat-select-trigger *ngIf="form.controls.category.value as selectedCat">
+                            <mat-icon [style.color]="selectedCat.color">
+                                {{selectedCat.icon ? selectedCat.icon : 'category'}}
+                            </mat-icon>
+                            {{selectedCat.name}}
+                        </mat-select-trigger>
+                        <mat-option [value]="null">
+                            - none -
+                        </mat-option>
+                        <mat-option *ngFor="let cat of this.possibleCategories"
+                                    [value]="cat">
+                            <mat-icon [style.color]="cat.color">
+                                {{cat.icon ? cat.icon : 'category'}}
+                            </mat-icon>
+                            {{cat.name}}
+                        </mat-option>
+                    </mat-select>
+
+                </mat-form-field>
+
+            </div>
+        </div>
+
+
+
+    </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-button
+            mat-dialog-close>Cancel</button>
+    <button mat-button
+            (click)="onSave()"
+            cdkFocusInitial
+            [disabled]="this.form.invalid">{{acceptButtonTest}}</button>
+</mat-dialog-actions>

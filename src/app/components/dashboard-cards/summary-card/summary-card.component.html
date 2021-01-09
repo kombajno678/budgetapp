@@ -1,0 +1,25 @@
+<mat-card class="small-card  mat-elevation-z4 h-100">
+  <mat-card-header>
+
+    <a mat-button
+       [routerLink]="link.url">
+      {{link.title}}
+    </a>
+    (last {{summaryConfig.top}} {{summaryConfig.summaryRangeType}}{{ summaryConfig.top >=2 ? 's' : '' }})
+
+  </mat-card-header>
+
+  <mat-card-content>
+
+    <app-summary [predictions$]="predictions$"
+                 [compact]="summaryConfig.compact"
+                 [top]="summaryConfig.top"
+                 [summaryRangeType]="summaryConfig.summaryRangeType">
+
+    </app-summary>
+
+
+  </mat-card-content>
+
+
+</mat-card>

@@ -1,0 +1,7 @@
+{
+  "domain": "dev-wkdk2hez.eu.auth0.com",
+  "clientId": "5dWDzorSFMf9gZ41hI3nXMRk6TDw3q9H",
+  "audience": "https://dev-wkdk2hez.eu.auth0.com/api/v2/",
+  "useRefreshTokens" : true,
+  "cacheLocation" : "localstorage"
+}

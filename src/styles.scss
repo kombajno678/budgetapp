@@ -1,0 +1,173 @@
+/* You can add global styles to this file, and also import other style files */
+/*@import "/src/theme";*/
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
+}
+
+.cdk-virtual-scroll-orientation-vertical,
+.cdk-virtual-scroll-content-wrapper {
+  max-width: 100% !important;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.opacity-0 {
+  opacity: 0;
+}
+.opacity-1 {
+  opacity: 0.2;
+}
+.opacity-2 {
+  opacity: 0.4;
+}
+.opacity-3 {
+  opacity: 0.6;
+}
+.opacity-4 {
+  opacity: 0.8;
+}
+.opacity-5 {
+  opacity: 1.0;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+mat-card.small-card {
+  /*overflow-y: auto;*/
+  /*max-height: 400px;*/
+}
+
+/* dotn crop cards on smaller screens */
+@media only screen and (max-width: 600px) {
+  mat-card.small-card {
+    //overflow-y: auto;
+    max-height: unset;
+  }
+}
+
+.animated-loading-bg {
+  background: linear-gradient(228deg, #1a1a1a, #780085);
+  background-size: 400% 400%;
+
+  -webkit-animation: AnimationName1 3s ease infinite;
+  -moz-animation: AnimationName1 3s ease infinite;
+  -o-animation: AnimationName1 3s ease infinite;
+  animation: AnimationName1 3s ease infinite;
+}
+
+@-webkit-keyframes AnimationName1 {
+  0% {
+    background-position: 0% 92%;
+  }
+  50% {
+    background-position: 100% 9%;
+  }
+  100% {
+    background-position: 0% 92%;
+  }
+}
+@-moz-keyframes AnimationName1 {
+  0% {
+    background-position: 0% 92%;
+  }
+  50% {
+    background-position: 100% 9%;
+  }
+  100% {
+    background-position: 0% 92%;
+  }
+}
+@-o-keyframes AnimationName1 {
+  0% {
+    background-position: 0% 92%;
+  }
+  50% {
+    background-position: 100% 9%;
+  }
+  100% {
+    background-position: 0% 92%;
+  }
+}
+@keyframes AnimationName1 {
+  0% {
+    background-position: 0% 92%;
+  }
+  50% {
+    background-position: 100% 9%;
+  }
+  100% {
+    background-position: 0% 92%;
+  }
+}
+
+.animated-logo-bg {
+  background: linear-gradient(228deg, #00dbff80, #e700ff80);
+  background-size: 400% 400%;
+
+  -webkit-animation: AnimationName 120s ease infinite;
+  -moz-animation: AnimationName 120s ease infinite;
+  -o-animation: AnimationName 120s ease infinite;
+  animation: AnimationName 120s ease infinite;
+}
+
+@-webkit-keyframes AnimationName {
+  0% {
+    background-position: 0% 92%;
+  }
+  50% {
+    background-position: 100% 9%;
+  }
+  100% {
+    background-position: 0% 92%;
+  }
+}
+@-moz-keyframes AnimationName {
+  0% {
+    background-position: 0% 92%;
+  }
+  50% {
+    background-position: 100% 9%;
+  }
+  100% {
+    background-position: 0% 92%;
+  }
+}
+@-o-keyframes AnimationName {
+  0% {
+    background-position: 0% 92%;
+  }
+  50% {
+    background-position: 100% 9%;
+  }
+  100% {
+    background-position: 0% 92%;
+  }
+}
+@keyframes AnimationName {
+  0% {
+    background-position: 0% 92%;
+  }
+  50% {
+    background-position: 100% 9%;
+  }
+  100% {
+    background-position: 0% 92%;
+  }
+}

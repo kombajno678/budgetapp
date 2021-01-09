@@ -1,0 +1,92 @@
+<h1 mat-dialog-title>{{title}}</h1>
+<mat-dialog-content>
+    <form [formGroup]="form">
+
+        <div class="row">
+            <div class="col">
+
+                <mat-form-field appearance="fill"
+                                class="w-100">
+                    <mat-label>
+                        Name
+                    </mat-label>
+                    <input matInput
+                           type="text"
+                           placeholder="category name"
+                           formControlName="name">
+
+                </mat-form-field>
+
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col col-md-6">
+
+                <mat-form-field appearance="fill"
+                                class="w-100 color-input">
+                    <mat-label>
+                        Color
+                    </mat-label>
+
+
+                    <input matInput
+                    
+                           type="color"
+                           id="favcolor"
+                           name="favcolor"
+                           value="#FFFFFF"
+                           formControlName="color">
+
+                    <mat-icon matSuffix>palette</mat-icon>
+
+                </mat-form-field>
+
+
+            </div>
+            <div class="col col-md-6">
+                <mat-form-field appearance="fill"
+                                class="w-100">
+                    <mat-label>
+                        Icon
+                    </mat-label>
+                    <input matInput
+                           type="text"
+                           placeholder="icon"
+                           formControlName="icon">
+                    <mat-icon matSuffix>{{form.controls.icon.value}}</mat-icon>
+                </mat-form-field>
+            </div>
+            <div class="col-12">
+                <div class="text-center icon-choice">
+                    <ng-container *ngFor="let icon of exampleIcons">
+
+                        <button mat-flat-button color="{{icon == form.controls.icon.value ? 'primary' : '' }}"
+                                (click)="onExampleIconClick(icon)">
+                            <mat-icon>{{icon}}</mat-icon>
+                        </button>
+
+                    </ng-container>
+                </div>
+                <p>
+                    <a href="https://material.io/resources/icons"
+                       target="_blank"
+                       rel="noopener noreferrer">List</a> of all available icons
+                </p>
+            </div>
+
+        </div>
+
+
+    </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+
+    <button mat-button
+            mat-dialog-close>Cancel</button>
+    <button mat-button
+            (click)="onSave()"
+            cdkFocusInitial
+            [disabled]="this.form.invalid">{{acceptButtonTest}}</button>
+</mat-dialog-actions>

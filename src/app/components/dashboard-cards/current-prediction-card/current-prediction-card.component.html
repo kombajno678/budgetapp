@@ -1,0 +1,98 @@
+<mat-card class="h-100 mat-elevation-z4"
+          class="small-card">
+    <mat-card-header>
+        <h2>Predictions</h2>
+    </mat-card-header>
+
+    <div class="row pr-2 pl-2"
+         *ngIf="(predictionsLoaded$ | async) as r; else loading">
+
+        <div class="col-sm-12 col-md-6 text-center mb-3 p-2">
+
+
+            <div class="prediction-today card-accent mat-elevation-z4 "
+                 *ngIf="todaysPrediction$ | async as today">
+
+
+                <div class="mat-subheading-2 m-0">Today</div>
+                <div class="mat-display-1 m-0">
+                    {{ displayValue(today, 0) }}
+                </div>
+                <div class="p-2">
+                    <span class="{{today.value - prevMonth.value > 0 ? 'badge-primary' : 'badge-warn'}}"
+                        *ngIf="prevMonthPrediction$ | async as prevMonth">
+                      since last month : 
+                      {{today.value - prevMonth.value > 0 ? '+' : '' }}
+                      {{ displayValue(today.value - prevMonth.value, 0) }}
+                  </span>
+                </div>
+                
+
+            </div>
+
+
+        </div>
+
+
+        <div class="col-sm-6 col-md-3 text-center mb-3 p-2"
+             *ngIf="(todaysPrediction$ | async) as today">
+            <div class="card-primary mat-elevation-z4 ">
+                <div class="row justify-content-center m-0 p-1 pb-3 pt-3 h-100">
+                    <div class="col-auto col-sm-12">in 1 month</div>
+                    <div class="col-auto col-sm-12">
+                        <span class="predition-future"
+                              *ngIf="(nextMonthPrediction$ | async) as nextMonth">
+                            {{ displayValue(nextMonth, 0) }}
+                        </span>
+                    </div>
+                    <div class="col-auto col-sm-12"
+                         *ngIf="(nextMonthPrediction$ | async) as nextMonth">
+                        <span class="{{nextMonth.value - today.value > 0 ? 'badge-accent' : 'badge-warn'}}">
+                            {{nextMonth.value - today.value > 0 ? '+' : '' }}
+                            {{ displayValue(nextMonth.value -today.value, 0)}}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div class="col-sm-6 col-md-3 text-center mb-3 p-2"
+             *ngIf="(todaysPrediction$ | async) as today">
+            <div class="card-primary mat-elevation-z4 ">
+                <div class="row justify-content-center m-0 p-1 pb-3 pt-3 h-100">
+                    <div class="col-auto col-sm-12">in 3 months</div>
+                    <div class="col-auto col-sm-12">
+                        <span class="predition-future"
+                              *ngIf="(threeMonthsPrediction$ | async) as threeMonths">
+                            {{ displayValue(threeMonths, 0) }}
+                        </span>
+                    </div>
+                    <div class="col-auto col-sm-12"
+                         *ngIf="(threeMonthsPrediction$ | async) as threeMonths">
+                        <span class="{{threeMonths.value - today.value > 0 ? 'badge-accent' : 'badge-warn'}}">
+                            {{threeMonths.value - today.value > 0 ? '+' : '' }}
+                            {{ displayValue(threeMonths.value -today.value, 0)}}
+                        </span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+    </div>
+
+    <ng-template #loading>
+        <app-loading-spinner></app-loading-spinner>
+    </ng-template>
+
+    <mat-card-footer>
+        <div class="p-2 text-center mat-caption">
+            Incorrect? Try inserting new <a mat-button
+               href="/fixedpoints">fixed point</a><br>
+        </div>
+    </mat-card-footer>
+
+</mat-card>

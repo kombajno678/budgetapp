@@ -1,0 +1,86 @@
+<mat-toolbar color="">
+    <div class="row align-items-center w-100 no-gutters">
+
+
+        <div class="col-3  align-middle menu-button">
+            <button (click)="handleMenuButtonClick()"
+                    mat-icon-button
+                    class=""
+                    aria-label="toggle side menu">
+                <mat-icon>menu</mat-icon>
+            </button>
+
+        </div>
+
+
+        <div class="col  align-middle"></div>
+
+
+        <div class="col-auto align-middle clickable navbar-logo" (click)="redirectToHome()">
+            <div class="logo-nav-bar">
+                <img class="img-fluid"
+                     src="/assets/img/budgetapp-logo.png">
+
+            </div>
+        </div>
+        <div class="col-auto  align-middle clickable navbar-title"  (click)="redirectToHome()">
+
+
+            <span>
+                Budgetapp
+            </span>
+
+        </div>
+
+
+        <div class="col  align-middle"></div>
+
+
+
+
+
+        <div class="col-3 align-middle text-right log-in">
+            <app-user-avatar></app-user-avatar>
+        </div>
+    </div>
+
+
+
+
+
+
+
+    <!-- Login button: show if NOT authenticated
+    auth.user$ | async as user
+ -->
+
+
+
+
+
+
+
+
+
+    <!-- Fullsize dropdown: show if authenticated -->
+
+
+    <!-- /Fullsize dropdown -->
+
+
+    <!--
+        <img [src]="user.picture" alt="Profile picture" class="nav-user-profile rounded-circle" style="width: 75px;" />
+        <div class="">
+            <div class="">
+                {{ user.name }}
+            </div>
+            <a routerLink="/profile" class="">
+                Profile
+            </a>
+            <button (click)="logout()" class="btn btn-link dropdown-item" id="qsLogoutBtn">
+                Log out
+            </button>
+        </div>
+    -->
+
+</mat-toolbar>

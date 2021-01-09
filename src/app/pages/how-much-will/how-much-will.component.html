@@ -1,0 +1,100 @@
+<div *ngIf="displayTitle"
+     class="row m-0  p-2">
+    <div class="col-12">
+        <span class="mat-display-1">
+            How much money will i have ...
+        </span>
+    </div>
+
+    <div class="col p-3">
+        <span class="">
+            Here you can find out how much moeny will you have at any given day in the future. Also, how much would you
+            have had to cut down your expenses to accumulate given amount of money at that day.
+        </span>
+    </div>
+
+</div>
+
+
+<div class="row m-0 ">
+
+    <div class="col">
+
+        <button mat-raised-button
+                class="w-100 p-3"
+                color="primary"
+                (click)="picker.open()">
+            <span class="">
+                <ng-container class=""
+                              *ngIf="(predictedAmount | async); else initialButtonText">
+                    Pick another day
+
+                </ng-container>
+                <ng-template #initialButtonText>
+
+                    Pick a day
+
+
+                </ng-template>
+            </span>
+
+
+        </button>
+
+        <form [formGroup]="form">
+            <mat-form-field class=" date-form-field"
+                            appearance="fill">
+                <input matInput
+                       (dateChange)="dateChange($event)"
+                       [matDatepicker]="picker"
+                       [matDatepickerFilter]="dateFilter">
+                <mat-datepicker #picker></mat-datepicker>
+
+
+            </mat-form-field>
+
+        </form>
+
+
+    </div>
+
+    <div class="col text-center">
+
+
+
+
+        <ng-container *ngIf="(predictedAmount | async) as amount">
+            <p class="">
+
+                Predicted amount:
+
+            </p>
+            <span class="mat-display-2">
+
+                {{amount.toLocaleString()}}
+
+            </span>
+        </ng-container>
+
+
+
+    </div>
+
+
+
+    <div class="col-12">
+        <ng-container *ngIf="(chartConfig$ | async)">
+
+            <app-prediction-chart-card [config$]="chartConfig$.asObservable()">
+            </app-prediction-chart-card>
+
+
+
+
+
+
+        </ng-container>
+    </div>
+
+
+</div>

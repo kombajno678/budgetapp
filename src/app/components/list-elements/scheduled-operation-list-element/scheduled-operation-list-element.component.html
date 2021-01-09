@@ -1,0 +1,121 @@
+<mat-list-item *ngIf="so" class="{{so.active ? '' : 'sop-disabled'}}{{highlighted ? 'highlighted' : ''}}">
+    <mat-icon mat-list-icon (click)="debug()">
+        {{ so.value >= 0 ? 'add' : 'remove'}}
+    </mat-icon>
+
+    <div mat-line
+         *ngIf="!compact">
+        <span class="mat-title">{{so.value < 0
+              ?
+              displayValue(-so.value)
+              :
+              displayValue(so.value)}}</span>
+
+                <span *ngIf="so.category">
+                    <mat-icon [matTooltip]="so.category.name"
+                              [style.color]="so.category.color">
+                        {{so.category.icon ? so.category.icon : 'category'}}
+                    </mat-icon>
+                </span>
+
+                {{ so.active ? '' : '(Disabled)' }}
+                {{ !so.hidden ? '' : '(Deleted)' }}
+    </div>
+    <div mat-line
+         *ngIf="!compact"
+         class="">
+        <span class="mat-subheading-2">{{so.name}}</span>
+        <span class="schedule-desc">
+            {{ this.getScheduleTypeDescription(so.scheduleType) }}
+        </span>
+        <span class="schedule-desc">
+            {{ so.category?.name}}
+        </span>
+
+
+    </div>
+
+    <div mat-line
+         *ngIf="compact">
+
+
+        <span class="mat-title">
+            {{so.value < 0
+              ?
+              displayValue(-so.value)
+              :
+              displayValue(so.value)}}
+              </span>
+                <span class="mat-subheading-2">{{so.name}}</span>
+
+
+    </div>
+
+
+
+
+
+    <ng-container *ngIf="displayButton">
+
+
+        <button mat-icon-button
+                type="button"
+                [matMenuTriggerFor]="menu"
+                aria-label="Example icon-button with a menu">
+            <mat-icon>more_vert</mat-icon>
+        </button>
+
+
+        <mat-menu #menu="matMenu">
+
+            <button mat-menu-item
+                    type="button"
+                    color="accent"
+                    [disabled]="so.hidden"
+                    (click)="modify()">
+                <mat-icon>edit</mat-icon>
+                <span>Modify</span>
+            </button>
+
+            <button mat-menu-item
+                    type="button"
+                    color="warn"
+                    [disabled]="so.hidden"
+                    (click)="changeActiveState()">
+                <mat-icon>{{ so.active ? 'pause' : 'play_arrow' }}</mat-icon>
+                <span> {{ so.active ? 'Disable' : 'Activate' }}</span>
+            </button>
+<!--
+            <button mat-menu-item
+                    type="button"
+                    color="warn"
+                    disabled>
+                <mat-icon>delete</mat-icon>
+                <span>Delete all operations from this schedules</span>
+            </button>
+-->
+
+
+            <button *ngIf="!so.hidden" mat-menu-item
+                    type="button"
+                    color="warn"
+                    (click)="onDelete.emit(so)">
+                <mat-icon>delete</mat-icon>
+                <span>Delete</span>
+            </button>
+
+
+            <button *ngIf="so.hidden" mat-menu-item
+                    type="button"
+                    color="warn"
+                    (click)="onRestore.emit(so)">
+                <mat-icon>restore_from_trash</mat-icon>
+                <span>Restore</span>
+            </button>
+
+        </mat-menu>
+    </ng-container>
+
+
+
+</mat-list-item>

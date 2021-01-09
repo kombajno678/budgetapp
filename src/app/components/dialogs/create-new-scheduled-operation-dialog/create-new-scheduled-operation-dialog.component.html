@@ -1,0 +1,231 @@
+<h1 mat-dialog-title>{{title}}</h1>
+<mat-dialog-content>
+    <form [formGroup]="form">
+
+        <div class="row">
+            <div class="col">
+
+                <mat-button-toggle-group name="operation-type"
+                                         class="w-100"
+                                         #operationTypeOption="matButtonToggleGroup"
+                                         aria-label="Operation type">
+                    <mat-button-toggle value="expense"
+                                       class="w-100"
+                                       [checked]="this.operationValueSign < 0">Expense</mat-button-toggle>
+                    <mat-button-toggle value="income"
+                                       class="w-100"
+                                       [checked]="this.operationValueSign > 0">Income</mat-button-toggle>
+                </mat-button-toggle-group>
+
+
+            </div>
+        </div>
+
+
+
+        <div class="row">
+            <div class="col">
+
+                <mat-form-field appearance="fill"
+                                class="w-100">
+                    <mat-label>
+                        Value
+                    </mat-label>
+                    <input matInput
+                           type="number"
+                           placeholder="0.00"
+                           formControlName="value">
+                    <mat-icon matSuffix>money</mat-icon>
+                    <span matPrefix>{{ operationTypeOption.value == 'income' ?' + ' : ' - ' }}</span>
+
+                </mat-form-field>
+
+
+            </div>
+        </div>
+
+
+        <div class="row">
+            <div class="col">
+                <mat-form-field appearance="fill"
+                                class="w-100">
+                    <mat-label>
+                        Operation title
+                    </mat-label>
+                    <input matInput
+                           formControlName="name">
+                </mat-form-field>
+
+            </div>
+        </div>
+
+
+        <div class="row p-2">
+            <div class="col">
+
+                <label> Choose schedule type: </label>
+                <mat-radio-group class="example-radio-group"
+                                 formControlName="formScheduleType"
+                                 aria-label="Select schedule type:">
+                    <mat-radio-button class="example-radio-button"
+                                      [value]="0">Daily</mat-radio-button>
+                    <mat-radio-button class="example-radio-button"
+                                      [value]="1">Weekly</mat-radio-button>
+                    <mat-radio-button class="example-radio-button"
+                                      [value]="2">Monthly</mat-radio-button>
+                    <mat-radio-button class="example-radio-button"
+                                      [value]="3">Annually</mat-radio-button>
+                </mat-radio-group>
+
+                <ng-container [ngSwitch]="this.scheduleType">
+
+                    <div *ngSwitchCase="0">
+
+                    </div>
+
+                    <div *ngSwitchCase="1">
+
+
+                        <mat-form-field appearance="fill">
+                            <mat-label>Day of week</mat-label>
+                            <mat-select formControlName="formDaysOfWeek"
+                                        #daysOfWeekSelectionList
+                                        multiple>
+                                <mat-option *ngFor="let dayOfWeek of daysOfWeek"
+                                            [value]="dayOfWeek.value">{{dayOfWeek.display}}</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+
+
+
+
+                    </div>
+
+                    <div *ngSwitchCase="2">
+
+                        <!--
+
+                        <mat-selection-list #daysOfMonthsSelectionList
+                                            formControlName="formDaysOfMonths">
+                            <mat-list-option *ngFor="let dayOfMonth of daysOfMonth"
+                                             [value]="dayOfMonth">
+                                {{dayOfMonth}}
+                            </mat-list-option>
+                        </mat-selection-list>
+                        -->
+
+
+
+                        <mat-form-field appearance="fill">
+                            <mat-label>Day of month</mat-label>
+                            <mat-select formControlName="formDaysOfMonths"
+                                        #daysOfMonthsSelectionList
+                                        multiple>
+                                <mat-option *ngFor="let dayOfMonth of daysOfMonth"
+                                            [value]="dayOfMonth">{{dayOfMonth}}</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+
+
+
+                    </div>
+
+                    <div *ngSwitchCase="3">
+
+
+                        <!--
+
+                        <mat-selection-list #monthsSelectionList
+                                            formControlName="formMonths">
+                            <mat-list-option *ngFor="let month of months"
+                                             [value]="month.value">
+                                {{month.display}}
+                            </mat-list-option>
+                        </mat-selection-list>
+                        -->
+
+
+                        <mat-form-field appearance="fill">
+                            <mat-label>Month:</mat-label>
+                            <mat-select formControlName="formMonths"
+                                        #monthsSelectionList
+                                        multiple>
+                                <mat-option *ngFor="let month of months"
+                                            [value]="month.value">{{month.display}}</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+
+
+
+
+
+                        <mat-form-field appearance="fill">
+                            <mat-label>Day of month</mat-label>
+                            <mat-select formControlName="formDaysOfMonths"
+                                        #daysOfMonthsSelectionList
+                                        multiple>
+                                <mat-option *ngFor="let dayOfMonth of daysOfMonth"
+                                            [value]="dayOfMonth">{{dayOfMonth}}</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+
+
+                    <div *ngSwitchDefault>(error: unknown schedule type)</div>
+                </ng-container>
+
+
+            </div>
+        </div>
+
+
+
+        <div class="row">
+            <div class="col">
+                <mat-form-field appearance="fill"
+                                class="w-100">
+                    <mat-label>
+                        Operation category
+                    </mat-label>
+
+                    <mat-select formControlName="category">
+                        <mat-select-trigger *ngIf="form.controls.category.value as selectedCat">
+                            <mat-icon [style.color]="selectedCat.color">
+                                {{selectedCat.icon ? selectedCat.icon : 'category'}}
+                            </mat-icon>
+                            {{selectedCat.name}}
+                        </mat-select-trigger>
+                        <mat-option [value]="null">
+                            - none -
+                        </mat-option>
+                        <mat-option *ngFor="let cat of this.possibleCategories"
+                                    [value]="cat">
+
+                            <mat-icon [style.color]="cat.color">
+                                {{cat.icon ? cat.icon : 'category'}}
+                            </mat-icon>{{cat.name}}
+                        </mat-option>
+                    </mat-select>
+
+                </mat-form-field>
+
+            </div>
+        </div>
+
+
+
+
+
+
+    </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-flat-button
+            mat-dialog-close>Cancel</button>
+    <button mat-button
+            (click)="onSave()"
+            [disabled]="this.form.invalid">
+        {{acceptButtonTest}}
+    </button>
+</mat-dialog-actions>

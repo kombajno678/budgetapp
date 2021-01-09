@@ -1,0 +1,228 @@
+<div class="row m-0">
+  <div class="col-12 pr-0 pl-0">
+    <app-prediction-chart [data$]="predictions$.asObservable()"
+                          [config$]="config$.asObservable()"
+                          (onDayClicked)="onDayClicked($event)"> ... </app-prediction-chart>
+  </div>
+</div>
+<div class="row m-0">
+  <div class="col p-1">
+    <mat-button-toggle-group name="rangeType"
+                             class="w-100"
+                             #rangeTypeGroup="matButtonToggleGroup"
+                             aria-label="rangeType"
+                             (change)="onRangeTypeChange($event)">
+      <mat-button-toggle class="w-100"
+                         value="month">+/- month</mat-button-toggle>
+      <mat-button-toggle class="w-100"
+                         value="months"
+                         checked>+/- 3 months</mat-button-toggle>
+      <mat-button-toggle class="w-100"
+                         value="custom">Custom</mat-button-toggle>
+    </mat-button-toggle-group>
+  </div>
+  <div class="col p-1">
+
+    <form [formGroup]="form"
+          (submit)="onFormSubmit()">
+
+      <ng-container *ngIf="rangeTypeGroup.value == 'custom'">
+
+
+        <div class="row m-0">
+          <div class="col">
+
+            <mat-form-field appearance="fill">
+              <mat-label>Enter a date range</mat-label>
+              <mat-date-range-input [rangePicker]="picker">
+                <input matStartDate
+                       formControlName="startDate"
+                       placeholder="Start date">
+                <input matEndDate
+                       formControlName="endDate"
+                       placeholder="End date">
+              </mat-date-range-input>
+              <mat-datepicker-toggle matSuffix
+                                     [for]="picker"></mat-datepicker-toggle>
+              <mat-date-range-picker #picker></mat-date-range-picker>
+            </mat-form-field>
+
+          </div>
+          <div class="col">
+
+            <button mat-flat-button
+                    color="accent"
+                    class="w-100 select-date-button">
+              Select
+            </button>
+          </div>
+        </div>
+      </ng-container>
+
+    </form>
+
+  </div>
+
+
+
+
+
+</div>
+
+
+<div class="row m-0">
+
+  <div class="col-12 col-md-6 p-1">
+    <ng-container *ngIf="selectedPP$ | async as pp; else clickhelp">
+      <mat-expansion-panel expanded>
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            selected day: {{pp.date.toLocaleDateString()}}
+          </mat-panel-title>
+          <mat-panel-description>
+            {{displayValue(pp.value)}}
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <div class="w-100 text-center mat-caption">
+          change : {{ displayValue(pp.delta) }}
+
+        </div>
+
+        <div class="w-100 text-center mat-caption"
+             *ngIf="pp.fixedPoint">
+          fixed point : {{ pp.fixedPoint.exact_value }}
+        </div>
+
+
+        <mat-list dense>
+          <ng-container *ngFor="let op of pp.operations">
+            <app-operation-list-element [op]="op"
+                                        [compact]="true"
+                                        [displayButton]="false">
+            </app-operation-list-element>
+          </ng-container>
+        </mat-list>
+
+      </mat-expansion-panel>
+
+    </ng-container>
+
+    <ng-template #clickhelp>
+      <div class="p-3">
+        <h1>
+          <mat-icon>info</mat-icon> Hint
+        </h1>
+        <p>Click on a day in chart to see details here
+        </p>
+      </div>
+
+
+
+    </ng-template>
+
+
+
+  </div>
+  <div class="col-12 col-md-6 p-1">
+   <app-summary [predictions$]="this.predictions$">
+
+   </app-summary>
+  </div>
+
+</div>
+
+<div class="row m-0">
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<!--
+<div class="row m-0"
+     *ngIf="false">
+  <div class="col">
+
+
+    <ng-container *ngIf="(loading$ | async) as loading; else loaded">
+      <mat-spinner>
+
+      </mat-spinner>
+    </ng-container>
+    <ng-template #loaded>
+      <ng-container *ngIf="(predictions$ | async) as list">
+
+        Days : {{ list.length }}
+        <cdk-virtual-scroll-viewport itemSize="48"
+                                     class="days-viewport">
+          <mat-accordion class="example-headers-align"
+                         multi>
+
+
+            <mat-list dense
+                      class="w-100">
+              <ng-container *cdkVirtualFor="let pp of getPredictionsWhereDeltaNotZero(list)">
+
+                <mat-expansion-panel>
+                  <mat-expansion-panel-header>
+                    <mat-panel-title>
+                      {{pp.date.toISOString().substr(0, 10)}} : {{displayValue(pp.value)}}
+                    </mat-panel-title>
+                    <mat-panel-description>
+                      change : {{ displayValue(pp.delta) }}
+                    </mat-panel-description>
+                  </mat-expansion-panel-header>
+
+
+                  <div *ngIf="pp.fixedPoint">
+                    fixed point : {{ pp.fixedPoint.exact_value }}
+                  </div>
+
+
+                  <mat-list>
+                    <div mat-subheader>operations</div>
+                    <mat-list-item *ngFor="let op of pp.operations">
+                      <app-operation-list-element [op]="op"
+                                                  [compact]="true"
+                                                  [displayButton]="true">...
+                      </app-operation-list-element>
+                    </mat-list-item>
+                  </mat-list>
+
+                </mat-expansion-panel>
+
+
+              </ng-container>
+            </mat-list>
+          </mat-accordion>
+
+        </cdk-virtual-scroll-viewport>
+
+      </ng-container>
+
+
+    </ng-template>
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+</div>
+-->

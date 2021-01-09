@@ -1,0 +1,20 @@
+.img-wrapper {
+  height: 3rem;
+  width: 4rem;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+.expand-icon {
+  line-height: 3rem;
+  font-size: 2.75rem;
+}
+
+.avatar {
+  object-fit: cover;
+}
+
+img {
+  width: 100%;
+  height: auto;
+}
+

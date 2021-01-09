@@ -1,0 +1,34 @@
+@use "src/variables";
+
+.top-section {
+  padding: 1rem;
+}
+.user-avatar-container:hover  {
+  border:10px;
+}
+
+.user-avatar {
+  /*border-radius: 50%;*/
+  padding: 1rem;
+  
+}
+
+.user-avatar-container {
+  //border: 5px solid black;
+  //border-radius: 50%;
+  max-width: fit-content;
+  margin: auto;
+}
+
+mat-icon{
+  margin-right:1rem;
+}
+
+.mat-list-item-disabled{
+  color: rgb(127, 127, 127) !important;
+  background-color:rgba(0, 0, 0, 0) !important;
+}
+
+img{
+  max-width: 6rem;
+}

@@ -1,0 +1,59 @@
+<h2 mat-dialog-title>Upload operations help</h2>
+<mat-dialog-content class="mat-typography p-0">
+
+
+
+
+    <mat-tab-group>
+        <mat-tab label="mBank">
+
+
+
+
+
+            <mat-horizontal-stepper linear
+                                    #stepper>
+                <mat-step>
+                    <!--<ng-template matStepLabel>Log in </ng-template>-->
+                    <h2>Log in to bank's online page</h2>
+                </mat-step>
+                <mat-step>
+                    <!--<ng-template matStepLabel>History</ng-template>-->
+                    <h2>Go to your operation history</h2>
+                    <img src="assets\img\help\mbank\upload-help-mbank-01.png"
+                         class="img-fluid"
+                         alt="Operations history">
+                </mat-step>
+                <mat-step>
+                    <!--<ng-template matStepLabel>Export</ng-template>-->
+                    <h2>Click here to download history as .csv file</h2>
+                    <img src="assets\img\help\mbank\upload-help-mbank-02.png"
+                         class="img-fluid"
+                         alt="Operations export as csv">
+                </mat-step>
+                <mat-step>
+                    <!--<ng-template matStepLabel>Done</ng-template>-->
+                    <h2>Done! Now you can import that file here</h2>
+                </mat-step>
+            </mat-horizontal-stepper>
+
+
+
+
+        </mat-tab>
+        <mat-tab label="other"
+                 disabled> </mat-tab>
+        <mat-tab label="banks"
+                 disabled> </mat-tab>
+        <mat-tab label="coming"
+                 disabled> </mat-tab>
+        <mat-tab label="soon"
+                 disabled> </mat-tab>
+    </mat-tab-group>
+
+
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <button mat-button
+            mat-dialog-close>Close</button>
+</mat-dialog-actions>

@@ -1,0 +1,22 @@
+.avatar-wrapper {
+  max-height: 80% !important;
+}
+
+.menu-button {
+  /*margin-right: 0.5rem;*/
+}
+.logo-nav-bar {
+  height: 32px;
+  width: 32px;
+  /*margin-right: 0.5rem;*/
+}
+
+.log-in {
+  width: 50px;
+}
+
+@media only screen and (max-width: 600px) {
+  .navbar-title {
+    display: none;
+  }
+}

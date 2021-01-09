@@ -1,0 +1,307 @@
+<h1>Uploading .csv file</h1>
+
+
+<div class="row m-1"
+     *ngIf="!report && !success && !uploading">
+  <div class="col-12 col-md-6 mb-3 text-center">
+    <h3>Need help getting file?</h3>
+    <button mat-stroked-button
+            color="secondary"
+            (click)="onHelpButtonClick()">How do I export data?</button>
+  </div>
+
+  <div class="col-12 col-md-6 mb-3 text-center">
+    <h3>Want to try with example file?</h3>
+    <a mat-stroked-button
+       color="secondary"
+       [href]="exampleFilePath"
+       target="_blank">Download example csv file</a>
+  </div>
+
+
+
+
+
+  <div class="col-sm-12 col-md-8 mb-0 p-0">
+    <form [formGroup]="myForm"
+          class="w-100">
+
+
+      <mat-form-field class="p-0">
+        <div>
+          <mat-toolbar>
+            <!-- Display files names -->
+            <input matInput
+                   formControlName="fileAttr"
+                   readonly />
+
+            <!-- Browse Button -->
+
+            <mat-icon>
+              attach_file
+
+            </mat-icon>
+          </mat-toolbar>
+
+          <!-- Fetch selected filed on change -->
+          <input formControlName="file"
+                 type="file"
+                 id="file"
+                 #fileInput
+                 id="uploadFile"
+                 (change)="onFileChange($event)"
+                 name="uploadFile" />
+        </div>
+      </mat-form-field>
+
+    </form>
+
+  </div>
+
+
+  <div class="col-sm-12 col-md-4 text-center p-0 pb-3">
+    <button mat-flat-button
+            class="w-100 h-100 p-2"
+            color="primary"
+            (click)="submit()"
+            [disabled]="f.file.invalid">
+      Submit
+      <mat-icon>
+        publish
+      </mat-icon>
+    </button>
+  </div>
+
+  <div class="col">
+    <div *ngIf="f.file.touched && f.file.invalid">
+      <div *ngIf="f.file.errors.required">
+        File is required.
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+</div>
+
+
+
+<div class="row m-1"
+     *ngIf="uploading">
+  <div class="col"></div>
+  <div class="col-auto text-center">
+    <mat-spinner>
+    </mat-spinner>
+    <span class="text-center pt-3">
+      <h3>uploading and analyzing ...</h3>
+    </span>
+
+  </div>
+  <div class="col"></div>
+</div>
+
+
+<ng-container *ngIf="(report$ | async) as r; else loading">
+  <div class="row m-1">
+    <div class="col-12">
+      <h1>
+        Please review generated operations.
+      </h1>
+      <p>
+        You can make changes to them now. If you click cancel button, no changes will be made.
+      </p>
+
+    </div>
+
+    <div class="col-sm-12 col-md-12 col-lg-12 p-1">
+
+      <mat-accordion>
+
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              new scheduled operaions
+            </mat-panel-title>
+            <mat-panel-description class="text-right">
+              {{r.ScheduledOperations.length}}
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+
+          <ng-template matExpansionPanelContent>
+
+            <cdk-virtual-scroll-viewport itemSize="48"
+                                         minBufferPx="200"
+                                         maxBufferPx="400"
+                                         class="operations-viewport">
+              <mat-list dense
+                        class="w-100">
+                <ng-container *cdkVirtualFor="let so of r.ScheduledOperations">
+                  <app-scheduled-operation-list-element [so]="so"
+                                                        [compact]="true">
+
+                  </app-scheduled-operation-list-element>
+
+
+                </ng-container>
+              </mat-list>
+            </cdk-virtual-scroll-viewport>
+
+          </ng-template>
+
+          
+        </mat-expansion-panel>
+
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              new categories
+            </mat-panel-title>
+            <mat-panel-description  class="text-right">
+              {{r.Categories.length}}
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+          <ng-template matExpansionPanelContent>
+
+            <cdk-virtual-scroll-viewport itemSize="48"
+                                         minBufferPx="200"
+                                         maxBufferPx="400"
+                                         class="operations-viewport">
+              <mat-list dense
+                        class="w-100">
+                <ng-container *cdkVirtualFor="let cat of r.Categories">
+                  <app-category-list-element [cat]="cat"
+                                             [compact]="false"
+                                             (onDelete)="deleteCategory($event)"
+                                             (onModify)="modifyCategory($event)">
+                    ...
+                  </app-category-list-element>
+                </ng-container>
+              </mat-list>
+            </cdk-virtual-scroll-viewport>
+
+
+
+
+          </ng-template>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              new operations
+            </mat-panel-title>
+            <mat-panel-description  class="text-right">
+              {{r.Operations.length}}
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+          <ng-template matExpansionPanelContent>
+            <cdk-virtual-scroll-viewport itemSize="48"
+                                         minBufferPx="200"
+                                         maxBufferPx="400"
+                                         class="operations-viewport">
+
+              <mat-list dense
+                        class="w-100">
+
+                <ng-container *cdkVirtualFor="let op of r.Operations;templateCacheSize: 20">
+
+                  <app-operation-list-element [op]="op"
+                                              [compact]="true"
+                                              (onDelete)="deleteOperation($event)"
+                                              (onModify)="modifyOperation($event)"
+                                              class="w-100">
+
+                  </app-operation-list-element>
+
+
+                </ng-container>
+
+              </mat-list>
+
+            </cdk-virtual-scroll-viewport>
+          </ng-template>
+          
+
+        </mat-expansion-panel>
+
+
+      </mat-accordion>
+    </div>
+
+
+
+
+  </div>
+
+  <div class="row m-1">
+
+    <div class="col">
+
+    </div>
+    <div class="col-auto">
+      <button mat-flat-button
+              (click)="onCancel()">
+        Cancel
+      </button>
+    </div>
+    <div class="col-auto">
+      <button mat-flat-button
+              (click)="onSave()"
+              color="primary">
+        Save
+      </button>
+    </div>
+
+  </div>
+
+
+</ng-container>
+
+
+
+
+
+
+<ng-template #loading>
+
+
+
+
+
+  <ng-container *ngIf="!success; else successMsg">
+
+    <ng-container *ngIf="report">
+      <div class="row m-1">
+        <div class="col"></div>
+        <div class="col-auto text-center">
+          <mat-spinner>
+          </mat-spinner>
+          <span class="text-center pt-3">
+            <h3>saving ...</h3>
+          </span>
+
+        </div>
+        <div class="col"></div>
+      </div>
+    </ng-container>
+
+
+
+  </ng-container>
+
+  <ng-template #successMsg>
+    <h2>
+      Import successflul!
+    </h2>
+    <a *ngIf="displayGoToHomeButton"
+       mat-flat-button
+       color="accent"
+       href="/">Go to home page</a>
+  </ng-template>
+
+
+
+
+</ng-template>

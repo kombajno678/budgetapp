@@ -1,0 +1,91 @@
+<mat-list-item class="{{highlighted ? 'highlighted' : ''}}">
+    <mat-icon mat-list-icon>
+        {{ op.value >= 0 ? 'add' : 'remove'}}
+    </mat-icon>
+
+
+
+    <div mat-line
+         *ngIf="!compact">
+        <span class="mat-title">
+            {{op.value < 0
+              ?
+              displayValue(-op.value)
+              :
+              displayValue(op.value)}}
+              </span>
+                <span *ngIf="op.scheduled_operation">
+                    <mat-icon [matTooltip]="op.scheduled_operation.name">
+                        schedule
+                    </mat-icon>
+                </span>
+                <span *ngIf="op.category">
+                    <mat-icon [matTooltip]="op.category.name"
+                              [style.color]="op.category.color">
+                        {{op.category.icon ? op.category.icon : 'category'}}
+                    </mat-icon>
+                </span>
+
+
+    
+    
+            </div>
+
+    <div mat-line
+         *ngIf="!compact">
+        <span class="mat-subheading-2"> {{op.name}}</span>
+
+    </div>
+
+
+
+    <div mat-line
+         *ngIf="compact">
+        <span class="mat-title">{{op.value < 0
+              ?
+              displayValue(-op.value)
+              :
+              displayValue(op.value)}}</span>
+
+
+                <span class="mat-subheading-2">{{op.name}}</span>
+
+
+    </div>
+
+
+
+    <ng-container *ngIf="displayButton">
+        <div>
+            <button mat-icon-button
+                    [matMenuTriggerFor]="menu"
+                    aria-label="menu">
+                <mat-icon>more_vert</mat-icon>
+            </button>
+
+
+
+            <mat-menu #menu="matMenu">
+
+                <button mat-menu-item
+                        color="accent"
+                        (click)="modify()">
+                    <mat-icon>edit</mat-icon>
+                    <span>Modify</span>
+                </button>
+
+                <button mat-menu-item
+                        color="warn"
+                        (click)="onDelete.emit(op)">
+                    <mat-icon>delete</mat-icon>
+                    <span>Delete</span>
+                </button>
+
+
+
+            </mat-menu>
+        </div>
+    </ng-container>
+
+
+</mat-list-item>

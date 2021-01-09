@@ -1,0 +1,61 @@
+<mat-list-item class="{{highlighted ? 'highlighted' : ''}}">
+    <mat-icon mat-list-icon
+              [style.color]="cat.color">
+        {{ cat.icon ? cat.icon : 'category' }}
+    </mat-icon>
+
+    <div mat-line
+         *ngIf="!compact">
+        <span class="mat-title">{{cat.name}} </span>
+
+    </div>
+
+
+
+    <div mat-line
+         *ngIf="compact">
+
+    </div>
+
+
+
+    <ng-container *ngIf="displayButton">
+        <div>
+            <button mat-icon-button
+                    [matMenuTriggerFor]="menu"
+                    aria-label="menu">
+                <mat-icon>more_vert</mat-icon>
+            </button>
+
+
+
+            <mat-menu #menu="matMenu">
+
+                <button mat-menu-item
+                        color="accent"
+                        (click)="modify()">
+                    <mat-icon>edit</mat-icon>
+                    <span>Modify</span>
+                </button>
+
+                <button mat-menu-item
+                        color="warn"
+                        (click)="onDelete.emit(cat)"
+                        disabled>
+                    <mat-icon>delete</mat-icon>
+                    <span>Delete</span>
+                </button>
+
+
+
+            </mat-menu>
+        </div>
+    </ng-container>
+
+
+
+
+
+
+
+</mat-list-item>
