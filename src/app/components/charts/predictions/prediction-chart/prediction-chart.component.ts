@@ -58,6 +58,7 @@ export class PredictionChartComponent implements OnInit, AfterViewInit {
 
 
 
+  chartCompactHeight: boolean = false;
 
 
 
@@ -252,6 +253,7 @@ export class PredictionChartComponent implements OnInit, AfterViewInit {
           if (config.marks) {
             
           }
+          this.chartCompactHeight = config.compact;
 
 
 

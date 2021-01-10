@@ -28,7 +28,8 @@ export class HomeComponent implements OnInit {
       endDate: new Date(endDate),
       title: 'Next 3 months',
       delayOnUpdate:false,
-      disableControls : true
+      disableControls : true,
+      compact: true,
     })
 
     let startDate = new Date();
@@ -38,7 +39,8 @@ export class HomeComponent implements OnInit {
       endDate: new Date(),
       title: 'Last month',
       delayOnUpdate:false,
-      disableControls : true
+      disableControls : true,
+      compact: true,
     })
 
 

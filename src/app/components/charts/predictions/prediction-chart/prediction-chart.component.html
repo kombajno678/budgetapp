@@ -10,24 +10,7 @@
 
 <ng-template #loaded>
   <div style="display: block;">
-
-
     <ng-container *ngIf="displayChart; else templatechart">
-      <!--
-      <canvas baseChart
-              #mychart
-              [width]="width ? width : 400"
-              [height]="height ? height : 400"
-              [datasets]="lineChartData"
-              [labels]="lineChartLabels"
-              [options]="lineChartOptions"
-              [colors]="lineChartColors"
-              [legend]="lineChartLegend"
-              [chartType]="lineChartType"
-              [plugins]="lineChartPlugins"
-              (chartClick)="onChartClick($event)">
-      </canvas>
-      -->
       <highcharts-chart *ngIf="isHighcharts"
                         [Highcharts]="Highcharts"
                         [constructorType]="chartConstructor"
@@ -36,21 +19,11 @@
                         [(update)]="updateFlag"
                         [oneToOne]="oneToOneFlag"
                         
-                        style="width: 100%; height: 400px; display: block;">
+                        style="width: 100%; height: 400px; display: block;"
+                        class="{{ chartCompactHeight ? 'chart-compact-h' : 'chart-normal-h'}}">
       </highcharts-chart>
-
-
-
-
-
-
-
     </ng-container>
-
-
   </div>
-
-
 </ng-template>
 
 <ng-template #templatechart>
