@@ -254,7 +254,7 @@ export class PredictionChartComponent implements OnInit, AfterViewInit {
             
           }
           this.chartCompactHeight = config.compact;
-
+          this.chartOptions.legend.enabled = !config.compact;
 
 
         }
