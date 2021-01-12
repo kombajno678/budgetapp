@@ -105,7 +105,11 @@ export class PredictionChartComponent implements OnInit, AfterViewInit {
 
 
     xAxis: {
-      categories: []
+      categories: [],
+      labels : {
+        step : 7,
+        rotation: -45,
+      }
     },
     yAxis: {
       

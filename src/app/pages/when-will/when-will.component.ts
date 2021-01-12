@@ -106,7 +106,8 @@ export class WhenWillComponent implements OnInit {
           title: `You will have ${x} at ${when.toISOString().substr(0, 10)}`,
           marks: [when],
           delayOnUpdate:true,
-          disableControls : true
+          disableControls : true,
+          compact : false,
 
         }
 
