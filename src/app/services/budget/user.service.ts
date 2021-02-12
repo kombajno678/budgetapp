@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { EventEmitter, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, combineLatest, Observable, of, Subject } from 'rxjs';
 import { catchError, finalize, first, map, share, tap } from 'rxjs/operators';
@@ -72,6 +72,17 @@ export class UserService {
       catchError(this.handleError<any>(path, null))
     );
 
+  }
+
+  public themeChanged:EventEmitter<null> = new EventEmitter<null>();
+
+
+  emitThemeChange(){
+    this.themeChanged.emit();
+  }
+
+  onThemeChanged():Observable<any>{
+    return this.themeChanged.asObservable();
   }
 
 

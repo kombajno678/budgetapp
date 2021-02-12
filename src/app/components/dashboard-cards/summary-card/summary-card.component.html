@@ -5,7 +5,10 @@
        [routerLink]="link.url">
       {{link.title}}
     </a>
-    (last {{summaryConfig.top}} {{summaryConfig.summaryRangeType}}{{ summaryConfig.top >=2 ? 's' : '' }})
+    <span class="pt-2">
+      (last {{summaryConfig.top}} {{summaryConfig.summaryRangeType}}{{ summaryConfig.top >=2 ? 's' : '' }})
+
+    </span>
 
   </mat-card-header>
 

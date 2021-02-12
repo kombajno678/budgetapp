@@ -1,9 +1,135 @@
-import { Component, OnInit, ViewChild, ElementRef, Input, Output, EventEmitter, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, Input, Output, EventEmitter, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
 import { PredictionPoint } from 'src/app/models/internal/PredictionPoint';
 import { PredictionChartCardConfig } from 'src/app/components/dashboard-cards/prediction-chart-card/prediction-chart-card.component';
 import moment, { Moment } from 'moment';
 import * as Highcharts from 'highcharts';
+import { UserService } from 'src/app/services/budget/user.service';
+import { ThemeService } from 'ng2-charts';
+import { Router } from '@angular/router';
+
+
+
+const lightChartOptions = {
+
+  "colors": ["#0266C8", "#F90101", "#F2B50F", "#00933B"],
+  "chart": {
+    "style": {
+      "fontFamily": "Roboto",
+      "color": "#444444"
+    },
+    "backgroundColor": "#FFFFFF",
+    
+  },
+  "xAxis": {
+    "gridLineWidth": 1,
+    "gridLineColor": "#F3F3F3",
+    "lineColor": "#F3F3F3",
+    "minorGridLineColor": "#F3F3F3",
+    "tickColor": "#F3F3F3",
+    "tickWidth": 1
+  },
+  "yAxis": {
+    "gridLineColor": "#F3F3F3",
+    "lineColor": "#F3F3F3",
+    "minorGridLineColor": "#F3F3F3",
+    "tickColor": "#F3F3F3",
+    "tickWidth": 1
+  },
+  "legendBackgroundColor": "rgba(0, 0, 0, 0.5)",
+  "background2": "#505053",
+  "dataLabelsColor": "#B0B0B3",
+  "textColor": "#C0C0C0",
+  "contrastTextColor": "#F0F0F3",
+  "maskColor": "rgba(255,255,255,0.3)"
+
+}
+const darkChartOptions = {
+  "colors": ["#A9CF54", "#C23C2A", "#FFFFFF", "#979797", "#FBB829"],
+  "chart": {
+    "backgroundColor": "#424242",
+    "style": {
+      "color": "white"
+    }
+  },
+  "legend": {
+    "enabled": true,
+    //"align": "right",
+    //"verticalAlign": "bottom",
+    "itemStyle": {
+      "color": "#C0C0C0"
+    },
+    "itemHoverStyle": {
+      "color": "#C0C0C0"
+    },
+    "itemHiddenStyle": {
+      "color": "#444444"
+    }
+  },
+  "title": {
+    "text": '',
+    "style": {
+      "color": "#FFFFFF"
+    }
+  },
+  "tooltip": {
+    "backgroundColor": "#1C242D",
+    "borderColor": "#1C242D",
+    "borderWidth": 1,
+    "borderRadius": 0,
+    "style": {
+      "color": "#FFFFFF"
+    }
+  },
+  "subtitle": {
+    "style": {
+      "color": "#666666"
+    }
+  },
+  "xAxis": {
+    "gridLineColor": "#2E3740",
+    "gridLineWidth": 1,
+    "labels": {
+      "style": {
+        "color": "#a2a2a2"
+      }
+    },
+    "lineColor": "#2E3740",
+    "tickColor": "#2E3740",
+    "title": {
+      "style": {
+        "color": "#FFFFFF"
+      },
+      "text": ''
+    }
+  },
+  "yAxis": {
+    "gridLineColor": "#2E3740",
+    "gridLineWidth": 1,
+    "labels": {
+      "style": {
+        //"color": "#FF0000"
+        "color": "#a2a2a2"
+      },
+    },
+    lineColor: "#2E3740",
+    tickColor: "#2E3740",
+
+    "title": {
+      "style": {
+        "color": "#FFFFFF"
+      },
+      "text": ''
+    }
+
+  }
+
+}
+
+type Theme = 'light-theme' | 'dark-theme';
+
+
+
 
 @Component({
   selector: 'app-prediction-chart',
@@ -11,6 +137,51 @@ import * as Highcharts from 'highcharts';
   styleUrls: ['./prediction-chart.component.scss']
 })
 export class PredictionChartComponent implements OnInit, AfterViewInit {
+
+  private _selectedTheme: Theme = 'light-theme';
+  public get selectedTheme() {
+    return this._selectedTheme;
+  }
+  public set selectedTheme(value) {
+    this._selectedTheme = value;
+    let overrides: any;//Highcharts.ChartOptions;
+    if (this.selectedTheme === 'dark-theme') {
+      overrides = {
+        legend: {
+          labels: { fontColor: 'white' }
+        },
+        scales: {
+          xAxes: [{
+            ticks: { fontColor: 'white' },
+            gridLines: { color: 'rgba(255,255,255,0.1)' }
+          }],
+          yAxes: [{
+            ticks: { fontColor: 'white' },
+            gridLines: { color: 'rgba(255,255,255,0.1)' }
+          }]
+        }
+      };
+    } else {
+      overrides = {};
+    }
+    this.themeService.setColorschemesOptions(overrides);
+  }
+  initTheme() {
+    let isDarkTheme = JSON.parse(localStorage.getItem('isDarkTheme'));
+    if (isDarkTheme) {
+      this.setCurrentTheme('dark-theme');
+      Highcharts.setOptions(darkChartOptions);
+    } else {
+      this.setCurrentTheme('light-theme');
+      Highcharts.setOptions(lightChartOptions);
+    }
+    console.log('initTheme')
+    
+
+  }
+  setCurrentTheme(theme: Theme) {
+    this.selectedTheme = theme;
+  }
 
 
   highchartSeriesClicked = (event) => {
@@ -138,7 +309,7 @@ export class PredictionChartComponent implements OnInit, AfterViewInit {
 
 
 
-  constructor() {
+  constructor(private router: Router, private userService: UserService, private themeService: ThemeService) {
     this.onDayClicked = new EventEmitter<Date>();
   }
 
@@ -151,6 +322,7 @@ export class PredictionChartComponent implements OnInit, AfterViewInit {
   
 
   ngOnInit() {
+    this.initTheme();
     //console.log('this.compact = ', this.compact);
     this.loading$ = new BehaviorSubject<boolean>(null);
 
@@ -282,14 +454,33 @@ export class PredictionChartComponent implements OnInit, AfterViewInit {
       }
     });
 
+    this.userService.onThemeChanged().subscribe(() => {
+      console.log('this.userService.onThemeChanged().subscribe');
+      this.initTheme();
+      this.reload();
+
+    })
+
 
 
 
   }
+
+
 
   ngAfterViewInit() {
     
 
   }
+
+
+  reload(){
+    this.router.navigate([this.router.url])
+  }
+
+
+  
+
+  
 
 }

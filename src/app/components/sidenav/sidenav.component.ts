@@ -129,7 +129,7 @@ export class SidenavComponent implements OnInit {
   }
   handleChangeThemeClick() {
     this.changeTheme.emit();
-    this.sidenav.close();
+    this.close();
   }
   close() {
     this.sidenav.close();

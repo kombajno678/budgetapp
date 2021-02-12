@@ -1,12 +1,12 @@
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ContentChildren, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { AuthService } from '@auth0/auth0-angular';
 import { ChartOptions } from 'chart.js';
 import { ThemeService } from 'ng2-charts';
 import { environment } from 'src/environments/environment';
 import { User } from './models/User';
 import { BudgetService } from './services/budget/budget.service';
-import { NavigationEnd, Router } from "@angular/router"
+import { ActivatedRoute, NavigationEnd, Router } from "@angular/router"
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Globals } from './Globals';
@@ -16,127 +16,13 @@ import { ScheduledOperationsService } from './services/budget/scheduled-operatio
 import { combineLatest } from 'rxjs';
 import { FixedPointsService } from './services/budget/fixed-points.service';
 import { MatDrawer, MatSidenav } from '@angular/material/sidenav';
+import { Location } from '@angular/common';
 
 
-import * as Highcharts from 'highcharts';
+import { PredictionChartComponent } from './components/charts/predictions/prediction-chart/prediction-chart.component';
 
 
 
-const lightChartOptions = {
-
-  "colors": ["#0266C8", "#F90101", "#F2B50F", "#00933B"],
-  "chart": {
-    "style": {
-      "fontFamily": "Roboto",
-      "color": "#444444"
-    }
-  },
-  "xAxis": {
-    "gridLineWidth": 1,
-    "gridLineColor": "#F3F3F3",
-    "lineColor": "#F3F3F3",
-    "minorGridLineColor": "#F3F3F3",
-    "tickColor": "#F3F3F3",
-    "tickWidth": 1
-  },
-  "yAxis": {
-    "gridLineColor": "#F3F3F3",
-    "lineColor": "#F3F3F3",
-    "minorGridLineColor": "#F3F3F3",
-    "tickColor": "#F3F3F3",
-    "tickWidth": 1
-  },
-  "legendBackgroundColor": "rgba(0, 0, 0, 0.5)",
-  "background2": "#505053",
-  "dataLabelsColor": "#B0B0B3",
-  "textColor": "#C0C0C0",
-  "contrastTextColor": "#F0F0F3",
-  "maskColor": "rgba(255,255,255,0.3)"
-
-}
-const darkChartOptions = {
-  "colors": ["#A9CF54", "#C23C2A", "#FFFFFF", "#979797", "#FBB829"],
-  "chart": {
-    "backgroundColor": "#424242",
-    "style": {
-      "color": "white"
-    }
-  },
-  "legend": {
-    "enabled": true,
-    //"align": "right",
-    //"verticalAlign": "bottom",
-    "itemStyle": {
-      "color": "#C0C0C0"
-    },
-    "itemHoverStyle": {
-      "color": "#C0C0C0"
-    },
-    "itemHiddenStyle": {
-      "color": "#444444"
-    }
-  },
-  "title": {
-    "text": '',
-    "style": {
-      "color": "#FFFFFF"
-    }
-  },
-  "tooltip": {
-    "backgroundColor": "#1C242D",
-    "borderColor": "#1C242D",
-    "borderWidth": 1,
-    "borderRadius": 0,
-    "style": {
-      "color": "#FFFFFF"
-    }
-  },
-  "subtitle": {
-    "style": {
-      "color": "#666666"
-    }
-  },
-  "xAxis": {
-    "gridLineColor": "#2E3740",
-    "gridLineWidth": 1,
-    "labels": {
-      "style": {
-        "color": "#a2a2a2"
-      }
-    },
-    "lineColor": "#2E3740",
-    "tickColor": "#2E3740",
-    "title": {
-      "style": {
-        "color": "#FFFFFF"
-      },
-      "text": ''
-    }
-  },
-  "yAxis": {
-    "gridLineColor": "#2E3740",
-    "gridLineWidth": 1,
-    "labels": {
-      "style": {
-        //"color": "#FF0000"
-        "color": "#a2a2a2"
-      },
-    },
-    lineColor: "#2E3740",
-    tickColor: "#2E3740",
-
-    "title": {
-      "style": {
-        "color": "#FFFFFF"
-      },
-      "text": ''
-    }
-
-  }
-
-}
-
-type Theme = 'light-theme' | 'dark-theme';
 
 
 
@@ -158,56 +44,41 @@ export class AppComponent implements OnInit, AfterViewInit {
   @ViewChild(MatSidenav)
   matDrawer;
 
-  sidenavMode:string = 'side'
+
+  @ContentChildren(PredictionChartComponent)
+  predictionCharts: QueryList<PredictionChartComponent>;
+
+
+  sidenavMode: string = 'side'
 
 
 
 
-  private _selectedTheme: Theme = 'light-theme';
-  public get selectedTheme() {
-    return this._selectedTheme;
-  }
-  public set selectedTheme(value) {
-    this._selectedTheme = value;
-    let overrides: ChartOptions;
-    if (this.selectedTheme === 'dark-theme') {
-      overrides = {
-        legend: {
-          labels: { fontColor: 'white' }
-        },
-        scales: {
-          xAxes: [{
-            ticks: { fontColor: 'white' },
-            gridLines: { color: 'rgba(255,255,255,0.1)' }
-          }],
-          yAxes: [{
-            ticks: { fontColor: 'white' },
-            gridLines: { color: 'rgba(255,255,255,0.1)' }
-          }]
-        }
-      };
-    } else {
-      overrides = {};
-    }
-    this.themeService.setColorschemesOptions(overrides);
-  }
 
+  mySubscription;
 
-
-
+  
+ 
   constructor(
     public auth: AuthService,
     public breakpointObserver: BreakpointObserver,
-    private themeService: ThemeService,
     private budget: BudgetService,
     private userService: UserService,
-    private router: Router,
+    private router: Router,private activatedRoute: ActivatedRoute,
     private snack: MatSnackBar,
     private operationsService: BudgetOperationService,
     private scheduledService: ScheduledOperationsService,
-    private fixedPointsService: FixedPointsService
+    private fixedPointsService: FixedPointsService,
+    private location: Location
 
   ) {
+    this.router.routeReuseStrategy.shouldReuseRoute = () => false;
+     this.mySubscription = this.router.events.subscribe((event) => {
+       if (event instanceof NavigationEnd) {
+          // Trick the Router into believing it's last link wasn't previously loaded
+          this.router.navigated = false;
+       }
+     }); 
 
     breakpointObserver.observe([
       Breakpoints.HandsetLandscape,
@@ -229,7 +100,7 @@ export class AppComponent implements OnInit, AfterViewInit {
 
 
 
-    this.initTheme();
+
 
     this.setAnimatedBgIfHomePage();
 
@@ -250,23 +121,9 @@ export class AppComponent implements OnInit, AfterViewInit {
 
 
   }
-  initTheme() {
-
-    if (this.isDarkTheme) {
-      this.setCurrentTheme('dark-theme');
-      Highcharts.setOptions(darkChartOptions)
-    } else {
-      this.setCurrentTheme('light-theme');
-      Highcharts.setOptions(lightChartOptions)
 
 
-    }
 
-  }
-
-  setCurrentTheme(theme: Theme) {
-    this.selectedTheme = theme;
-  }
 
   ngOnInit() {
 
@@ -278,7 +135,12 @@ export class AppComponent implements OnInit, AfterViewInit {
     //Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
     //Add 'implements AfterViewInit' to the class.
     //this.matDrawer.disableClose = true;
-    
+
+  }
+  ngOnDestroy(){
+    if (this.mySubscription) {
+      this.mySubscription.unsubscribe();
+    }
   }
 
 
@@ -334,7 +196,14 @@ export class AppComponent implements OnInit, AfterViewInit {
   changeTheme() {
     this.isDarkTheme = !this.isDarkTheme;
     localStorage.setItem('isDarkTheme', this.isDarkTheme);
-    this.initTheme();
+    this.userService.emitThemeChange();
+
+
+    let temp = this.location.path();
+    console.log('navigateByUrl', temp);
+    this.router.navigateByUrl(temp, { skipLocationChange: true }).then(() => {
+      this.router.navigate([temp]);
+    });
   }
 
   activateHandsetLayout() {

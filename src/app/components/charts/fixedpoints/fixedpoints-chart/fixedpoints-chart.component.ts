@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { ChartDataSets, ChartOptions, ChartType } from 'chart.js';
 import { Color, Label } from 'ng2-charts';
 import { Observable } from 'rxjs';
@@ -65,6 +65,7 @@ export class FixedpointsChartComponent implements OnInit {
   constructor() {
 
   }
+  
 
   ngOnInit() {
     this.fixedPoints$.subscribe(r => {

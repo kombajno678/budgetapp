@@ -224,7 +224,7 @@ export class BudgetService {
 
 
   //predictions$: Subject<PredictionPoint[]>;
-  generatePredictionsBetweenDates(start: Date, end: Date): Observable<PredictionPoint[]> {
+  generatePredictionsBetweenDates(start: Date, end: Date, stopAtValue:number = null): Observable<PredictionPoint[]> {
     if (this.verbose) console.log('GENERATOR ionvoked ', start.toISOString(), end.toISOString());
     let predictions$ = new BehaviorSubject<PredictionPoint[]>(null);
     /*

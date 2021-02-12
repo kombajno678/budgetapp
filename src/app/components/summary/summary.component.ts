@@ -102,7 +102,7 @@ export class SummaryComponent implements OnInit {
           name = m.format('YYYY');
           break;
         case 'quarter':
-          name = m.format('YYYY-Q');
+          name = m.format('YYYY-Q').replace('-', '-Q');;
           break;
         case 'month':
           name = m.format('YYYY-MM');
@@ -110,7 +110,7 @@ export class SummaryComponent implements OnInit {
           break;
         case 'week':
 
-          name = m.format('YYYY-WW');
+          name = m.format('YYYY-WW').replace('-', '-W');
           break;
         case 'day':
           name = m.format('YYYY-MM-DD')
@@ -130,7 +130,7 @@ export class SummaryComponent implements OnInit {
         if(this.top > 0 && this.top <= this.groupedPredictions.length){
           //
         }else{
-          this.groupedPredictions.push({
+          this.groupedPredictions.unshift({
             name: name,
             predictions: [pp],
             expensesSum: 0,
