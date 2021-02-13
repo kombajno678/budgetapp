@@ -159,8 +159,9 @@ export class CreateNewOperationDialogComponent implements OnInit {
     if(this.form.controls.category.value){
       this.form.controls.category_id.setValue(this.form.controls.category.value.id);
 
-    }else{}
-    this.form.controls.category_id.setValue(null);
+    }else{
+      this.form.controls.category_id.setValue(null)
+    }
     this.operation.category_id = this.form.controls.category_id.value;
     //delete this.operation.category;
 
@@ -182,7 +183,8 @@ export class CreateNewOperationDialogComponent implements OnInit {
       this.operation.when = temp.toDate();
 
     } else {
-      this.operation.when = this.form.controls.when.value.add(12, 'hours');
+      this.operation.when = moment(this.form.controls.when.value).add(12, 'hours').toDate();
+      this.operation.when.setUTCHours(12, 0, 0, 0);
     }
     console.log(this.operation.when);
     this.dialogRef.close(this.operation);

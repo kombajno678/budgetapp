@@ -45,12 +45,12 @@
                         </mat-icon>
                         Delete all operations
                     </button>
-
+                    <!--
                     <button mat-menu-item
                             (click)="generate()">
                         (Generate missing operations from scheduled operations)
                     </button>
-
+-->
                 </mat-menu>
             </div>
 
@@ -66,10 +66,10 @@
 
 
         <mat-accordion multi>
-            <mat-expansion-panel opened>
+            <mat-expansion-panel expanded>
                 <mat-expansion-panel-header>
                     <mat-panel-title>
-                        <mat-icon  class="mr-3">filter_list</mat-icon>Filter
+                        <mat-icon class="mr-3">filter_list</mat-icon>Filter
                     </mat-panel-title>
 
                 </mat-expansion-panel-header>
@@ -89,8 +89,7 @@
                                 <mat-button-toggle class="w-100"
                                                    value="month">Month</mat-button-toggle>
                                 <mat-button-toggle class="w-100"
-                                                   value="week"
-                                                   >Week</mat-button-toggle>
+                                                   value="week">Week</mat-button-toggle>
                                 <mat-button-toggle class="w-100"
                                                    value="custom">Custom</mat-button-toggle>
                             </mat-button-toggle-group>
