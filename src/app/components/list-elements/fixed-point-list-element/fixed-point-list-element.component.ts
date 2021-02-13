@@ -13,15 +13,17 @@ import { CreateNewFixedPointDialogComponent } from '../../dialogs/create-new-fix
 export class FixedPointListElementComponent implements OnInit {
 
   @Input()
-  fp:FixedPoint;
+  fp: FixedPoint;
+
+  highlighted:boolean;
 
   getDateString = Globals.toStr;
 
   @Output()
-  onModify:EventEmitter<void> = new EventEmitter<void>();
+  onModify: EventEmitter<void> = new EventEmitter<void>();
 
   @Output()
-  onDelete:EventEmitter<void> = new EventEmitter<void>();
+  onDelete: EventEmitter<void> = new EventEmitter<void>();
 
 
   constructor(private fixedPointsService: FixedPointsService, private dialog: MatDialog) { }
@@ -36,12 +38,22 @@ export class FixedPointListElementComponent implements OnInit {
     let dialogRef = this.dialog.open(CreateNewFixedPointDialogComponent, { width: '100%', data: FixedPoint.getCopy(fp) });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
+        this.highlighted = true;
+
         let modified_fixedPoint: FixedPoint = result;
+        modified_fixedPoint.id = fp.id;
+
         this.fixedPointsService.update(modified_fixedPoint).subscribe(r => {
           console.log('result of modify = ', r);
           this.onModify.emit();
           this.fp = modified_fixedPoint;
-        })
+
+          
+          setTimeout(() => this.highlighted = false, 1500);
+
+
+        });
+
       }
     })
   }

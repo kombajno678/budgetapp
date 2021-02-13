@@ -2,6 +2,7 @@ import { AfterViewInit, Component, Inject, OnInit, ViewChild } from '@angular/co
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatButtonToggleGroup } from '@angular/material/button-toggle';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import moment, { Moment } from 'moment';
 import { Globals } from 'src/app/Globals';
 import { FixedPoint } from 'src/app/models/FixedPoint';
 
@@ -35,7 +36,7 @@ export class CreateNewFixedPointDialogComponent implements OnInit, AfterViewInit
       this.acceptButtonTest = this.updateButtonText;
       this.title = this.updateTitle;
 
-      
+
     } else {
       this.fixedPoint = new FixedPoint();
       this.fixedPoint.exact_value = null;
@@ -55,22 +56,22 @@ export class CreateNewFixedPointDialogComponent implements OnInit, AfterViewInit
 
   ngOnInit(): void {
 
-    
+
 
   }
-  
-  ngAfterViewInit(){
+
+  ngAfterViewInit() {
     let yesterday = new Date();
-      yesterday.setDate(yesterday.getDate() - 1);
+    yesterday.setDate(yesterday.getDate() - 1);
 
-      if(Globals.compareDates(new Date(), this.fixedPoint.when)){
-        this.operationDateOption.value = 'today';
-      }else if(Globals.compareDates(yesterday, this.fixedPoint.when)){
-        this.operationDateOption.value = 'yesterday';
-      }else{
-        this.operationDateOption.value = 'other';
+    if (Globals.compareDates(new Date(), this.fixedPoint.when)) {
+      this.operationDateOption.value = 'today';
+    } else if (Globals.compareDates(yesterday, this.fixedPoint.when)) {
+      this.operationDateOption.value = 'yesterday';
+    } else {
+      this.operationDateOption.value = 'other';
 
-      }
+    }
   }
 
 
@@ -87,7 +88,10 @@ export class CreateNewFixedPointDialogComponent implements OnInit, AfterViewInit
       yesterday.setDate(yesterday.getDate() - 1);
       this.fixedPoint.when = yesterday;
     } else {
-      this.fixedPoint.when = this.form.controls.when.value;
+      console.log('this.form.controls.when.value : ', this.form.controls.when.value);
+      this.fixedPoint.when = moment(this.form.controls.when.value).add(12, 'hours').toDate();//.add(12, 'H').toDate();
+      this.fixedPoint.when.setUTCHours(12, 0, 0, 0);
+      console.log('this.fixedPoint.when : ', this.fixedPoint.when);
     }
 
     this.dialogRef.close(this.fixedPoint);

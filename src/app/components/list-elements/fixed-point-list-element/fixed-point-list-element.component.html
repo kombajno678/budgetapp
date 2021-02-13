@@ -1,4 +1,4 @@
-<mat-list-item>
+<mat-list-item class="{{highlighted ? 'highlighted' : ''}}">
     <mat-icon mat-list-icon>insights</mat-icon>
     <div mat-line>
         {{getDateString(fp.when)}}
@@ -26,11 +26,6 @@
                 (click)="modify(fp)">
             <mat-icon>edit</mat-icon>
             <span>Modify</span>
-        </button>
-        <button mat-menu-item
-                disabled>
-            <mat-icon>notifications_off</mat-icon>
-            <span>Placeholder</span>
         </button>
     </mat-menu>
 

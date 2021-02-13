@@ -13,6 +13,7 @@ import { FilterConfig, OperationType } from 'src/app/models/internal/FilterConfi
 import { MatButtonToggleChange } from '@angular/material/button-toggle';
 import { Category } from 'src/app/models/Category';
 import { MatSelectionList } from '@angular/material/list';
+import { BudgetOperationService } from 'src/app/services/budget/budget-operation.service';
 
 @Component({
   selector: 'app-scheduled-operations',
@@ -66,7 +67,8 @@ export class ScheduledOperationsComponent implements OnInit, OnDestroy {
     private scheduledOperationsService: ScheduledOperationsService,
     private categoriesService: CategoryService,
     private snack: MatSnackBar,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private operationsService: BudgetOperationService
   ) {
 
     this.categoriesService.getAll().subscribe(r => {
@@ -118,14 +120,28 @@ export class ScheduledOperationsComponent implements OnInit, OnDestroy {
       return f;
     });
 
+    filtered.forEach( op => {
+      if(op.day_of_month.length > 0){
+        // monthly
+        op.scheduleHash = op.day_of_month.length;
+      }
+      else if(op.day_of_week.length > 0){
+        // weekly
+        op.scheduleHash = 500 + op.day_of_week.length * 4;
+      }else{
+        //daily
+        op.scheduleHash = 1000;
+      }
+    })
+
 
     let sorted = filtered.sort((a, b) => {
       let x = 0, y = 0;
 
       switch (this.sortConfig.by) {
         case SortBy.DATE:
-          x = a.day_of_month.length*10 + a.day_of_week.length + a.month.length*100;
-          y = b.day_of_month.length*10 + b.day_of_week.length + b.month.length*100;
+          x = a.scheduleHash;
+          y = b.scheduleHash;
           break;
         case SortBy.VALUE:
           x = Math.abs(a.value);
@@ -335,6 +351,30 @@ export class ScheduledOperationsComponent implements OnInit, OnDestroy {
     this.scheduledOperationsService.update(modifyEvent.new, true).subscribe(r => {
       if (r) {
         console.log('result od scheduledOperationsService.update = ', r);
+        // if modified category, change category of all operations form this scheduled operation
+        if(modifyEvent.old.category_id !== modifyEvent.new.category_id){
+
+          this.operationsService.getAllOnce().subscribe(ops => {
+            ops = ops.filter(op => {
+              return op.scheduled_operation_id === modifyEvent.new.id;
+            });
+            ops.forEach(op => {
+              op.category_id = modifyEvent.new.category_id;
+            });
+            console.log('operations to be updated : ', ops);
+            
+
+            combineLatest([...ops.map(op => this.operationsService.update(op, false))]).subscribe( results => {
+              console.log('updated ' + results.filter(r => r).length + 'out of ' + ops.length);
+              if(results.every(r => r)){
+                console.log('update operations finsihed');
+                this.operationsService.refreshResource();
+              }
+            });
+            
+            
+          })
+        }
         //this.refresh();
       }
     })

@@ -250,7 +250,6 @@ export class PredictionChartComponent implements OnInit, AfterViewInit {
       events:{
         click: this.highchartSeriesClicked
       },
-      
     },
     {
       data: [],
@@ -258,6 +257,9 @@ export class PredictionChartComponent implements OnInit, AfterViewInit {
       name: 'history',
       events:{
         click: this.highchartSeriesClicked
+      },
+      marker:{
+        enabled: false
       }
     },
     {
@@ -266,6 +268,9 @@ export class PredictionChartComponent implements OnInit, AfterViewInit {
       name: 'future',
       events:{
         click: this.highchartSeriesClicked
+      },
+      marker:{
+        enabled: false
       }
     },
 

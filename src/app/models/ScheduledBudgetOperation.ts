@@ -17,6 +17,8 @@ export class ScheduledBudgetOperation extends AbstractResource {
     day_of_month?: number[];
     day_of_week?: number[];
 
+    scheduleHash?:number;
+
     category?: Category;
     scheduleType?: ScheduleType;
 

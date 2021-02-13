@@ -44,14 +44,14 @@ export class SidenavComponent implements OnInit {
     disabled: false,
   },
   {
-    title: 'When will i have ...',
+    title: 'When will i have',
     url: '/whenwill',
     icon: 'event',
     loginRequired: true,
     disabled: false,
   },
   {
-    title: 'How much money will i have ...',
+    title: 'How much money will i have',
     url: '/howmuchwill',
     icon: 'event',
     loginRequired: true,
