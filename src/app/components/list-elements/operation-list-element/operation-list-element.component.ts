@@ -41,9 +41,9 @@ export class OperationListElementComponent implements OnInit, OnDestroy {
 
 
   ngOnDestroy(): void {
-    this.op = null;
-    this.onDelete = null;
-    this.onModify = null;
+    //this.op = null;
+    //this.onDelete = null;
+    //this.onModify = null;
   }
 
 
