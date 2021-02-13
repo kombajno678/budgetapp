@@ -22,7 +22,9 @@ export interface WhenWillResult {
 })
 export class WhenWillComponent implements OnInit {
 
-  neverFlag:boolean = false;
+  neverFlag: boolean = false;
+  elapsedTime: number;
+  public loading: boolean = false;
 
 
 
@@ -33,8 +35,8 @@ export class WhenWillComponent implements OnInit {
 
   paddingDays = 7;
 
-  result$:BehaviorSubject<WhenWillResult> = new BehaviorSubject<WhenWillResult>(null);
-  chartConfig$:BehaviorSubject<PredictionChartCardConfig>= new BehaviorSubject<PredictionChartCardConfig>(null);
+  result$: BehaviorSubject<WhenWillResult> = new BehaviorSubject<WhenWillResult>(null);
+  chartConfig$: BehaviorSubject<PredictionChartCardConfig> = new BehaviorSubject<PredictionChartCardConfig>(null);
 
 
 
@@ -68,8 +70,15 @@ export class WhenWillComponent implements OnInit {
     let today = new Date();
     today.setUTCHours(12, 0, 0, 0);
 
+    //console.time('whenWillIHaveX');
+    let t0 = performance.now();
+
     this.budget.findDateWithValue(x).subscribe(r => {
       if (r) {
+        //console.timeEnd('whenWillIHaveX');
+        let t1 = performance.now()
+        this.elapsedTime = (t1 - t0);
+
         let when = r;
 
         //find years diff
@@ -105,9 +114,9 @@ export class WhenWillComponent implements OnInit {
           endDate: end,
           title: `You will have ${x} at ${when.toISOString().substr(0, 10)}`,
           marks: [when],
-          delayOnUpdate:true,
-          disableControls : true,
-          compact : false,
+          delayOnUpdate: true,
+          disableControls: true,
+          legend: false,
 
         }
 
@@ -123,8 +132,14 @@ export class WhenWillComponent implements OnInit {
 
 
 
-      }else{
-        result.next(null);
+      } else {
+        result.next({
+          resultDateA: today,
+          yearsDiff: Infinity,
+          monthsDiff: Infinity,
+          daysDiff: Infinity,
+          chartConfig: null
+        });
         console.warn('never xd');
         this.neverFlag = true;
       }
@@ -141,15 +156,19 @@ export class WhenWillComponent implements OnInit {
 
     let x = this.form.controls.amount.value;
 
-    this.whenWillIHaveX(x).pipe(tap(r => console.log('whenWillIHaveX => tap : ', r))).subscribe(r => {
+    this.result$.next(null);
+    this.loading = true;
+
+    this.whenWillIHaveX(x)/*.pipe(tap(r => console.log('whenWillIHaveX => tap : ', r)))*/.subscribe(r => {
       //console.log(r);
-      if(r){
+      if (r) {
         this.result$.next(r);
         this.chartConfig$.next(r.chartConfig);
+        this.loading = false;
 
       }
 
-      
+
     });
 
 

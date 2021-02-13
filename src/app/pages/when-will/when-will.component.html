@@ -31,47 +31,68 @@
         <button mat-flat-button
                 color="primary"
                 class="w-100 p-1"
-                (click)="onFormSubmit()">
+                (click)="onFormSubmit()"
+                [disabled]="loading">
             Check
         </button>
 
     </div>
     <div class="col"></div>
 </div>
-<ng-container *ngIf="(result$ | async) as result">
-    <div class="row m-0">
-        <div class="col"></div>
-        <div class="col-12 col-sm-12 col-md-6 text-center p-3">
-            <span class="mat-display-2">
-                {{result.resultDateA.toLocaleDateString()}}
-            </span>
-            <p>
-                {{ (result.yearsDiff == 0 && result.monthsDiff == 0 && result.daysDiff == 0) ? 'today' : 'in '}} {{
-                result.yearsDiff ? result.yearsDiff + ' years ' : ''}} {{ result.monthsDiff ? result.monthsDiff + '
-                months ' : ''}} {{
-                result.daysDiff ? result.daysDiff + ' days ' : ''}}
-            </p>
+
+
+<ng-container *ngIf="!loading; else loadingTemplate">
+
+    <ng-container *ngIf="(result$ | async) as result">
+        <div class="row m-0">
+            <div class="col"></div>
+            <div class="col-12 col-sm-12 col-md-6 text-center p-3">
+                <span class="mat-display-2"
+                      *ngIf="!neverFlag">
+                    {{result.resultDateA.toLocaleDateString()}}
+                </span>
+                <span class="mat-display-2 "
+                      *ngIf="neverFlag">
+                    <mat-icon class="big-icon">
+                        sentiment_very_dissatisfied
+                    </mat-icon>
+
+                </span>
+                <p class="mat-headline">
+                    {{ (result.yearsDiff == 0 && result.monthsDiff == 0 && result.daysDiff == 0) ? 'today' : 'in '}} {{
+                    result.yearsDiff ? result.yearsDiff.toLocaleString().toLocaleLowerCase() + ' years ' : ''}} {{
+                    result.monthsDiff ? result.monthsDiff.toLocaleString().toLocaleLowerCase() + '
+                    months ' : ''}} {{
+                    result.daysDiff ? result.daysDiff.toLocaleString().toLocaleLowerCase() + ' days ' : ''}}
+                </p>
+
+
+            </div>
+            <div class="col"></div>
+
+
+            <div class="col-12">
+                <ng-container *ngIf="chartConfig$ && !neverFlag">
+
+                    <app-prediction-chart-card [config$]="chartConfig$.asObservable()">
+                    </app-prediction-chart-card>
+
+
+
+
+
+
+                </ng-container>
+            </div>
+
+
         </div>
-        <div class="col"></div>
+    </ng-container>
 
-
-        <div class="col-12">
-            <ng-container *ngIf="chartConfig$">
-
-                <app-prediction-chart-card [config$]="chartConfig$.asObservable()">
-                </app-prediction-chart-card>
-
-
-
-
-
-
-            </ng-container>
-        </div>
-
-
-    </div>
 </ng-container>
-<ng-container *ngIf="neverFlag">
-    Never :(
-</ng-container>
+<ng-template #loadingTemplate>
+    ... loading ...
+    <app-loading-spinner>
+
+    </app-loading-spinner>
+</ng-template>

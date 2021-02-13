@@ -21,7 +21,7 @@ import { UserService } from './user.service';
 })
 export class BudgetService {
 
-  verbose: boolean = false;//true//false;
+  verbose: boolean = true//false;
 
 
 
@@ -72,10 +72,53 @@ export class BudgetService {
   }
 
 
+  private maxFindValueInvocations = 10;
+  private findValueInvocations = 0;
+
+  private findValue(startingDate: Date, daysRange:number, valueToFind: number): Observable<Date> {
+    let result: BehaviorSubject<Date> = new BehaviorSubject<Date>(null);
+    this.findValueInvocations++;
+    if(this.findValueInvocations >= this.maxFindValueInvocations){
+      result.next(null);
+      return result;
+    }
+
+    let endDate = new Date(startingDate);
+    endDate.setFullYear(endDate.getFullYear() + 1);
+
+
+    this.generatePredictionsBetweenDates(startingDate, endDate, valueToFind).subscribe(r => {
+      if (r && r[0]) {
+        result.next(r[0].date);
+      } else {
+        //find in next range
+        let nextRange = (daysRange * 2);
+        if(nextRange > 365*5){
+          nextRange = 365*5;
+        }
+        if(this.verbose){
+          console.log('findValue > nextRange = ', nextRange);
+        }
+
+        this.findValue(endDate, nextRange, valueToFind).subscribe(r => {
+          if(r){
+            result.next(r);
+
+          }else{
+            //too mush
+            result.next(null);
+          }
+        })
+      }
+    })
+
+    return result;
+  }
+
   public i = 0;
-  private findValueRecursive(dateA: Date, step: number, directionForward: boolean, valueToFind:number): Observable<Date> {
+  private findValueRecursive(dateA: Date, step: number, directionForward: boolean, valueToFind: number): Observable<Date> {
     this.i++;
-    if (this.verbose)console.log(this.i, ' > someF(',dateA, step, directionForward, valueToFind, ' )');
+    if (this.verbose) console.log(this.i, ' > someF(', dateA, step, directionForward, valueToFind, ' )');
     let result: BehaviorSubject<Date> = new BehaviorSubject<Date>(null);
     //check value at today
     /*
@@ -86,7 +129,7 @@ export class BudgetService {
       dateA.setDate(dateA.getDate() - (i * step));
     }
     */
-   
+
     let dateB = new Date(dateA);
     if (directionForward) {
       dateB.setDate(dateB.getDate() + step);
@@ -105,7 +148,7 @@ export class BudgetService {
         let valueA = r[0];
         let valueB = r[1];
 
-        
+
         //console.log(this.i + ' > checking value at ' + dateA.toISOString() + '  : ' + valueA.value);
         //console.log(this.i + ' > checking value at ' + dateB.toISOString() + '  : ' + valueB.value);
         //console.log('valueB.value - valueA.value', valueB.value - valueA.value);
@@ -113,53 +156,53 @@ export class BudgetService {
 
 
         // if money is rising and x < both values, return lower date
-        if(valueB.value - valueA.value > 0 && (valueToFind < valueB.value && valueToFind < valueA.value)){
-          result.next(dateA < dateB ? dateA : dateB );
-          if (this.verbose)console.log(this.i + ' > money is rising and x < both values, return lower date');
+        if (valueB.value - valueA.value > 0 && (valueToFind < valueB.value && valueToFind < valueA.value)) {
+          result.next(dateA < dateB ? dateA : dateB);
+          if (this.verbose) console.log(this.i + ' > money is rising and x < both values, return lower date');
           return;
         }
 
         // if money is decreasing and x > both values, return lower date
-        if(valueB.value - valueA.value < 0 && (valueToFind > valueB.value && valueToFind > valueA.value)){
+        if (valueB.value - valueA.value < 0 && (valueToFind > valueB.value && valueToFind > valueA.value)) {
           //result.next(dateA < dateB ? dateA : dateB );
-          result.next(null);
+          //result.next(null);
           console.log(this.i + ' > money is decreasing and x > both values, return lower date');
 
-          return;
+          //return;
         }
 
 
 
         //x between prev and next
         if ((valueToFind > valueA.value && valueToFind < valueB.value) || ((valueToFind < valueA.value && valueToFind > valueB.value))) {
-          if(step < 2){
-            
-            if(Math.abs(valueToFind - valueA.value) < Math.abs(valueToFind - valueB.value) ){
-              
+          if (step < 2) {
+
+            if (Math.abs(valueToFind - valueA.value) < Math.abs(valueToFind - valueB.value)) {
+
               result.next(dateA);
-            }else{
+            } else {
               result.next(dateB);
 
             }
 
 
-          }else{
-            if (this.verbose)console.log(this.i + ' > step = step / 2; directionForward = !directionForward');
+          } else {
+            if (this.verbose) console.log(this.i + ' > step = step / 2; directionForward = !directionForward');
             step = Math.floor(step / 2);
             directionForward = !directionForward;
             this.findValueRecursive(dateB, step, directionForward, valueToFind).subscribe(r => {
-              if(r){
+              if (r) {
                 result.next(r);
               }
             });
           }
-          
+
         } else {
-          step = Math.floor(step * 1.25);
-          if (this.verbose)console.log(this.i + ' > step = step * 2');
+          step = Math.floor(step * 1.5);
+          if (this.verbose) console.log(this.i + ' > step = step * 2');
 
           this.findValueRecursive(dateB, step, directionForward, valueToFind).subscribe(r => {
-            if(r){
+            if (r) {
               result.next(r);
             }
           });
@@ -179,40 +222,45 @@ export class BudgetService {
   findDateWithValue(valueToFind: number): Observable<Date> {
     this.i = 0;
     let result = new BehaviorSubject<Date>(null);
-    let step = 32;
+    let step = 7;
     let directionForward: boolean = true;
     let startingDate = new Date();
     startingDate.setUTCHours(12, 0, 0, 0);
 
     this.generatePredictionForDate(startingDate).subscribe(r => {
-      if(r){
-        if(valueToFind < r.value ){
+      if (r) {
+        if (valueToFind < r.value) {
           //console.log('you already have this money');
           result.next(startingDate);
-          
-        }else{
-           
-          this.findValueRecursive(startingDate, step, directionForward, valueToFind).subscribe(r => {
+
+        } else {
+
+          // this.findValueRecursive(startingDate, step, directionForward, valueToFind).subscribe(r => {
+          //   result.next(r);
+          // });
+
+          this.findValueInvocations = 0;
+          this.findValue(startingDate, 90, valueToFind).subscribe(r => {
             result.next(r);
-          });
+          })
         }
       }
     })
-    return result; 
+    return result;
 
-    
-    
+
+
   }
 
 
 
   generatePredictionForDate(date: Date): Observable<PredictionPoint> {
-    if (this.verbose)console.log('GENERATOR: asked for prediction at : ', date.toISOString());
-    
+    if (this.verbose) console.log('GENERATOR: asked for prediction at : ', date.toISOString());
+
     let ob: ReplaySubject<PredictionPoint> = new ReplaySubject<PredictionPoint>(1);
     this.generatePredictionsBetweenDates(date, date).subscribe(r => {
-      if(r){
-        if (this.verbose) console.log('GENERATOR: ', date.toISOString(), ' => ',r[r.length - 1]);
+      if (r) {
+        if (this.verbose) console.log('GENERATOR: ', date.toISOString(), ' => ', r[r.length - 1]);
         ob.next(r[r.length - 1]);
 
       }
@@ -224,7 +272,7 @@ export class BudgetService {
 
 
   //predictions$: Subject<PredictionPoint[]>;
-  generatePredictionsBetweenDates(start: Date, end: Date, stopAtValue:number = null): Observable<PredictionPoint[]> {
+  generatePredictionsBetweenDates(start: Date, end: Date, stopAtValue: number = null): Observable<PredictionPoint[]> {
     if (this.verbose) console.log('GENERATOR ionvoked ', start.toISOString(), end.toISOString());
     let predictions$ = new BehaviorSubject<PredictionPoint[]>(null);
     /*
@@ -236,7 +284,7 @@ export class BudgetService {
     let daysRange = Globals.getDaysInRange(start, end);
     if (this.verbose) console.log('GENERATOR got days range ', daysRange.length);
 
-    let generated:boolean = false;
+    let generated: boolean = false;
 
     let sub = combineLatest([
       this.fixedPointsService.getAll(),
@@ -244,7 +292,7 @@ export class BudgetService {
       this.scheduledOperations.getAll(),
 
     ]);
-    
+
     sub.subscribe(r => {
       if (!generated && r.every(x => x) && r[1].length > 0) {
         if (this.verbose) console.log('GENERATOR START ');
@@ -252,7 +300,7 @@ export class BudgetService {
         let predictions = daysRange.map(p => new PredictionPoint(p, 0));
         let fixedPoints = r[0];
         let operations = r[1];
-        if(operations.length == 0){
+        if (operations.length == 0) {
           console.warn('generatePredictionsBetweenDates > operations.length == 0');
         }
         let scheduledOps = r[2].filter(so => so.active && !so.hidden);
@@ -355,11 +403,27 @@ export class BudgetService {
               op.scheduled_operation = scheduledOps.find(so => so.id === op.scheduled_operation_id);
             })
           }
+
+          if (stopAtValue > 0) {
+            if (predictions[i].value >= stopAtValue) {
+              if (this.verbose) console.log('GENERATOR NEXT ', predictions[i]);
+              predictions$.next([predictions[i]]);
+              break;
+            }
+            if (i >= predictions.length - 1) {
+              predictions$.next([null]);
+            }
+          }
+
         }
-        if (this.verbose) console.log('GENERATOR NEXT ', predictions.length);
-        predictions$.next(predictions);
-        generated = true;
-        //this.predictions$.complete();
+        if (!(stopAtValue > 0)) {
+          if (this.verbose) console.log('GENERATOR NEXT ', predictions.length);
+          predictions$.next(predictions);
+          generated = true;
+          //this.predictions$.complete();
+        }
+
+
       }
     })
 
@@ -543,7 +607,7 @@ export class BudgetService {
                   let temp: BudgetOperation = new BudgetOperation(so.name, so.value, d, so.id);
                   //temp.scheduled_operation = so;
                   temp.scheduled_operation_id = so.id;
-                  if(so.category_id){
+                  if (so.category_id) {
                     temp.category_id = so.category_id;
                   }
                   operationsToAdd.push(temp);
@@ -558,7 +622,7 @@ export class BudgetService {
 
           //gone through all days, now add operations
           if (this.verbose) console.log('execcuting operationsToAdd = ' + operationsToAdd.length);
-          
+
 
 
 

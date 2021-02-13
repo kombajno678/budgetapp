@@ -14,6 +14,7 @@ export interface PredictionChartCardConfig {
   delayOnUpdate?:boolean,
   disableControls:boolean,
   compact?:boolean,
+  legend?:boolean
 }
 
 

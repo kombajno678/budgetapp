@@ -61,7 +61,9 @@ export class HowMuchWillComponent implements OnInit {
       title: `Prediction for day : ${day.toLocaleDateString()}`,
       marks: [day],
       delayOnUpdate: true,
-      disableControls : true
+      disableControls: true,
+      compact: false,
+      legend: false,
 
     }
     this.chartConfig$.next(chartConfig);
