@@ -59,7 +59,7 @@
 
                 </span>
                 <p class="mat-headline">
-                    {{ (result.yearsDiff == 0 && result.monthsDiff == 0 && result.daysDiff == 0) ? 'today' : 'in '}} {{
+                    {{ (result.yearsDiff == 0 && result.monthsDiff == 0 && result.daysDiff == 0) ? 'You already have more than ' + wantedMoney : 'in '}} {{
                     result.yearsDiff ? result.yearsDiff.toLocaleString().toLocaleLowerCase() + ' years ' : ''}} {{
                     result.monthsDiff ? result.monthsDiff.toLocaleString().toLocaleLowerCase() + '
                     months ' : ''}} {{

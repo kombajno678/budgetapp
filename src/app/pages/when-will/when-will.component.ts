@@ -26,6 +26,8 @@ export class WhenWillComponent implements OnInit {
   elapsedTime: number;
   public loading: boolean = false;
 
+  wantedMoney:number = null;
+
 
 
   @Input()
@@ -119,6 +121,9 @@ export class WhenWillComponent implements OnInit {
           legend: false,
 
         }
+        if((daysDiff + monthsDiff + yearsDiff) <= 0){
+          chartConfig.title = `You already have more than ${x} money`;
+        }
 
         //init and next result
         result.next({
@@ -155,6 +160,7 @@ export class WhenWillComponent implements OnInit {
 
 
     let x = this.form.controls.amount.value;
+    this.wantedMoney = x;
 
     this.result$.next(null);
     this.loading = true;
