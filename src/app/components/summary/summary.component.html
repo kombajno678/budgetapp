@@ -34,29 +34,33 @@
                 <mat-expansion-panel-header>
                     <mat-panel-title>
                         <div class="row m-0 p-0 w-100">
-                            <div class="col-auto p-1">
+                            <div class="col-12 col-md-auto  px-1">
                                 {{g.name}}
                             </div>
-                            <div class="col p-1 opacity-3">
+                            <div class="col px-1 opacity-3">
                                 expenses
                             </div>
-                            <div class="col p-1 opacity-3">
+                            <div class="col px-1 opacity-3">
 
                                 <span class="{{ g.expensesSumMax ? 'badge-warn' : '' }} m-0 p-0">
                                     {{this.displayValue(g.expensesSum)}}
                                 </span>
 
                             </div>
-                            <div class="col p-1 opacity-3">
+                            <div class="col px-1 opacity-3">
                                 income
 
                             </div>
-                            <div class="col p-1 opacity-3">
+                            <div class="col px-1 opacity-3">
                                 <span class="{{ g.incomeSumMax ? 'badge-primary' : '' }} m-0 p-0">
                                     {{this.displayValue(g.incomeSum)}}
                                 </span>
 
                             </div>
+
+
+
+
                         </div>
 
 
