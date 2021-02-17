@@ -59,11 +59,12 @@
 
                 </span>
                 <p class="mat-headline">
-                    {{ (result.yearsDiff == 0 && result.monthsDiff == 0 && result.daysDiff == 0) ? 'You already have more than ' + wantedMoney : 'in '}} {{
-                    result.yearsDiff ? result.yearsDiff.toLocaleString().toLocaleLowerCase() + ' years ' : ''}} {{
-                    result.monthsDiff ? result.monthsDiff.toLocaleString().toLocaleLowerCase() + '
-                    months ' : ''}} {{
-                    result.daysDiff ? result.daysDiff.toLocaleString().toLocaleLowerCase() + ' days ' : ''}}
+                    {{ (result.yearsDiff == 0 && result.monthsDiff == 0 && result.daysDiff == 0) ? 'You already have more than ' + wantedMoney : 'in '}}
+
+                    {{ result.yearsDiff ? result.yearsDiff.toLocaleString().toLocaleLowerCase() + (result.yearsDiff > 1 ? ' years ' : ' year '): ''}}
+                    {{ result.monthsDiff ? result.monthsDiff.toLocaleString().toLocaleLowerCase() + (result.monthsDiff > 1 ? ' months ' : ' month ') : ''}}
+                    {{ result.daysDiff ? result.daysDiff.toLocaleString().toLocaleLowerCase() + (result.daysDiff > 1 ? ' days ' : ' day ') : ''}}
+                    
                 </p>
 
 

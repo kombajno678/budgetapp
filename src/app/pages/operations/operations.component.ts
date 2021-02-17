@@ -246,7 +246,7 @@ export class OperationsComponent implements OnInit, AfterViewInit, OnDestroy {
             op.category = r[2].find(so => so.id === op.category_id);
           }
         });
-        if (!this.quiet && this.allOperations.length == 0) this.snack.open('You have no operations :(', 'close', { duration: 3000 });
+        //if (!this.quiet && this.allOperations.length == 0) this.snack.open('You have no operations :(', 'close', { duration: 3000 });
         this.updateDisplayedOperations();
       }
     })

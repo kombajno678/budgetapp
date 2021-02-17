@@ -197,7 +197,7 @@ export class ScheduledOperationsComponent implements OnInit, OnDestroy {
 
           console.log('this.scheduledOperations = ', this.allScheduledOperations);
           if (this.allScheduledOperations.length == 0) {
-            if (!this.quiet) this.snack.open('You have no operations :(', 'close', { duration: 3000 });
+            //if (!this.quiet) this.snack.open('You have no operations :(', 'close', { duration: 3000 });
 
           }
         }

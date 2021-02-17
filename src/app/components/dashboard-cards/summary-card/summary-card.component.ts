@@ -13,7 +13,7 @@ export class SummaryCardComponent implements OnInit {
 
   link = {
     title: 'Summary',
-    url: '/prediction',
+    url: '/predictions',
   }
 
 

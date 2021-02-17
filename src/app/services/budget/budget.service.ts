@@ -72,7 +72,7 @@ export class BudgetService {
   }
 
 
-  private maxFindValueInvocations = 10;
+  private maxFindValueInvocations = 100;
   private findValueInvocations = 0;
 
   private findValue(startingDate: Date, daysRange:number, valueToFind: number): Observable<Date> {
